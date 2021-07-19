@@ -1,0 +1,4 @@
+name: banking
+recipe: laravel
+config:
+  webroot: .
