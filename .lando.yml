@@ -1,4 +1,9 @@
-name: banking
+name: bank
 recipe: laravel
 config:
   webroot: .
+
+services:
+  database:
+    type: mysql
+    portforward: 3306
