@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function login(Request $request){
+    public function login(Request $request) {
         if(Auth::check()) {
             return redirect(route('user.private'));
         }
