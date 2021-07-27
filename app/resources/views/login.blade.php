@@ -16,17 +16,17 @@
             <div class="form-group">
                 <label for="email" class="form-label">Your Email</label>
                 <input type="text" id="email" name="email" class="input-field" placeholder="Email" required>
-                @error('email')
-                    <div class="alert">{{ $message }}</div>
-                @enderror
             </div>
             <div class="form-group">
                 <label for="password" class="form-label">Your Password</label>
                 <input type="password" id="email" name="password" class="input-field" required>
-                @error('password')
-                <div class="alert">{{ $message }}</div>
-                @enderror
             </div>
+            @error('email')
+            <div class="alert">{{ $message }}</div>
+            @enderror
+            @error('password')
+            <div class="alert">{{ $message }}</div>
+            @enderror
             <div class="form-group" id="button">
                 <button name="send" type="submit" class="form-button">Apply</button>
             </div>

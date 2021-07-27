@@ -9,15 +9,16 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RegisterController extends Controller
 {
+
     public function saveUser(Request $request) {
         if(Auth::check()) {
             return redirect(route('user.private'));
         }
 
         $validate = $request->validate([
-           'name' => 'required|min:4',
+            'name' => 'required|min:4',
             'email' => 'required|email',
-            'password' => 'required|min:4'
+            'password' => 'required|min:4|regex:/^.*(?=.{4,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
         ]);
 
         if(User::where('email', $validate['email'])->exists()) {

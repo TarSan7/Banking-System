@@ -2,12 +2,20 @@
     color: white;
 }
 
+.alert{
+    color: darkred;
+    margin-bottom: 0;
+}
+
 .index-title{
     text-align: center;
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     margin-top: 100px;
     margin-bottom: 100px;
+}
+.nav-item{
+    display: flex;
 }
 
 .index-title-div{
@@ -23,11 +31,17 @@
     justify-content: center;
 }
 
+.form{
+    display: flex;
+    justify-content: center;
+}
+
 .form-group{
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
+    max-width: 700px;
 }
 
 .form-label{
@@ -61,4 +75,75 @@
 }
 .form-button:hover{
     background-color: #718096;
+}
+
+.card{
+    border: 1px solid black;
+    border-radius: 50px;
+    padding: 50px;
+    width: 500px;
+    background-color: beige;
+}
+
+.card-title, .card-info{
+    text-decoration: none;
+}
+
+.text{
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 20px;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    color: black;
+    text-decoration: none;
+}
+
+.add-card{
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 26px;
+    margin-top: 60px;
+    margin-bottom: 60px;
+}
+
+.card-link{
+    text-decoration: none;
+}
+
+.spacing{
+    display: flex;
+    justify-content: space-between;
+}
+
+.menu{
+    margin-top: 20px;
+    text-decoration: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+#menu{
+    margin-bottom: 50px;
+}
+
+li{
+    list-style: none;
+}
+
+p.navbar-brand{
+    color: white;
+    margin-top: 30px;
+}
+
+footer{
+    display: flex;
+    justify-content: center;
+    margin-top: 300px;
+    height: 100px;
+    background-color: #0D6EFD;
 }

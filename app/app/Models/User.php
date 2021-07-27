@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -42,7 +43,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function setPasswordAttribute($password) {
+    public function setPasswordAttribute($password)
+    {
         $this->attributes['password'] = Hash::make($password);
+    }
+
+    public function usercards()
+    {
+
+        return $this->HasMany(UserCard::class);
+    }
+
+    public static function getCards($userId)
+    {
+        $cardsId = UserCard::select('card_id')->where('user_id', $userId)->get();
+        return $cardsId;
     }
 }
