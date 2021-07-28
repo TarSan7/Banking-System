@@ -1,5 +1,5 @@
 @extends('layout.main')
-@extends('layout.header1')
+@extends('layout.headerPrivate')
 
 @section('title') Main Page @endsection
 
