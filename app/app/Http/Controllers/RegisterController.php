@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -10,22 +11,12 @@ use Illuminate\Database\Eloquent\Builder;
 class RegisterController extends Controller
 {
 
-    public function saveUser(Request $request) {
+    public function saveUser(RegisterUserRequest $request) {
         if(Auth::check()) {
             return redirect(route('user.private'));
         }
 
-        $validate = $request->validate([
-            'name' => 'required|min:4',
-            'email' => 'required|email',
-            'password' => 'required|min:4|regex:/^.*(?=.{4,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/'
-        ]);
-
-        if(User::where('email', $validate['email'])->exists()) {
-            return redirect(route('user.registration'))->withErrors([
-                'email' => 'This email has already been used!'
-            ]);
-        }
+        $validate = $request->validated();
 
         $user = User::create($validate);
         if($user) {

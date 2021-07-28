@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function login(Request $request) {
+    public function login(LoginUserRequest $request) {
         if(Auth::check()) {
             return redirect(route('user.private'));
         }

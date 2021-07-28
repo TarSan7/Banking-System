@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddCardRequest;
 use App\Models\UserCard;
 use App\Models\Card;
 use Illuminate\Http\Request;
@@ -9,13 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class CardController extends Controller
 {
-    public function addCard(Request $request)
+    public function addCard(AddCardRequest $request)
     {
-        $validate = $request->validate([
-            'number' => 'required|regex:/^[0-9]{13,16}$/',
-            'cvv' => 'required|regex:/^[0-9]{3}$/',
-            'expires-end' => 'required'
-        ]);
+        $validate = $request->validated();
 
         if(!Card::where('number', $validate['number'])->where('cvv', $validate['cvv'])
             ->where('expires_end', $validate['expires-end'])->exists()) {
