@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AddCardRequest;
 use App\Models\UserCard;
 use App\Models\Card;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CardController extends Controller
@@ -14,19 +13,20 @@ class CardController extends Controller
     {
         $validate = $request->validated();
 
-        if(!Card::where('number', $validate['number'])->where('cvv', $validate['cvv'])
+        if (!Card::where('number', $validate['number'])->where('cvv', $validate['cvv'])
             ->where('expires_end', $validate['expires-end'])->exists()) {
             return redirect(route('user.addCard'))->withErrors([
                 'number' => 'This card doesn`t exist! Try again!'
             ]);
         }
-        if(UserCard::cardsNumber($validate['number'])) {
+        if (UserCard::cardsNumber($validate['number'])) {
             return redirect(route('user.addCard'))->withErrors([
                 'number' => 'This card has already used!'
             ]);
         }
-        $uCard = UserCard::create(['user_id' => Auth::user()->id, 'card_id' => UserCard::cardsId($validate['number'])]);
-        if($uCard) {
+        $uCard = UserCard::create(['user_id' => Auth::user()->id,
+                 'card_id' => UserCard::cardsId($validate['number'])]);
+        if ($uCard) {
             return redirect(route('user.private'));
         }
 
@@ -37,6 +37,6 @@ class CardController extends Controller
 
     public function cardInfo($cardId)
     {
-
+        return view('oneCard', ['card' => Card::find($cardId)]);
     }
 }

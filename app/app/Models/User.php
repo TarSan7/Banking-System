@@ -50,7 +50,6 @@ class User extends Authenticatable
 
     public function usercards()
     {
-
         return $this->HasMany(UserCard::class);
     }
 

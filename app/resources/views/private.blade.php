@@ -22,7 +22,7 @@
             <div class="cards">
                 @if(count($cards) > 0)
                     @foreach($cards as $card)
-                        <a href="" class="card-link">
+                        <a href="{{ route('user.card', ['id' => $card['id']]) }}" class="card-link">
                             <div class="card col-md-6 col-12">
                                 <div class="spacing">
                                     <h2 class="card-title"> Card </h2>

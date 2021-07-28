@@ -25,13 +25,13 @@ Route::get('/', function () {
 })->name('home');
 
 Route::name('user.') -> group(function () {
-    Route::get('/private', function (){
+    Route::get('/private', function () {
         $cardsId = UserCard::select('card_id')->where('user_id', Auth::user()->id)->get();
         return view('private', ['cards' => Card::find($cardsId)]);
     })->middleware('auth')->name('private');
 
     Route::get('/login', function () {
-        if(Auth::check()) {
+        if (Auth::check()) {
             return redirect(route('user.private'));
         }
         return view('login');
@@ -45,7 +45,7 @@ Route::name('user.') -> group(function () {
     })->name('logout');
 
     Route::get('/registration', function () {
-        if(Auth::check()) {
+        if (Auth::check()) {
             return redirect(route('user.private'));
         }
         return view('registration');
@@ -59,5 +59,5 @@ Route::name('user.') -> group(function () {
 
     Route::post('/addCard', [CardController::class, 'addCard']);
 
-    Route::get('/card{id}', [CardController::class, 'cardInfo']);
+    Route::get('/card/{id}', [CardController::class, 'cardInfo'])->name('card');
 });

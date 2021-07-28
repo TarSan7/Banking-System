@@ -11,15 +11,16 @@ use Illuminate\Database\Eloquent\Builder;
 class RegisterController extends Controller
 {
 
-    public function saveUser(RegisterUserRequest $request) {
-        if(Auth::check()) {
+    public function saveUser(RegisterUserRequest $request)
+    {
+        if (Auth::check()) {
             return redirect(route('user.private'));
         }
 
         $validate = $request->validated();
 
         $user = User::create($validate);
-        if($user) {
+        if ($user) {
             Auth::login($user);
             return redirect(route('user.private'));
         }

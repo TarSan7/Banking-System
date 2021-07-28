@@ -24,7 +24,6 @@ class CardFactory extends Factory
      */
     public function definition()
     {
-
         return [
             'number' => $this->faker->unique()->creditCardNumber,
             'cvv' => rand(100, 999),

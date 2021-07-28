@@ -22,11 +22,13 @@ class UserCard extends Model
     {
         return $this->belongsTo(Card::class);
     }
-    public static function cardsNumber($number){
+    public static function cardsNumber($number)
+    {
         return UserCard::where('card_id', self::cardsId($number))->exists();
     }
 
-    public static function cardsId($number){
+    public static function cardsId($number)
+    {
         return Card::where('number', $number)->get('id')[0]['id'];
     }
 }
