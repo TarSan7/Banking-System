@@ -12,7 +12,7 @@ class CardController extends Controller
     public function addCard(Request $request)
     {
         $validate = $request->validate([
-            'number' => 'required|regex:/^[0-9]{14,16}$/',
+            'number' => 'required|regex:/^[0-9]{13,16}$/',
             'cvv' => 'required|regex:/^[0-9]{3}$/',
             'expires-end' => 'required'
         ]);
