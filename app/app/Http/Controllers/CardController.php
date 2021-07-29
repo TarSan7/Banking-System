@@ -6,6 +6,7 @@ use App\Http\Requests\AddCardRequest;
 use App\Http\Requests\TransferToCardRequest;
 use App\Models\UserCard;
 use App\Models\Card;
+use App\Models\CardTransfer;
 use Illuminate\Support\Facades\Auth;
 
 class CardController extends Controller
