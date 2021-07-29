@@ -60,4 +60,11 @@ Route::name('user.') -> group(function () {
     Route::post('/addCard', [CardController::class, 'addCard']);
 
     Route::get('/card/{id}', [CardController::class, 'cardInfo'])->name('card');
+
+    Route::get('/cardTransfer', function () {
+        $cards = Card::find(User::getCards(Auth::user()->id));
+        return view('cardTransfer', ['cards' => $cards]);
+    })->name('cardTransfer');
+
+    Route::post('/cardTransfer', [CardController::class, 'transferToCard']);
 });

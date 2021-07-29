@@ -11,7 +11,7 @@
     <div class="container">
         <ul class="menu">
             <li class="item"><a href="" class="text"> Transactions</a></li>
-            <li class="item"><a href="" class="text"> Transfer to another card</a></li>
+            <li class="item"><a href="{{ route('user.cardTransfer') }}" class="text"> Transfer to another card</a></li>
             <li class="item"><a href="" class="text"> Phone replenishment</a></li>
             <li class="item"><a href="" class="text"> Loans </a></li>
             <li class="item"><a href="" class="text"> Deposits </a></li>
