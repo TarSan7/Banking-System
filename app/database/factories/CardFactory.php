@@ -25,10 +25,11 @@ class CardFactory extends Factory
     public function definition()
     {
         return [
+            'type' => 'checking',
             'number' => $this->faker->unique()->creditCardNumber,
             'cvv' => rand(100, 999),
             'expires_end' => $this->faker->creditCardExpirationDate(),
-            'sum' => rand(0., 1000000.),
+            'sum' => rand(0, 100000),
             'currency' => $this->currency[rand(0, 5)]
         ];
     }
