@@ -29,15 +29,12 @@ Application that simulates the banking system.
 
 ### If using Lando
 
-1. Go through 1 - 5 previous steps.
+1. Go through 1, 2 previous steps.
 2. From project directory serve command:
    ```
-   $ lando init
-   ```
-3. Make 6 step from previous instruction.
-4. Run command:
-   ```
-   $ lando start 
+   $ lando start
+   $ lando composer install
+   $ lando artisan migrate
    ```
 
 ### If using Docker
