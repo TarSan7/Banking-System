@@ -1,6 +1,7 @@
 name: bank
 recipe: laravel
 config:
+  php: '7.4'
   webroot: /app/public
 
 services:

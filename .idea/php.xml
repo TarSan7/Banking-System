@@ -5,6 +5,11 @@
       <MessDetectorConfiguration tool_path="$PROJECT_DIR$/app/vendor/bin/phpmd" />
     </phpmd_settings>
   </component>
+  <component name="PhpCSFixer">
+    <phpcsfixer_settings>
+      <PhpCSFixerConfiguration tool_path="$PROJECT_DIR$/app/vendor/bin/php-cs-fixer" />
+    </phpcsfixer_settings>
+  </component>
   <component name="PhpCodeSniffer">
     <phpcs_settings>
       <PhpCSConfiguration beautifier_path="$PROJECT_DIR$/app/vendor/bin/phpcbf" tool_path="$PROJECT_DIR$/app/vendor/bin/phpcs" />
@@ -147,9 +152,13 @@
       <path value="$PROJECT_DIR$/app/vendor/friendsofphp/php-cs-fixer" />
       <path value="$PROJECT_DIR$/app/vendor/react/promise" />
       <path value="$PROJECT_DIR$/app/vendor/dealerdirect/phpcodesniffer-composer-installer" />
+      <path value="$PROJECT_DIR$/app/vendor/league/config" />
+      <path value="$PROJECT_DIR$/app/vendor/nette/schema" />
+      <path value="$PROJECT_DIR$/app/vendor/nette/utils" />
+      <path value="$PROJECT_DIR$/app/vendor/dflydev/dot-access-data" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7.3" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
   <component name="PhpStan">
     <PhpStan_settings>
       <PhpStanConfiguration tool_path="$PROJECT_DIR$/app/vendor/bin/phpstan" />

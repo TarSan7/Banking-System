@@ -80,11 +80,4 @@ Route::name('user.') -> group(function () {
     })->name('phoneTransfer');
 
     Route::post('/phoneTransfer/{id}', [PhoneTransferController::class, 'transferToPhone']);
-//
-//    Route::get('/internetTransfer', function () {
-//        $cards = Card::find(User::getCards(Auth::user()->id));
-//        return view('internetTransfer', ['cards' => $cards]);
-//    })->name('internetTransfer');
-//
-//    Route::post('/internetTransfer', [CardController::class, 'transferToPhone']);
 });
