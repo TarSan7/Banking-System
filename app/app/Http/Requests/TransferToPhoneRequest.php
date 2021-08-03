@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TransferToCardRequest extends FormRequest
+class TransferToPhoneRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class TransferToCardRequest extends FormRequest
     {
         return [
             'numberFrom' => 'required',
-            'numberTo' => 'required|exists:cards,number|regex:/^[0-9]{13,16}$/',
+            'numberTo' => 'required',
             'sum' => 'required',
             'comment' => 'regex:/^.{0,}$/'
         ];

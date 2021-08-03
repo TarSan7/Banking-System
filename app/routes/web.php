@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\CardTransferController;
+use App\Http\Controllers\PhoneTransferController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +29,7 @@ Route::get('/', function () {
 Route::name('user.') -> group(function () {
     Route::get('/private', function () {
         $cardsId = UserCard::select('card_id')->where('user_id', Auth::user()->id)->get();
-        return view('private', ['cards' => Card::find($cardsId)]);
+        return view('private', ['username' => User::getUsername(), 'cards' => Card::find($cardsId)]);
     })->middleware('auth')->name('private');
 
     Route::get('/login', function () {
@@ -70,5 +72,19 @@ Route::name('user.') -> group(function () {
         return view('cardTransfer', ['cards' => $cards]);
     })->name('cardTransfer');
 
-    Route::post('/cardTransfer', [CardController::class, 'transferToCard']);
+    Route::post('/cardTransfer', [CardTransferController::class, 'transferToCard']);
+
+    Route::get('/phoneTransfer/{id}', function ($id) {
+        $cards = Card::find(User::getCards(Auth::user()->id));
+        return view('phoneTransfer', ['cards' => $cards, 'id' => $id]);
+    })->name('phoneTransfer');
+
+    Route::post('/phoneTransfer/{id}', [PhoneTransferController::class, 'transferToPhone']);
+//
+//    Route::get('/internetTransfer', function () {
+//        $cards = Card::find(User::getCards(Auth::user()->id));
+//        return view('internetTransfer', ['cards' => $cards]);
+//    })->name('internetTransfer');
+//
+//    Route::post('/internetTransfer', [CardController::class, 'transferToPhone']);
 });

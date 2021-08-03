@@ -14,6 +14,7 @@ class CardTransfer extends Model
         'card_to',
         'date',
         'sum',
+        'new_sum',
         'currency',
         'comment',
     ];

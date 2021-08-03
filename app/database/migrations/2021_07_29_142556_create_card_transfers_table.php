@@ -19,6 +19,7 @@ class CreateCardTransfersTable extends Migration
             $table->string('card_to');
             $table->dateTime('date');
             $table->float('sum', 10);
+            $table->float('new_sum', 10);
             $table->string('currency');
             $table->text('comment');
             $table->timestamps();

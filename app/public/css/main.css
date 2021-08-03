@@ -44,6 +44,7 @@
 .form{
     display: flex;
     justify-content: center;
+    margin-bottom: 300px;
 }
 
 .form-group{
@@ -118,7 +119,7 @@
     font-weight: 300;
     font-size: 26px;
     margin-top: 60px;
-    margin-bottom: 60px;
+    margin-bottom: 100px;
 }
 
 .card-link{
@@ -141,6 +142,19 @@
     margin-top: 20px;
     text-decoration: none;
     text-align: center;
+    margin-bottom: 450px;
+}
+
+.form-auth{
+    margin-bottom: 350px;
+}
+
+.transfer-form{
+    margin-bottom: 200px;
+}
+
+#text-transfers{
+    font-size: 26px;
 }
 
 #menu{
@@ -156,10 +170,25 @@ p.navbar-brand{
     margin-top: 30px;
 }
 
+.transactions{
+    padding-bottom: 200px;
+}
+
+.transaction{
+    margin-bottom: 80px;
+}
+
+.card-to{
+    color: green;
+}
+
+.card-from{
+    color: darkred;
+}
+
 footer{
     display: flex;
     justify-content: center;
-    margin-top: 400px;
-    height: 100px;
+    height: 80px;
     background-color: #0D6EFD;
 }

@@ -12,9 +12,9 @@
 
     <div class="container to-center">
         <ul class="menu-transfer">
-            <li class="item"><a href="{{ route('user.cardTransfer') }}" class="text"> To another card</a></li>
-            <li class="item"><a href="" class="text"> Phone replenishment</a></li>
-            <li class="item"><a href="" class="text"> Internet payment </a></li>
+            <li class="item"><a href="{{ route('user.cardTransfer') }}" class="text" id="text-transfers"> To another card</a></li>
+            <li class="item"><a href="{{ route('user.phoneTransfer', ['id' => 'phone']) }}" class="text" id="text-transfers"> Phone replenishment</a></li>
+            <li class="item"><a href="{{ route('user.phoneTransfer', ['id' => 'internet']) }}" class="text" id="text-transfers"> Internet payment </a></li>
         </ul>
     </div>
 

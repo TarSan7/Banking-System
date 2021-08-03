@@ -58,4 +58,9 @@ class User extends Authenticatable
         $cardsId = UserCard::select('card_id')->where('user_id', $userId)->get();
         return $cardsId;
     }
+
+    public static function getUsername()
+    {
+        return User::where('email', Auth::user()->email)->get('name')[0]['name'];
+    }
 }
