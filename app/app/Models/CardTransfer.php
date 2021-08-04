@@ -9,6 +9,9 @@ class CardTransfer extends Model
 {
     use HasFactory;
 
+    /**
+     * @var string[]
+     */
     protected $fillable = [
         'card_from',
         'card_to',

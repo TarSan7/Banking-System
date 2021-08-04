@@ -3,14 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterUserRequest;
-use Illuminate\Http\Request;
-use App\Models\User;
+use App\Repository\Eloquent\UserRepository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Class RegisterController
+ * @package App\Http\Controllers
+ */
 class RegisterController extends Controller
 {
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
+    /**
+     * @param UserRepository $userRepository
+     */
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
+    /**
+     * @param RegisterUserRequest $request
+     * @return Application|RedirectResponse|Redirector
+     */
     public function saveUser(RegisterUserRequest $request)
     {
         if (Auth::check()) {
@@ -19,7 +40,8 @@ class RegisterController extends Controller
 
         $validate = $request->validated();
 
-        $user = User::create($validate);
+        $user = $this->userRepository->create($validate);
+
         if ($user) {
             Auth::login($user);
             return redirect(route('user.private'));

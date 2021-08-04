@@ -9,6 +9,9 @@ class Card extends Model
 {
     use HasFactory;
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function usercard()
     {
         return $this->hasOne(User::class);

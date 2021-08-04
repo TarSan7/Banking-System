@@ -27,10 +27,8 @@ Route::get('/', function () {
 })->name('home');
 
 Route::name('user.') -> group(function () {
-    Route::get('/private', function () {
-        $cardsId = UserCard::select('card_id')->where('user_id', Auth::user()->id)->get();
-        return view('private', ['username' => User::getUsername(), 'cards' => Card::find($cardsId)]);
-    })->middleware('auth')->name('private');
+    Route::get('/private', [LoginController::class, 'toPrivate'])
+        ->middleware('auth')->name('private');
 
     Route::get('/login', function () {
         if (Auth::check()) {
@@ -67,17 +65,11 @@ Route::name('user.') -> group(function () {
         return view('chooseTransfer');
     })->name('transfers');
 
-    Route::get('/cardTransfer', function () {
-        $cards = Card::find(User::getCards(Auth::user()->id));
-        return view('cardTransfer', ['cards' => $cards]);
-    })->name('cardTransfer');
+    Route::get('/cardTransfer', [CardTransferController::class, 'goTransfer'])->name('cardTransfer');
 
     Route::post('/cardTransfer', [CardTransferController::class, 'transferToCard']);
 
-    Route::get('/phoneTransfer/{id}', function ($id) {
-        $cards = Card::find(User::getCards(Auth::user()->id));
-        return view('phoneTransfer', ['cards' => $cards, 'id' => $id]);
-    })->name('phoneTransfer');
+    Route::get('/phoneTransfer/{id}', [PhoneTransferController::class, 'goTransfer'])->name('phoneTransfer');
 
     Route::post('/phoneTransfer/{id}', [PhoneTransferController::class, 'transferToPhone']);
 });
