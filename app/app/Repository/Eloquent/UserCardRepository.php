@@ -28,7 +28,7 @@ class UserCardRepository extends BaseRepository implements UserCardRepositoryInt
     }
 
     /**
-     * @param $id
+     * @param integer $id
      * @return bool
      */
     public function cards($id): bool
@@ -37,10 +37,9 @@ class UserCardRepository extends BaseRepository implements UserCardRepositoryInt
     }
 
     /**
-     * @param $id
-     * @return Collection
+     * @return Collection|null
      */
-    public function cardIdByUser(): Collection
+    public function cardIdByUser(): ?Collection
     {
         return $this->model->where('user_id', Auth::user()->id)->get('card_id');
     }

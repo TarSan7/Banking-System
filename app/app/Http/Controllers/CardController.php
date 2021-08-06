@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddCardRequest;
-use App\Repository\Eloquent\CardRepository;
-use App\Repository\Eloquent\TransferRepository;
-use App\Repository\Eloquent\UserCardRepository;
+use App\Services\CardService;
+use App\Services\TransferService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -21,25 +18,21 @@ use Illuminate\View\View;
 class CardController extends Controller
 {
     /**
-     * @var CardRepository
-     * @var UserCardRepository
-     * @var TransferRepository
+     * @var TransferService
+     * @var CardService
      */
-    private $cardRepository, $userCardRepository, $transferRepository;
+    private $transferService, $cardService;
 
     /**
-     * @param CardRepository $cardRepository
-     * @param UserCardRepository $userCardRepository
-     * @param TransferRepository $transferRepository
+     * @param TransferService $transferService
+     * @param CardService $cardService
      */
     public function __construct(
-        CardRepository $cardRepository,
-        UserCardRepository $userCardRepository,
-        TransferRepository $transferRepository
+        TransferService $transferService,
+        CardService $cardService
     ) {
-        $this->cardRepository = $cardRepository;
-        $this->userCardRepository = $userCardRepository;
-        $this->transferRepository = $transferRepository;
+        $this->transferService = $transferService;
+        $this->cardService = $cardService;
     }
 
     /**
@@ -48,23 +41,21 @@ class CardController extends Controller
      */
     public function addCard(AddCardRequest $request)
     {
-        $validate = $request->validated();
+        $this->cardService->setCard($request->validated());
 
-        if (!$this->cardRepository->cardExist($validate)) {
+        if (!$this->cardService->cardExist()) {
             return redirect(route('user.addCard'))->withErrors([
                 'number' => 'This card doesn`t exist! Try again!'
             ]);
         }
 
-        if ($this->userCardRepository->cards($this->cardRepository->getId(Arr::get($validate, 'number', null)))) {
+        if ($this->cardService->cardAdded()) {
             return redirect(route('user.addCard'))->withErrors([
                 'number' => 'This card has already used!'
             ]);
         }
 
-        $uCard = $this->userCardRepository->create(['user_id' => Auth::user()->id,
-                 'card_id' => $this->cardRepository->getId(Arr::get($validate,'number', null))]);
-        if ($uCard) {
+        if ($this->cardService->createCard()) {
             return redirect(route('user.private'));
         }
 
@@ -74,13 +65,14 @@ class CardController extends Controller
     }
 
     /**
-     * @param $cardId
+     * @param int $cardId
      * @return Application|Factory|View
      */
     public function cardInfo($cardId)
     {
-        $card = $this->cardRepository->find($cardId);
-        return view('oneCard', ['card' => $card,
-            'transactions' => $this->transferRepository->getCardTransactions(Arr::get($card, 'number', null))]);
+        return view('oneCard', [
+            'card' => $this->cardService->getCardById($cardId),
+            'transactions' => $this->transferService->getCardTransfers($cardId)
+        ]);
     }
 }

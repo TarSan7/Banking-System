@@ -1,8 +1,6 @@
 <?php
 
-use App\Models\User;
-use App\Models\UserCard;
-use App\Models\Card;
+use App\Http\Controllers\LoanController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RegisterController;
@@ -72,4 +70,6 @@ Route::name('user.') -> group(function () {
     Route::get('/phoneTransfer/{id}', [PhoneTransferController::class, 'goTransfer'])->name('phoneTransfer');
 
     Route::post('/phoneTransfer/{id}', [PhoneTransferController::class, 'transferToPhone']);
+
+    Route::get('/allLoans', [LoanController::class, 'allLoans'])->name('allLoans');
 });

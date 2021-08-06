@@ -27,7 +27,7 @@ class TransferRepository extends BaseRepository implements TransferRepositoryInt
     }
 
     /**
-     * @param $number
+     * @param integer $number
      * @return Collection
      */
     public function getCardTransactions($number): Collection

@@ -1,7 +1,7 @@
 @extends('layout.main')
 @extends('layout.headerPrivate')
 
-@section('title') Main Page @endsection
+@section('title') Loans @endsection
 
 @section('style')
     <link rel="stylesheet" href="./css/main.css">
@@ -9,16 +9,9 @@
 
 @section('content')
     <div class="container">
-        <ul class="menu">
-            <li class="item"><a href="" class="text"> Your transactions</a></li>
-            <li class="item"><a href="{{ route('user.transfers') }}" class="text"> Make transfer</a></li>
-            <li class="item"><a href="{{ route('user.allLoans') }}" class="text"> Loans </a></li>
-            <li class="item"><a href="" class="text"> Deposits </a></li>
-        </ul>
-        <hr>
-        <h1 class="index-title">Hi, {{$username}}!<br>Your cards:</h1>
+        <h1 class="index-title">List of loans:</h1>
         <div class="to-center">
-            <div class="cards">
+            <div class="loans">
                 @if(count($cards) > 0)
                     @foreach($cards as $card)
                         <a href="{{ route('user.card', ['id' => $card['id']]) }}" class="card-link">

@@ -29,7 +29,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
-     * @param $userId
+     * @param integer $userId
      * @return Collection
      */
     public function getCards($userId): Collection

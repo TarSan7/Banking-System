@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent;
 
 use App\Models\Card;
 use App\Repository\CardRepositoryInterface;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use phpDocumentor\Reflection\Types\Boolean;
 use phpDocumentor\Reflection\Types\Integer;
@@ -30,8 +31,8 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $cardsId
-     * @return Collection
+     * @param array $cardsId
+     * @return Collection|null
      */
     public function findAll($cardsId): ?Collection
     {
@@ -39,17 +40,18 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $validate
+     * @param array $validate
      * @return bool
      */
     public function cardExist($validate): bool
     {
-        return $this->model->where('number', $validate['number'])->where('cvv', $validate['cvv'])
-            ->where('expires_end', $validate['expires-end'])->exists();
+        return $this->model->where('number', Arr::get($validate, 'number', null))
+            ->where('cvv', Arr::get($validate, 'cvv', null))
+            ->where('expires_end', Arr::get($validate, 'expires-end', null))->exists();
     }
 
     /**
-     * @param $number
+     * @param String $number
      * @return int
      */
     public function getId($number): int
@@ -58,7 +60,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $numberFrom
+     * @param Integer $numberFrom
      * @return float
      */
     public function getSumFrom($numberFrom): float
@@ -67,7 +69,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $numberTo
+     * @param String $numberTo
      * @return float
      */
     public function getSumTo($numberTo): float
@@ -76,7 +78,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $numberFrom
+     * @param Integer $numberFrom
      * @param array $attributes
      */
     public function updateFrom($numberFrom, array $attributes)
@@ -85,7 +87,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $numberTo
+     * @param String $numberTo
      * @param array $attributes
      */
     public function updateTo($numberTo, array $attributes)
@@ -94,7 +96,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $numberFrom
+     * @param Integer $numberFrom
      * @return String
      */
     public function getCurrencyFrom($numberFrom): String
@@ -103,7 +105,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $numberTo
+     * @param String $numberTo
      * @return String
      */
     public function getCurrencyTo($numberTo): String
@@ -112,7 +114,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param $numberFrom
+     * @param Integer $numberFrom
      * @return String
      */
     public function getGeneralCardNum($numberFrom): String

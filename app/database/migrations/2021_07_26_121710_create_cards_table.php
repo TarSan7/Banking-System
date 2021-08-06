@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateCardsTable extends Migration
 {
+    /**
+     * @var string[]
+     */
     private $currency = array('UAH', 'EUR', 'USD', 'RUR', 'GBP', 'PLN');
     /**
      * Run the migrations.
@@ -30,6 +33,10 @@ class CreateCardsTable extends Migration
         }
     }
 
+    /**
+     * @param string $number
+     * @param string $currency
+     */
     private function addGlobal($number, $currency)
     {
         DB::table('cards')->insert( array(
