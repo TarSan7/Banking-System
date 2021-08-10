@@ -44,6 +44,9 @@
             @error('sum')
             <div class="alert">{{ $message }}</div>
             @enderror
+            @error('error')
+            <div class="alert">{{ $message }}</div>
+            @enderror
             <div class="form-group" id="button">
                 <button name="send" type="submit" class="form-button">Submit</button>
             </div>

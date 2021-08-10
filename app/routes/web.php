@@ -7,7 +7,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\CardTransferController;
-use App\Http\Controllers\PhoneTransferController;
+use App\Http\Controllers\OtherTransferController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,21 +55,27 @@ Route::name('user.') -> group(function () {
         return view('addCard');
     })->name('addCard');
 
-    Route::post('/addCard', [CardController::class, 'addCard']);
+    Route::post('/addCard', [CardController::class, 'add']);
 
-    Route::get('/card/{id}', [CardController::class, 'cardInfo'])->name('card');
+    Route::get('/card/{id}', [CardController::class, 'info'])->name('card');
 
     Route::get('/transfers', function () {
         return view('chooseTransfer');
     })->name('transfers');
 
-    Route::get('/cardTransfer', [CardTransferController::class, 'goTransfer'])->name('cardTransfer');
+    Route::get('/cardTransfer', [CardTransferController::class, 'index'])->name('cardTransfer');
 
-    Route::post('/cardTransfer', [CardTransferController::class, 'transferToCard']);
+    Route::post('/cardTransfer', [CardTransferController::class, 'make']);
 
-    Route::get('/phoneTransfer/{id}', [PhoneTransferController::class, 'goTransfer'])->name('phoneTransfer');
+    Route::get('/otherTransfer/{id}', [OtherTransferController::class, 'index'])->name('otherTransfer');
 
-    Route::post('/phoneTransfer/{id}', [PhoneTransferController::class, 'transferToPhone']);
+    Route::post('/otherTransfer/{id}', [OtherTransferController::class, 'make']);
 
-    Route::get('/allLoans', [LoanController::class, 'allLoans'])->name('allLoans');
+    Route::get('/allLoans', [LoanController::class, 'all'])->name('allLoans');
+
+    Route::get('/takeLoan/{id}', [LoanController::class, 'take'])->name('takeLoan');
+
+    Route::post('/takeLoan/{id}', [LoanController::class, 'details']);
+
+    Route::post('/acceptLoan/{id}', [LoanController::class, 'accept'])->name('acceptLoan');
 });

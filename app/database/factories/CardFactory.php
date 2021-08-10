@@ -33,4 +33,22 @@ class CardFactory extends Factory
             'currency' => $this->currency[rand(0, 5)]
         ];
     }
+
+    /**
+     * Creating credit card
+     * @param $sum
+     * @param $currency
+     * @return array
+     */
+    public function createLoan($sum, $currency)
+    {
+        return [
+            'type' => 'credit',
+            'number' => $this->faker->unique()->creditCardNumber,
+            'cvv' => rand(100, 999),
+            'expires_end' => $this->faker->creditCardExpirationDate(),
+            'sum' => $sum,
+            'currency' => $currency
+        ];
+    }
 }

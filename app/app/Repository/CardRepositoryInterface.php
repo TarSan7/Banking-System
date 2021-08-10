@@ -1,9 +1,8 @@
 <?php
 namespace App\Repository;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use phpDocumentor\Reflection\Types\Boolean;
-use PhpParser\Node\Expr\Cast\Double;
 
 interface CardRepositoryInterface
 {
@@ -30,6 +29,11 @@ interface CardRepositoryInterface
      */
     public function getId($number): int;
 
+    /**
+     * @param string $number
+     * @return Model|null
+     */
+    public function getCardByNum($number): ?Model;
     /**
      * @param integer $numberFrom
      * @return float

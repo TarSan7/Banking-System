@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Card extends Model
+class ActiveLoan extends Model
 {
     use HasFactory;
 
@@ -13,26 +13,25 @@ class Card extends Model
      * @var string[]
      */
     protected $fillable = [
-        'type',
-        'number',
-        'cvv',
-        'expires_end',
+        'loan_id',
         'sum',
-        'currency'
+        'total_sum',
+        'month_pay',
+        'card_id'
     ];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function usercard()
+    public function card()
     {
-        return $this->hasOne(User::class);
+        return $this->hasOne(Card::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function activeloan()
+    public function loan()
     {
-        return $this->belongsTo(ActiveLoan::class);
+        return $this->hasMany(Loan::class);
     }
 }

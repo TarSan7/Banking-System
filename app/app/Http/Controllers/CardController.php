@@ -27,9 +27,7 @@ class CardController extends Controller
      * @param TransferService $transferService
      * @param CardService $cardService
      */
-    public function __construct(
-        TransferService $transferService,
-        CardService $cardService
+    public function __construct(TransferService $transferService, CardService $cardService
     ) {
         $this->transferService = $transferService;
         $this->cardService = $cardService;
@@ -39,36 +37,22 @@ class CardController extends Controller
      * @param AddCardRequest $request
      * @return Application|RedirectResponse|Redirector
      */
-    public function addCard(AddCardRequest $request)
+    public function add(AddCardRequest $request)
     {
         $this->cardService->setCard($request->validated());
-
-        if (!$this->cardService->cardExist()) {
-            return redirect(route('user.addCard'))->withErrors([
-                'number' => 'This card doesn`t exist! Try again!'
-            ]);
+        $response = $this->cardService->check();
+        if ($response[0] === 'success') {
+            return redirect(route('user.addCard'))->with('success', $response[1]);
+        } else {
+            return redirect(route('user.addCard'))->withErrors(['error' => $response[1]]);
         }
-
-        if ($this->cardService->cardAdded()) {
-            return redirect(route('user.addCard'))->withErrors([
-                'number' => 'This card has already used!'
-            ]);
-        }
-
-        if ($this->cardService->createCard()) {
-            return redirect(route('user.private'));
-        }
-
-        return redirect(route('user.login'))->withErrors([
-            'formError' => 'An error occurred while saving data!'
-        ]);
     }
 
     /**
      * @param int $cardId
      * @return Application|Factory|View
      */
-    public function cardInfo($cardId)
+    public function info($cardId)
     {
         return view('oneCard', [
             'card' => $this->cardService->getCardById($cardId),

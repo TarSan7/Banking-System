@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TransferToCardRequest;
+use App\Http\Requests\TransferToPhoneRequest;
 use App\Services\CardService;
 use App\Services\TransferService;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
-use Illuminate\View\Factory;
-use Illuminate\View\View;
 
 /**
- * Class CardTransferController
+ * Class OtherTransferController
  * @package App\Http\Controllers
  */
-class CardTransferController extends Controller
+class OtherTransferController extends Controller
 {
     /**
      * @var TransferService
@@ -34,26 +34,27 @@ class CardTransferController extends Controller
     }
 
     /**
+     * @param string $id
      * @return Application|Factory|View
      */
-    public function index()
+    public function index($id)
     {
-        return view('cardTransfer', ['cards' => $this->cardService->getUserCards()]);
+        return view('otherTransfer', ['cards' => $this->cardService->getUserCards(), 'id' => $id]);
     }
 
     /**
-     * @param TransferToCardRequest $request
+     * @param TransferToPhoneRequest $request
+     * @param string $id
      * @return Application|RedirectResponse|Redirector
      */
-    public function make(TransferToCardRequest $request)
+    public function make(TransferToPhoneRequest $request, $id)
     {
-        $this->transferService->setInfo($request->validated());
-        $response = $this->transferService->cardCheck();
+        $this->transferService->setInfo($request->validated(), $id);
+        $response = $this->transferService->otherCheck($id);
         if ($response[0] === 'success') {
-            return redirect(route('user.cardTransfer'))->with('success', $response[1]);
+            return redirect(route('user.otherTransfer', ['id' => $id]))->with('success', $response[1]);
         } else {
-            return redirect(route('user.cardTransfer'))->withErrors(['error' => $response[1]]);
+            return redirect(route('user.otherTransfer', ['id' => $id]))->withErrors(['error' => $response[1]]);
         }
     }
-
 }

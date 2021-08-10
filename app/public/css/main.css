@@ -43,6 +43,7 @@
 
 .form{
     display: flex;
+    align-items: center;
     justify-content: center;
     margin-bottom: 300px;
 }
@@ -53,6 +54,11 @@
     align-items: center;
     margin-bottom: 30px;
     max-width: 700px;
+}
+
+.bold{
+    font-weight: 500;
+    font-size: 30px;
 }
 
 .form-label{
@@ -84,6 +90,7 @@
     font-size: 20px;
     background-color: #a0aec0;
 }
+
 .form-button:hover{
     background-color: #718096;
 }
@@ -96,7 +103,19 @@
     background-color: beige;
 }
 
-.card-title, .card-info{
+.loan{
+    border-radius: 50px;
+    padding: 50px;
+    width: 110%;
+    background-color: #e2e8f0;
+    color: black;
+}
+
+.loan-title{
+    text-align: center;
+}
+
+.card-title, .card-info, .loan-title{
     text-decoration: none;
 }
 
@@ -151,6 +170,10 @@
 
 .transfer-form{
     margin-bottom: 200px;
+}
+
+.loan-form{
+    margin-bottom: 250px;
 }
 
 #text-transfers{

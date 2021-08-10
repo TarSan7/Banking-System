@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent;
 
 use App\Models\Card;
 use App\Repository\CardRepositoryInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use phpDocumentor\Reflection\Types\Boolean;
@@ -57,6 +58,15 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     public function getId($number): int
     {
         return $this->model->where('number', $number)->get('id')[0]['id'];
+    }
+
+    /**
+     * @param String $number
+     * @return Model
+     */
+    public function getCardByNum($number): ?Model
+    {
+        return $this->model->where('number', $number)->get('*')[0];
     }
 
     /**

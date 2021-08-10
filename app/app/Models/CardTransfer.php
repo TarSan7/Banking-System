@@ -21,4 +21,9 @@ class CardTransfer extends Model
         'currency',
         'comment',
     ];
+
+    public function card()
+    {
+
+    }
 }

@@ -2,13 +2,16 @@
 
 namespace App\Services;
 
+use App\Models\Card;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\UserRepository;
 use App\Repository\Eloquent\UserCardRepository;
+use Database\Factories\CardFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Expr\AssignOp\Mod;
 
 class CardService
 {
@@ -17,21 +20,34 @@ class CardService
      * @var UserCardRepository
      * @var UserRepository
      */
-    private $cardRepository, $userCardRepository, $userRepository, $card;
+    private $cardRepository, $userCardRepository, $userRepository, $card, $cardFactory;
+
+    /**
+     * Responses for controller
+     */
+    const RESPONSES = array(
+        'notExist' => 'This card doesn`t exist! Try again!',
+        'used' => 'This card has already used!',
+        'form' => 'An error occurred while saving data!',
+        'done' => 'Done!'
+    );
 
     /**
      * @param CardRepository $cardRepository
      * @param UserCardRepository $userCardRepository
      * @param UserRepository $transferRepository
+     * @param CardFactory $cardFactory
      */
     public function __construct(
         CardRepository $cardRepository,
         UserCardRepository $userCardRepository,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        CardFactory $cardFactory
     ) {
         $this->cardRepository = $cardRepository;
         $this->userCardRepository = $userCardRepository;
         $this->userRepository = $userRepository;
+        $this->cardFactory = $cardFactory;
     }
 
     /**
@@ -43,7 +59,6 @@ class CardService
         $this->card = $card;
     }
 
-
     /**
      * Return model of card by it`s id
      * @param int $cardId
@@ -52,6 +67,15 @@ class CardService
     public function getCardById($cardId): Model
     {
         return $this->cardRepository->find($cardId);
+    }
+    /**
+     * Return model of card by it`s id
+     * @param string $cardNum
+     * @return Model|null
+     */
+    public function getCardByNum($cardNum): ?Model
+    {
+        return $this->cardRepository->getCardByNum($cardNum);
     }
 
     /**
@@ -93,5 +117,34 @@ class CardService
     {
         $cardsId = $this->userRepository->getCards(Auth::user()->id);
         return $this->cardRepository->findAll($cardsId);
+    }
+
+    /**
+     * @param float $sum
+     * @param int $loanId
+     * @return Model|null
+     */
+    public function newCard($sum, $loanId): ?Model
+    {
+        $card = $this->cardFactory->createLoan($sum, $this->cardRepository->getCurrencyFrom($loanId));
+        $this->cardRepository->create($card);
+        $card = $this->getCardByNum($card['number']);
+        return $card ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    public function check(): array
+    {
+        if (!$this->cardExist()) {
+            return ['error', self::RESPONSES['notExist']];
+        } elseif ($this->cardAdded()) {
+            return ['error', self::RESPONSES['used']];
+        } elseif ($this->createCard()) {
+            return ['success', self::RESPONSES['done']];
+        } else {
+            return ['error', self::RESPONSES['form']];
+        }
     }
 }

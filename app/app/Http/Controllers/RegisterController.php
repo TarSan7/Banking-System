@@ -39,7 +39,6 @@ class RegisterController extends Controller
         }
 
         $validate = $request->validated();
-
         $user = $this->userRepository->create($validate);
 
         if ($user) {

@@ -1,7 +1,7 @@
 @extends('layout.main')
 @extends('layout.headerPrivate')
 
-@section('title') Main Page @endsection
+@section('title') Card Info @endsection
 
 @section('style')
     <link rel="stylesheet" href="../css/main.css">

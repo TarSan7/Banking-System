@@ -19,4 +19,12 @@ class Loan extends Model
         'max_sum',
         'currency'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function activeloan()
+    {
+        return $this->hasMany(ActiveLoan::class);
+    }
 }

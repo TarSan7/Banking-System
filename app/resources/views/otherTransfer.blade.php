@@ -13,11 +13,11 @@
         <p class="success">{{ session('success')}}</p>
     @endif
     <div class="container to-center">
-        <form action="{{ route('user.phoneTransfer', ['id' => $id]) }}" method="post" class="transfer-form">
+        <form action="{{ route('user.otherTransfer', ['id' => $id]) }}" method="post" class="transfer-form">
             @csrf
             <div class="form-group">
                 <label for="numberFrom" class="form-label">Card from</label>
-                <select name="numberFrom" id="numberFrom" class="input-field" placeholder="Card number" required>
+                <select name="numberFrom" id="numberFrom" class="input-field" required>
                     @foreach ($cards as $card)
                         <option value="{{ $card['id'] }}"> {{ $card['number'] }} </option>
                     @endforeach
@@ -31,7 +31,7 @@
             @else
                 <div class="form-group">
                     <label for="numberTo" class="form-label">Internet provider</label>
-                    <select name="numberTo" id="numberTo" class="input-field" placeholder="Provider" required>
+                    <select name="numberTo" id="numberTo" class="input-field" required>
                         <option value="Lanet"> Lanet </option>
                         <option value="Kyivstar"> Kyivstar </option>
                         <option value="Volia"> Volia </option>

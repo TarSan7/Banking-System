@@ -4,10 +4,8 @@ namespace App\Services;
 
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\TransferRepository;
-use App\Repository\Eloquent\UserRepository;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
 class TransferService
 {
@@ -18,6 +16,19 @@ class TransferService
      * @var string
      */
     private $cardRepository, $transferRepository, $tranInfo, $phoneNumber;
+
+    const PHONE = 'phone', INTERNET = 'internet';
+    /**
+     * Responses for controller
+     */
+    const RESPONSES = array(
+        'sum' => 'Not enough resource!',
+        'currency' => 'Different currencies! Try another card.',
+        'cards' => 'Same cards! Try another card.',
+        'form' => 'An error occurred while transfer.',
+        'phone' => 'Incorrect number format!',
+        'done' => 'Done!'
+    );
 
     /**
      * @param CardRepository $cardRepository
@@ -88,6 +99,19 @@ class TransferService
     }
 
     /**
+     * Comparing numbers of cards
+     * @return bool
+     */
+    public function compareNumbers(): bool
+    {
+        if ($this->cardRepository->getId(Arr::get($this->tranInfo, 'numberTo', null)) ==
+            Arr::get($this->tranInfo, 'numberFrom', null)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Checking correct format of phone number
      * @return bool
      */
@@ -126,7 +150,6 @@ class TransferService
                     ['sum' => $this->getBalanceTo() + Arr::get($this->tranInfo, 'sum', null)]);
     }
 
-
     /**
      * Return collection with info about all card transfers
      * @param int $cardId
@@ -138,4 +161,36 @@ class TransferService
         return $this->transferRepository->getCardTransactions(Arr::get($card, 'number', null));
     }
 
+    /**
+     * @return array
+     */
+    public function cardCheck(): array
+    {
+        if ($this->transferSum() > $this->getBalanceFrom()) {
+            return ['error', self::RESPONSES['sum']];
+        } elseif (!$this->compareCurrency()) {
+            return ['error', self::RESPONSES['currency']];
+        } elseif ($this->compareNumbers()) {
+            return ['error', self::RESPONSES['cards']];
+        } elseif ($this->createTransfer()) {
+            $this->updateCards();
+            return ['success', self::RESPONSES['done']];
+        } else {
+            return ['error', self::RESPONSES['form']];
+        }
+    }
+
+    public function otherCheck($id): array
+    {
+        if ($id === self::PHONE && !$this->checkPhoneNumber()) {
+            return ['error', self::RESPONSES['phone']];
+        } elseif ($this->transferSum() > $this->getBalanceFrom()) {
+            return ['error', self::RESPONSES['sum']];
+        } elseif ($this->createTransfer()) {
+            $this->updateCards();
+            return ['success', self::RESPONSES['done']];
+        } else {
+            return ['error', self::RESPONSES['form']];
+        }
+    }
 }
