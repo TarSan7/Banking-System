@@ -129,6 +129,7 @@ class CardService
         $card = $this->cardFactory->createLoan($sum, $this->cardRepository->getCurrencyFrom($loanId));
         $this->cardRepository->create($card);
         $card = $this->getCardByNum($card['number']);
+        $this->userCardRepository->createNew(Auth::user()->id, $card['id']);
         return $card ?? null;
     }
 

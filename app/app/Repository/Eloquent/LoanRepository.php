@@ -28,8 +28,9 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
     {
         return $this->model->all();
     }
+
     /**
-     * Get all existing loan types
+     * Get existing loan by id
      * @return Model|null
      */
     public function getLoan($id): ?Model
@@ -46,15 +47,22 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
         return $this->model->find($id)->get('currency')[0]['currency'];
     }
 
+    /**
+     * @param int $id
+     * @param float $sum
+     * @param int $card_id
+     * @return bool
+     */
     public function newLoan($id, $sum, $card_id): bool
     {
         $loan = $this->getLoan($id);
-        $total = $sum + ($sum * ($loan['percent']* $loan['duration']) / 12 * 0.01);
+        $total = $sum + ($sum * ($loan['percent'] * $loan['duration']) / 12 * 0.01);
         return (bool) ActiveLoan::create([
             'loan_id' => $id,
             'sum' => $sum,
             'total_sum' => $total,
             'month_pay' => $total / $loan['duration'],
+            'month_left' => $loan['duration'],
             'card_id' => $card_id
         ]) ?? false;
     }

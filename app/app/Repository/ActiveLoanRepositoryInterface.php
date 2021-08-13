@@ -12,8 +12,19 @@ interface ActiveLoanRepositoryInterface
     public function all(): Collection;
 
     /**
-     * @param integer $id
+     * @return Collection
+     */
+    public function getCardsId(): Collection;
+
+    /**
+     * @param array
      * @return bool
      */
-    public function decrease($id): bool;
+    public function decrease($cardId): bool;
+
+    /**
+     * @param int $cardId
+     * @return bool
+     */
+    public function delete($cardId): bool;
 }

@@ -6,15 +6,14 @@ use App\Models\User;
 use App\Models\UserCard;
 use App\Repository\UserRepositoryInterface;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     /**
-    * UserRepository constructor.
-    *
-    * @param User $model
-    */
+     * UserRepository constructor.
+     *
+     * @param User $model
+     */
     public function __construct(User $model)
     {
         parent::__construct($model);
@@ -40,8 +39,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     /**
      * @return String
      */
-    public function getUsername(): String
+    public function getUsername($email): String
     {
-        return $this->model->where('email', Auth::user()->email)->get('name')[0]['name'];
+        return $this->model->where('email', $email)->get('name')[0]['name'];
     }
 }

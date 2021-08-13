@@ -19,5 +19,5 @@ interface UserRepositoryInterface
     /**
      * @return String
      */
-    public function getUsername(): String;
+    public function getUsername($email): String;
 }

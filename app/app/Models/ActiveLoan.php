@@ -17,6 +17,7 @@ class ActiveLoan extends Model
         'sum',
         'total_sum',
         'month_pay',
+        'month_left',
         'card_id'
     ];
     /**

@@ -57,7 +57,7 @@ class LoanService
      */
     public function newLoan($card, $id): bool
     {
-        return (bool) $this->loanRepository
+        return $this->loanRepository
             ->newLoan($id, Arr::get($card, 'sum', null), Arr::get($card, 'id', null)) ?? false;
     }
 
@@ -76,5 +76,14 @@ class LoanService
         } else {
             return ['error', self::RESPONSES['form']];
         }
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getUserLoans(): Collection
+    {
+//        $cards = $this->
+//        return $this->;k
     }
 }

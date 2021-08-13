@@ -77,4 +77,11 @@ interface CardRepositoryInterface
      * @return String
      */
     public function getGeneralCardNum($numberFrom): String;
+
+    /**
+     * @param integer $id
+     * @param float $sum
+     * @return bool
+     */
+    public function updateSum($id, $sum): bool;
 }

@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\Cast\Double;
 
 class CardRepository extends BaseRepository implements CardRepositoryInterface
 {
+
     /**
      * UserRepository constructor.
      *
@@ -70,7 +71,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param Integer $numberFrom
+     * @param int $numberFrom
      * @return float
      */
     public function getSumFrom($numberFrom): float
@@ -88,7 +89,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param Integer $numberFrom
+     * @param int $numberFrom
      * @param array $attributes
      */
     public function updateFrom($numberFrom, array $attributes)
@@ -106,7 +107,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param Integer $numberFrom
+     * @param int $numberFrom
      * @return String
      */
     public function getCurrencyFrom($numberFrom): String
@@ -124,12 +125,23 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
-     * @param Integer $numberFrom
+     * @param int $numberFrom
      * @return String
      */
     public function getGeneralCardNum($numberFrom): String
     {
         return $this->model->where('type', 'general')->where('currency',
             $this->getCurrencyFrom($numberFrom))->get('number')[0]['number'];
+    }
+
+    /**
+     * @param int $id
+     * @param float $sum
+     * @return bool
+     */
+    public function updateSum($id, $sum): bool
+    {
+        $updated = $this->model->find($id)['sum'] - $sum;
+        return (bool) $this->model->find($id)->update(['sum' => $updated]);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Repository\Eloquent\LoanRepository;
+use App\Repository\Eloquent\ActiveLoanRepository;
 use Illuminate\Console\Command;
 
 class LoanCommand extends Command
@@ -15,9 +15,9 @@ class LoanCommand extends Command
     protected $signature = 'loan:start';
 
     /**
-     * @var LoanRepository
+     * @var ActiveLoanRepository
      */
-    private $loanRepository;
+    private $activeLoanRepository;
 
     /**
      * The console command description.
@@ -29,13 +29,13 @@ class LoanCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @param LoanRepository $loanRepository
+     * @param ActiveLoanRepository $loanRepository
      * @return void
      */
-    public function __construct(LoanRepository $loanRepository)
+    public function __construct(ActiveLoanRepository $activeLoanRepository)
     {
         parent::__construct();
-        $this->loanRepository = $loanRepository;
+        $this->activeLoanRepository = $activeLoanRepository;
     }
 
     /**
@@ -45,6 +45,10 @@ class LoanCommand extends Command
      */
     public function handle(): bool
     {
-
+        $allCards = $this->activeLoanRepository->getCardsId();
+        if ($allCards) {
+            return $this->activeLoanRepository->decrease($allCards);
+        }
+        return true;
     }
 }

@@ -34,7 +34,10 @@ class LoanController extends Controller
      */
     public function all()
     {
-        return view('allLoans', ['loans' => $this->loanService->getBaseLoans()]);
+        return view('allLoans', [
+            'loans' => $this->loanService->getBaseLoans(),
+//            'yourLoans' => $this->loanService->getUserLoans()
+        ]);
     }
 
     /**

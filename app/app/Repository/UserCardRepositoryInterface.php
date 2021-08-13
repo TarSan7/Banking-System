@@ -15,5 +15,12 @@ interface UserCardRepositoryInterface
     /**
      * @return Collection|null
      */
-    public function cardIdByUser(): ?Collection;
+    public function cardIdByUser($id): ?Collection;
+
+    /**
+     * @param int $userId
+     * @param int $cardId
+     * @return bool
+     */
+    public function createNew($userId, $cardId): bool;
 }

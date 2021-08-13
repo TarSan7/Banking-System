@@ -27,8 +27,8 @@ class CardController extends Controller
      * @param TransferService $transferService
      * @param CardService $cardService
      */
-    public function __construct(TransferService $transferService, CardService $cardService
-    ) {
+    public function __construct(TransferService $transferService, CardService $cardService)
+    {
         $this->transferService = $transferService;
         $this->cardService = $cardService;
     }
