@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 use App\Models\Card;
+use App\Models\Loan;
 use App\Repository\CardRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -10,6 +11,7 @@ use Illuminate\Support\Collection;
 use phpDocumentor\Reflection\Types\Boolean;
 use phpDocumentor\Reflection\Types\Integer;
 use PhpParser\Node\Expr\Cast\Double;
+use function PHPUnit\Framework\isEmpty;
 
 class CardRepository extends BaseRepository implements CardRepositoryInterface
 {
@@ -143,5 +145,27 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     {
         $updated = $this->model->find($id)['sum'] - $sum;
         return (bool) $this->model->find($id)->update(['sum' => $updated]);
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function getNumber($id): string
+    {
+        return $this->model->where('id', $id)->get('number')[0]['number'];
+    }
+
+    /**
+     * @param array $userCards
+     * @param int $loanId
+     * @return Model|null
+     */
+    public function credit($userCards, $loanId): ?Model
+    {
+        $currency = Loan::find($loanId)['currency'];
+        $card = $this->model->whereIn('id', $userCards)->where('type', 'credit')
+            ->where('currency', $currency)->get();
+        return Arr::get($card, 0, null);
     }
 }

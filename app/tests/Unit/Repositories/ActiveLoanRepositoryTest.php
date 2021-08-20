@@ -41,7 +41,7 @@ class ActiveLoanRepositoryTest extends TestCase
     public function testGetCardsId(): void
     {
         $cards = $this->activeLoanRepository->getCardsId();
-        $this->assertCount(2, $cards);
+        $this->assertCount(count(ActiveLoan::all()), $cards);
     }
 
     /**
@@ -49,9 +49,14 @@ class ActiveLoanRepositoryTest extends TestCase
      */
     public function testDecrease(): void
     {
-        $this->loanRepository->newLoan(1, 250, 2);
-        $this->assertTrue($this->activeLoanRepository->decrease([['card_id' => 2]]));
-        $this->activeLoanRepository->delete(2);
+        $this->loanRepository->newLoan(1, 250, 2, 2);
+        $loan = ActiveLoan::where('loan_id', 1)->where('sum', 250)->where('card_id', 2)->get()[0];
+        $this->assertTrue($this->activeLoanRepository->decrease([$loan]));
+        $this->activeLoanRepository->delete($loan['id']);
+        $this->loanRepository->newLoan(1, 250, 2, 2);
+        ActiveLoan::where('loan_id', 1)->where('sum', 250)->where('card_id', 2)->update(['month_left' => 0]);
+        $loan = ActiveLoan::where('loan_id', 1)->where('sum', 250)->where('card_id', 2)->get()[0];
+        $this->assertTrue($this->activeLoanRepository->decrease([$loan]));
     }
 
     /**
@@ -59,7 +64,16 @@ class ActiveLoanRepositoryTest extends TestCase
      */
     public function testDelete(): void
     {
-        $this->loanRepository->newLoan(2, 300, 3);
-        $this->assertTrue($this->activeLoanRepository->delete(3));
+        $this->loanRepository->newLoan(2, 300, 3, 2);
+        $loan = ActiveLoan::where('loan_id', 2)->where('sum', 300)->where('card_id', 3)->get('id')[0];
+        $this->assertTrue($this->activeLoanRepository->delete($loan['id']));
+    }
+
+    /**
+     * Checking number of user loans
+     */
+    public function testUserLoans(): void
+    {
+        $this->assertCount(3, $this->activeLoanRepository->userLoans(1));
     }
 }

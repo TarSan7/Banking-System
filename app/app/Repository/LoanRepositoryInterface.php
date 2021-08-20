@@ -20,5 +20,12 @@ interface LoanRepositoryInterface
      */
     public function getCurrency($id): String;
 
-    public function newLoan($id, $sum, $card_id): bool;
+    /**
+     * @param int $id
+     * @param float $sum
+     * @param int $card_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function newLoan($id, $sum, $card_id, $user_id): bool;
 }

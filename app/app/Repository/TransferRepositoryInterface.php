@@ -8,7 +8,7 @@ interface TransferRepositoryInterface
 {
     /**
      * @param integer $number
-     * @return Collection
+     * @return ?Collection
      */
-    public function getCardTransactions($number): Collection;
+    public function getCardTransactions($number): ?Collection;
 }

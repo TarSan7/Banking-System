@@ -25,7 +25,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('loan:start')->everyMinute();
+        $schedule->command('loan:start')->daily();
+        $schedule->command('deposit:start')->daily();
     }
 
     /**

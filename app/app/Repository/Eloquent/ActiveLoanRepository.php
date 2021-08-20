@@ -3,8 +3,12 @@
 namespace App\Repository\Eloquent;
 
 use App\Models\ActiveLoan;
+use App\Models\Card;
+use App\Models\CardTransfer;
 use App\Repository\ActiveLoanRepositoryInterface;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositoryInterface
 {
@@ -40,30 +44,51 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
      * @param array $cardId
      * @return bool
      */
-    public function decrease($cardId): bool
+    public function decrease($loans): bool
     {
-        foreach ($cardId as $id) {
-            $monthLeft = $this->model->where('card_id', $id['card_id'])->get('month_left')[0]['month_left'];
+        foreach ($loans as $loan) {
+            $loanId = $loan['id'];
+            $monthLeft = $this->model->where('id', $loanId)
+                ->get('month_left')[0]['month_left'];
             if ($monthLeft <= 0) {
-                $this->delete($id['card_id']);
-            }
-            $change = $monthLeft - 1;
-            $monthSum = $this->model->where('card_id', $id['card_id'])->get('month_pay')[0]['month_pay'];
-            if (!$this->model->where('card_id', $id['card_id'])->update(['month_left' => $change])
-                || !$this->cardRepository->updateSum($id['card_id'], $monthSum)) {
-                return false;
+                $this->delete($loanId);
+            } elseif (date('d', strtotime($loan['created_at'])) == date('d')) {
+                $change = $monthLeft - 1;
+                $monthSum = $this->model->where('id', $loanId)->get('month_pay')[0]['month_pay'];
+                $this->model->where('id', $loanId)->update(['month_left' => $change]);
+                $this->cardRepository->updateSum($loan['card_id'], $monthSum);
+                CardTransfer::create([
+                    'card_from' => $this->cardRepository->getNumber($loan['card_id']),
+                    'card_to' => 'Bank',
+                    'date' => date('Y-m-d H:i:s'),
+                    'sum' => $monthSum,
+                    'new_sum' => $monthSum,
+                    'currency' => Card::where('id', Arr::get($loan, 'card_id', null), $monthSum)
+                        ->get('currency')[0]['currency'],
+                    'comment' => "Loan decrease",
+                    'user_id' => $loan['user_id']
+                ]);
             }
         }
         return true;
     }
 
     /**
-     * @param int $cardId
+     * @param int $id
      * @return bool
      */
-    public function delete($cardId): bool
+    public function delete($id): bool
     {
-        return (bool) $this->model->where('card_id', $cardId)->delete();
+        $this->model->where('id', $id)->delete();
+        return true;
     }
 
+    /**
+     * @param int $userId
+     * @return Collection
+     */
+    public function userLoans($userId): Collection
+    {
+        return $this->model->where('user_id', $userId)->get();
+    }
 }

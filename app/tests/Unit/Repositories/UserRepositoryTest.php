@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Repositories;
 
+use App\Models\UserCard;
 use App\Repository\Eloquent\UserRepository;
 use App\Repository\EloquentRepositoryInterface;
 use Tests\TestCase;
@@ -36,7 +37,7 @@ class UserRepositoryTest extends TestCase
      */
     public function testGetCards(): void
     {
-        $this->assertEquals('[{"card_id":111},{"card_id":112},{"card_id":8},{"card_id":113}]',
+        $this->assertEquals(UserCard::select('card_id')->where('user_id', 1)->get(),
             $this->userRepository->getCards(1));
     }
 
@@ -47,4 +48,5 @@ class UserRepositoryTest extends TestCase
     {
         $this->assertEquals('Sasha', $this->userRepository->getUsername('1@2.3'));
     }
+
 }

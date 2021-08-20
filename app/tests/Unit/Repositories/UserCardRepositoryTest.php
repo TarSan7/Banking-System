@@ -43,7 +43,7 @@ class UserCardRepositoryTest extends TestCase
      */
     public function testCardIdByUser(): void
     {
-        $this->assertEquals('[{"card_id":111},{"card_id":112},{"card_id":8},{"card_id":113}]',
+        $this->assertCount(5,
             $this->usercardRepository->cardIdByUser(1));
     }
 
@@ -63,5 +63,14 @@ class UserCardRepositoryTest extends TestCase
     {
         $this->usercardRepository->createNew(1, 1);
         $this->assertTrue($this->usercardRepository->delete(1, 1));
+    }
+
+    public function testCreate():void
+    {
+        $this->usercardRepository->create([
+            'user_id' => '3',
+            'card_id' => '100'
+        ]);
+        $this->assertTrue((bool) UserCard::where('user_id', 3)->get());
     }
 }

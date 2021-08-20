@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Repository\Eloquent\ActiveLoanRepository;
+use App\Services\LoanService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 
 class LoanCommand extends Command
 {
@@ -45,9 +47,9 @@ class LoanCommand extends Command
      */
     public function handle(): bool
     {
-        $allCards = $this->activeLoanRepository->getCardsId();
-        if ($allCards) {
-            return $this->activeLoanRepository->decrease($allCards);
+        $allLoans = $this->activeLoanRepository->all();
+        if ($allLoans) {
+            return $this->activeLoanRepository->decrease($allLoans);
         }
         return true;
     }

@@ -38,34 +38,39 @@
         <h1 class="index-title">Your loans:</h1>
         <div class="to-center">
             <div class="loans">
-{{--                @if(count($yourLoans) > 0)--}}
-{{--                    @foreach($yourLoans as $one)--}}
-{{--                        <div class="loan col-md-6 col-12">--}}
-{{--                            <h2 class="loan-title"> "{{ $one['loan_id'] }}" </h2>--}}
-{{--                            <div class="spacing">--}}
-{{--                                <h3 class="card-info"> Percents: </h3>--}}
-{{--                                <h2 class="card-title"> {{ $one['sum'] }}% </h2>--}}
-{{--                            </div>--}}
-{{--                            <div class="spacing">--}}
-{{--                                <h3 class="card-info"> Duration: </h3>--}}
-{{--                                <h2 class="card-title"> {{ $one['total_sum'] }} mm</h2>--}}
-{{--                            </div>--}}
-{{--                            <div class="spacing">--}}
-{{--                                <h3 class="card-info"> Duration: </h3>--}}
-{{--                                <h2 class="card-title"> {{ $one['month_pay'] }}</h2>--}}
-{{--                            </div>--}}
-{{--                            <div class="spacing">--}}
-{{--                                <h3 class="card-info"> Duration: </h3>--}}
-{{--                                <h2 class="card-title"> {{ $one['month_left'] }} mm</h2>--}}
-{{--                            </div>--}}
-{{--                            <div class="spacing">--}}
-{{--                                <h3 class="card-info"> Duration: </h3>--}}
-{{--                                <h2 class="card-title"> {{ $one[''] }} mm</h2>--}}
-{{--                            </div>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-{{--                    @endforeach--}}
-{{--                @endif--}}
+                @if(count($yourLoans) > 0)
+                    @foreach($yourLoans as $one)
+                        <div class="loan">
+                            <h2 class="loan-title"> "{{ $one['title'] }}" </h2>
+                            <div class="spacing">
+                                <h3 class="card-info"> Percents: </h3>
+                                <h2 class="card-title"> {{ $one['percent'] }}% </h2>
+                            </div>
+                            <div class="spacing">
+                                <h3 class="card-info"> Duration: </h3>
+                                <h2 class="card-title"> {{ $one['duration'] }} mm</h2>
+                            </div>
+                            <div class="spacing">
+                                <h3 class="card-info"> Total sum: </h3>
+                                <h2 class="card-title"> {{ $one['total-sum'] }} {{ $one['currency'] }}</h2>
+                            </div>
+                            <div class="spacing">
+                                <h3 class="card-info"> Month pay: </h3>
+                                <h2 class="card-title"> {{ $one['month-pay'] }} {{ $one['currency'] }}</h2>
+                            </div>
+                            <div class="spacing">
+                                <h3 class="card-info"> Month left: </h3>
+                                <h2 class="card-title"> {{ $one['month-left'] }} mm</h2>
+                            </div>
+                            <div class="spacing">
+                                <h3 class="card-info"> Card number: </h3>
+                                <h2 class="card-title"> {{ $one['card-number'] }}</h2>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <h2 class="text">None...</h2>
+                @endif
             </div>
         </div>
     </div>

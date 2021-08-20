@@ -3,7 +3,10 @@
 namespace App\Services;
 
 use App\Models\Card;
+use App\Models\Loan;
 use App\Repository\Eloquent\CardRepository;
+use App\Repository\Eloquent\LoanRepository;
+use App\Repository\Eloquent\TransferRepository;
 use App\Repository\Eloquent\UserRepository;
 use App\Repository\Eloquent\UserCardRepository;
 use Database\Factories\CardFactory;
@@ -20,7 +23,8 @@ class CardService
      * @var UserCardRepository
      * @var UserRepository
      */
-    private $cardRepository, $userCardRepository, $userRepository, $card, $cardFactory;
+    private $cardRepository, $userCardRepository, $userRepository, $card,
+        $cardFactory, $transferRepository, $loanRepository;
 
     /**
      * Responses for controller
@@ -35,19 +39,25 @@ class CardService
     /**
      * @param CardRepository $cardRepository
      * @param UserCardRepository $userCardRepository
-     * @param UserRepository $transferRepository
+     * @param UserRepository $userRepository
      * @param CardFactory $cardFactory
+     * @param TransferRepository $transferRepository
+     * @param LoanRepository $loanRepository
      */
     public function __construct(
         CardRepository $cardRepository,
         UserCardRepository $userCardRepository,
         UserRepository $userRepository,
-        CardFactory $cardFactory
+        CardFactory $cardFactory,
+        TransferRepository $transferRepository,
+        LoanRepository $loanRepository
     ) {
         $this->cardRepository = $cardRepository;
         $this->userCardRepository = $userCardRepository;
         $this->userRepository = $userRepository;
         $this->cardFactory = $cardFactory;
+        $this->transferRepository = $transferRepository;
+        $this->loanRepository = $loanRepository;
     }
 
     /**
@@ -124,13 +134,44 @@ class CardService
      * @param int $loanId
      * @return Model|null
      */
-    public function newCard($sum, $loanId): ?Model
+    public function newCreditCard($sum, $loanId): ?Model
     {
-        $card = $this->cardFactory->createLoan($sum, $this->cardRepository->getCurrencyFrom($loanId));
-        $this->cardRepository->create($card);
-        $card = $this->getCardByNum($card['number']);
-        $this->userCardRepository->createNew(Auth::user()->id, $card['id']);
-        return $card ?? null;
+        $userCards = array();
+        foreach ($this->userCardRepository->cardIdByUser(Auth::user()->id) as $one) {
+            $userCards[] = Arr::get($one, 'card_id', null);
+        }
+        $ifCard = $this->cardRepository->credit($userCards, $loanId);
+        if ($ifCard) {
+            $this->cardRepository->updateSum(Arr::get($ifCard, 'id', null), -$sum);
+            $this->transferRepository->create([
+                'card_from' => 'Bank',
+                'card_to' => Arr::get($ifCard, 'number', null),
+                'date' => date('Y-m-d H:i:s'),
+                'sum' => $sum,
+                'new_sum' => Arr::get($ifCard, 'sum', null) + $sum,
+                'currency' => Arr::get($ifCard, 'currency', null),
+                'comment' => 'Loan money',
+                'user_id' => Auth::user()->id
+            ]);
+            return $ifCard;
+        } else {
+            $loan = $this->loanRepository->getLoan($loanId);
+            $card = $this->cardFactory->createLoan($sum, Arr::get($loan, 'currency', null));
+            $this->cardRepository->create($card);
+            $card = $this->getCardByNum(Arr::get($card, 'number', null));
+            $this->transferRepository->create([
+                'card_from' => 'Bank',
+                'card_to' => Arr::get($card, 'number', null),
+                'date' => date('Y-m-d H:i:s'),
+                'sum' => $sum,
+                'new_sum' => $sum,
+                'currency' => Arr::get($card, 'currency', null),
+                'comment' => 'Loan money',
+                'user_id' => Auth::user()->id
+            ]);
+            $this->userCardRepository->createNew(Auth::user()->id, Arr::get($card, 'id', null));
+            return $card ?? null;
+        }
     }
 
     /**

@@ -20,11 +20,11 @@ interface ActiveLoanRepositoryInterface
      * @param array
      * @return bool
      */
-    public function decrease($cardId): bool;
+    public function decrease($loans): bool;
 
     /**
-     * @param int $cardId
+     * @param int $id
      * @return bool
      */
-    public function delete($cardId): bool;
+    public function delete($id): bool;
 }

@@ -4,18 +4,21 @@ namespace App\Services;
 
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\TransferRepository;
+use App\Repository\Eloquent\UserRepository;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class TransferService
 {
     /**
      * @var CardRepository
      * @var TransferRepository
+     * @var UserRepository
      * @var array
      * @var string
      */
-    private $cardRepository, $transferRepository, $tranInfo, $phoneNumber;
+    private $cardRepository, $transferRepository, $userRepository, $tranInfo, $phoneNumber;
 
     const PHONE = 'phone', INTERNET = 'internet';
     /**
@@ -33,13 +36,16 @@ class TransferService
     /**
      * @param CardRepository $cardRepository
      * @param TransferRepository $transferRepository
+     * @param UserRepository $userRepository
      */
     public function __construct(
         CardRepository $cardRepository,
-        TransferRepository $transferRepository
+        TransferRepository $transferRepository,
+        UserRepository $userRepository
     ) {
         $this->cardRepository = $cardRepository;
         $this->transferRepository = $transferRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -135,7 +141,8 @@ class TransferService
             'new_sum' => $this->getBalanceFrom() - Arr::get($this->tranInfo, 'sum', null),
             'currency' => $this->cardRepository
                 ->getCurrencyFrom(Arr::get($this->tranInfo, 'numberFrom', null)),
-            'comment' => Arr::get($this->tranInfo, 'comment', null)
+            'comment' => Arr::get($this->tranInfo, 'comment', null),
+            'user_id' => Auth::user()->id
         ]) ?? false;
     }
 
@@ -180,6 +187,10 @@ class TransferService
         }
     }
 
+    /**
+     * @param string $id
+     * @return array
+     */
     public function otherCheck($id): array
     {
         if ($id === self::PHONE && !$this->checkPhoneNumber()) {
@@ -192,5 +203,27 @@ class TransferService
         } else {
             return ['error', self::RESPONSES['form']];
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getTransactions(): array
+    {
+        $transactions = array();
+        $all = array();
+        foreach ($this->userRepository->getCards(Auth::id()) as $one) {
+            $all[] = $this->cardRepository->getNumber($one['card_id']);
+        }
+        foreach ($all as $card) {
+            $oneCard = $this->transferRepository->getCardTransactions($card);
+            if (Arr::get($oneCard, 0, null)) {
+                $transactions[] = array(
+                    'number' => $card,
+                    'oneCard' => $oneCard
+                );
+            }
+        }
+        return $transactions;
     }
 }

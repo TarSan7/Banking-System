@@ -148,4 +148,29 @@ class CardRepositoryTest extends TestCase
         $this->cardRepository->updateFrom(11, ['sum' => $sum + 20]);
         $this->assertEquals(87233.0, $this->cardRepository->getSumFrom(11));
     }
+
+    /**
+     * Finding card number by its id
+     */
+    public function testGetNumber(): void
+    {
+        $this->assertEquals('0000000000000000', $this->cardRepository->getNumber(1));
+    }
+
+    /**
+     * Checking if user has credit card with necessary currency
+     */
+    public function testCredit(): void
+    {
+        $this->assertNull($this->cardRepository->credit([1, 2, 3], 1));
+    }
+
+    /**
+     * Checking finding user cards
+     */
+    public function testFind(): void
+    {
+        $this->assertEquals(Card::find(2), $this->cardRepository->find(2));
+    }
+
 }

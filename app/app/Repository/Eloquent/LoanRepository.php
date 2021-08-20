@@ -6,7 +6,9 @@ use App\Models\ActiveLoan;
 use App\Models\Loan;
 use App\Repository\LoanRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use phpDocumentor\Reflection\Types\Integer;
 
 class LoanRepository extends BaseRepository implements LoanRepositoryInterface
@@ -39,7 +41,7 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
     }
 
     /**
-     * @param Integer $id
+     * @param int $id
      * @return String
      */
     public function getCurrency($id): String
@@ -53,17 +55,19 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
      * @param int $card_id
      * @return bool
      */
-    public function newLoan($id, $sum, $card_id): bool
+    public function newLoan($id, $sum, $card_id, $user_id): bool
     {
         $loan = $this->getLoan($id);
-        $total = $sum + ($sum * ($loan['percent'] * $loan['duration']) / 12 * 0.01);
+        $total = $sum + ($sum * (Arr::get($loan, 'percent', 0)
+                    * Arr::get($loan, 'duration', 0)) / 12 * 0.01);
         return (bool) ActiveLoan::create([
             'loan_id' => $id,
             'sum' => $sum,
             'total_sum' => $total,
-            'month_pay' => $total / $loan['duration'],
-            'month_left' => $loan['duration'],
-            'card_id' => $card_id
+            'month_pay' => $total / Arr::get($loan, 'duration', 0),
+            'month_left' => Arr::get($loan, 'duration', 0),
+            'card_id' => $card_id,
+            'user_id' => $user_id
         ]) ?? false;
     }
 }

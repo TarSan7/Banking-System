@@ -23,10 +23,26 @@ class TransferRepositoryTest extends TestCase
     }
 
     /**
+     * Getting all fields of UserCard
+     */
+    public function testAll(): void
+    {
+        $this->assertEquals(CardTransfer::all(), $this->transferRepository->all());
+    }
+
+    /**
      * Getting all card transfers
      */
     public function testGetCardTransactions(): void
     {
         $this->assertEmpty($this->transferRepository->getCardTransactions(11));
+    }
+
+    /**
+     * Checking all cards transactions
+     */
+    public function testAllTransactions(): void
+    {
+        $this->assertTrue((bool) $this->transferRepository->allTransactions(['0000000000000000', '0000000000000001']));
     }
 }

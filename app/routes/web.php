@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\DepositController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RegisterController;
@@ -78,4 +80,17 @@ Route::name('user.') -> group(function () {
     Route::post('/takeLoan/{id}', [LoanController::class, 'details']);
 
     Route::post('/acceptLoan/{id}', [LoanController::class, 'accept'])->name('acceptLoan');
+
+    Route::get('/transactions', [TransactionController::class, 'all'])->name('transactions');
+
+    Route::get('/allDeposits', [DepositController::class, 'all'])->name('allDeposits');
+
+    Route::get('/takeDeposit/{id}', [DepositController::class, 'take'])->name('takeDeposit');
+
+    Route::post('/takeDeposit/{id}', [DepositController::class, 'details']);
+
+    Route::post('/acceptDeposit/{id}', [DepositController::class, 'accept'])->name('acceptDeposit');
+
+    Route::post('/closeDeposit/{id}', [DepositController::class, 'close'])->name('closeDeposit');
+
 });

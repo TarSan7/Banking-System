@@ -84,4 +84,17 @@ interface CardRepositoryInterface
      * @return bool
      */
     public function updateSum($id, $sum): bool;
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function getNumber($id): string;
+
+    /**
+     * @param array $userCards
+     * @param int $loanId
+     * @return Model|null
+     */
+    public function credit($userCards, $loanId): ?Model;
 }

@@ -37,6 +37,7 @@ class UserCardRepository extends BaseRepository implements UserCardRepositoryInt
     }
 
     /**
+     * @param int $id
      * @return Collection|null
      */
     public function cardIdByUser($id): ?Collection

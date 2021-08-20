@@ -10,10 +10,10 @@
 @section('content')
     <div class="container">
         <ul class="menu">
-            <li class="item"><a href="" class="text"> Your transactions</a></li>
+            <li class="item"><a href="{{ route('user.transactions') }}" class="text"> Your transactions</a></li>
             <li class="item"><a href="{{ route('user.transfers') }}" class="text"> Make transfer</a></li>
             <li class="item"><a href="{{ route('user.allLoans') }}" class="text"> Loans </a></li>
-            <li class="item"><a href="" class="text"> Deposits </a></li>
+            <li class="item"><a href="{{ route('user.allDeposits') }}" class="text"> Deposits </a></li>
         </ul>
         <hr>
         <h1 class="index-title">Hi, {{$username}}!<br>Your cards:</h1>

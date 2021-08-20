@@ -28,12 +28,22 @@ class TransferRepository extends BaseRepository implements TransferRepositoryInt
 
     /**
      * @param integer $number
-     * @return Collection
+     * @return ?Collection
      */
-    public function getCardTransactions($number): Collection
+    public function getCardTransactions($number): ?Collection
     {
        return $this->model->select('*')->where('card_from', $number)
-           ->orWhere('card_to', $number)->orderByDesc('date')->get();
+           ->orWhere('card_to', $number)->orderByDesc('date')->get() ?? null;
+    }
+
+    /**
+     * @param string $number
+     * @return Collection
+     */
+    public function allTransactions($numbers): Collection
+    {
+        return $this->model->select('*')->whereIn('card_from', $numbers)
+            ->orWhereIn('card_to', $numbers)->orderByDesc('date')->get();
     }
 
 }

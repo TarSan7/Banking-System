@@ -20,6 +20,7 @@ class CardTransfer extends Model
         'new_sum',
         'currency',
         'comment',
+        'user_id'
     ];
 
     public function card()

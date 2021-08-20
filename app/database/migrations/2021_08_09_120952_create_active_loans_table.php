@@ -21,6 +21,7 @@ class CreateActiveLoansTable extends Migration
             $table->float('month_pay', 10, 2);
             $table->integer('month_left');
             $table->integer('card_id');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }

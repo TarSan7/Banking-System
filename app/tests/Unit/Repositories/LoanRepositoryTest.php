@@ -58,9 +58,11 @@ class LoanRepositoryTest extends TestCase
      */
     public function testNewLoan(): void
     {
-        if ($this->loanRepository->newLoan(1, 250, 2)) {
-            $this->assertTrue(ActiveLoan::where('loan_id', 1)->where('sum', 250)->where('card_id', 2)->exists());
-            $this->activeLoanRepository->delete(2);
+        if ($this->loanRepository->newLoan(1, 250, 2, 2)) {
+            $this->assertTrue(ActiveLoan::where('loan_id', 1)->where('sum', 250)
+                ->where('card_id', 2)->where('user_id', 2)->exists());
+            $loan = ActiveLoan::where('loan_id', 1)->where('sum', 250)->where('card_id', 2)->get()[0];
+            $this->activeLoanRepository->delete($loan['id']);
         }
     }
 }
