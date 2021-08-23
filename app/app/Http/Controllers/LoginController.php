@@ -67,9 +67,10 @@ class LoginController extends Controller
      */
     public function toPrivate()
     {
-        $cardsId = $this->userCardRepossitory->cardIdByUser(Auth::user()->id);
+        $user = Auth::user();
+        $cardsId = $this->userCardRepossitory->cardIdByUser($user->id);
         return view('private', [
-            'username' => $this->userRepository->getUsername(Auth::user()->email),
+            'username' => $this->userRepository->getUsername($user->email),
             'cards' => $this->cardRepository->findAll($cardsId)
         ]);
     }

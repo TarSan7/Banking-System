@@ -9,25 +9,24 @@ class DepositCommand extends Command
 {
     /**
      * The name and signature of the console command.
-     *
      * @var string
      */
     protected $signature = 'deposit:start';
 
-
+    /**
+     * @var ActiveDepositRepository
+     */
     private $activeDepositRepository;
 
     /**
      * The console command description.
-     *
      * @var string
      */
     protected $description = 'Adding percents to deposit';
 
     /**
      * Create a new command instance.
-     *
-     * @return void
+     * @param ActiveDepositRepository $activeDepositRepository
      */
     public function __construct(ActiveDepositRepository $activeDepositRepository)
     {
@@ -38,9 +37,9 @@ class DepositCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return bool
      */
-    public function handle()
+    public function handle(): bool
     {
         $allDeposits = $this->activeDepositRepository->all();
         if ($allDeposits) {

@@ -4,10 +4,13 @@ namespace Tests\Unit\Repositories;
 
 use App\Models\ActiveDeposit;
 use App\Models\Card;
+use App\Models\CardTransfer;
 use App\Models\Deposit;
 use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
+use App\Repository\Eloquent\TransferRepository;
+use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class ActiveDepositRepositoryTest extends TestCase
@@ -23,8 +26,12 @@ class ActiveDepositRepositoryTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->activeDepositRepository = new ActiveDepositRepository(new ActiveDeposit(), new CardRepository(new Card()));
-        $this->depositRepository = new DepositRepository(new Deposit());
+        $this->activeDepositRepository = new ActiveDepositRepository(
+            new ActiveDeposit(),
+            new CardRepository(new Card()),
+            new TransferRepository(new CardTransfer())
+        );
+        $this->depositRepository = new DepositRepository(new Deposit(), new ActiveDeposit());
     }
 
     /**
@@ -55,13 +62,14 @@ class ActiveDepositRepositoryTest extends TestCase
             'percent' => 20,
             'duration' => 4,
             'numberFrom' => 8
-        ], 2);
-        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->get()[0];
+        ], 0);
+        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->first();
         $this->assertTrue($this->activeDepositRepository->decrease([$deposit]));
         ActiveDeposit::where('deposit_id', 1)->where('card_id', 8)->update(['month_left' => 0]);
-        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->get()[0];
+
+        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->first();
         $this->assertTrue($this->activeDepositRepository->decrease([$deposit]));
-        $this->activeDepositRepository->delete($deposit['id']);
+        $this->activeDepositRepository->delete(Arr::get($deposit, 'id', null));
     }
 
     /**
@@ -75,9 +83,10 @@ class ActiveDepositRepositoryTest extends TestCase
             'percent' => 20,
             'duration' => 4,
             'numberFrom' => 8
-        ], 2);
-        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->get('id')[0];
-        $this->assertTrue($this->activeDepositRepository->delete($deposit['id']));
+        ], 0);
+        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->first();
+        $this->assertTrue($this->activeDepositRepository->delete(Arr::get($deposit, 'id', null)));
+        CardTransfer::where('user_id', 0)->delete();
     }
 
     /**
@@ -85,6 +94,6 @@ class ActiveDepositRepositoryTest extends TestCase
      */
     public function testUserDeposits(): void
     {
-        $this->assertCount(1, $this->activeDepositRepository->userDeposits(1));
+        $this->assertIsObject($this->activeDepositRepository->userDeposits(1));
     }
 }

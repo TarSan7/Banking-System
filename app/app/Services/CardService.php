@@ -92,7 +92,7 @@ class CardService
      * Checking the card for existence
      * @return bool
      */
-    public function cardExist(): bool
+    public function cardExist($card = null): bool
     {
         return $this->cardRepository->cardExist($this->card);
     }
@@ -103,7 +103,7 @@ class CardService
      */
     public function cardAdded(): bool
     {
-        $cardId = $this->cardRepository->getId(Arr::get($this->card, 'number', null));
+        $cardId = $this->cardRepository->getId(Arr::get($this->card, 'number', 0));
         return $this->userCardRepository->cards($cardId);
     }
 
@@ -111,11 +111,11 @@ class CardService
      * Creating card
      * @return bool
      */
-    public function createCard(): bool
+    public function createCard($id = 0, $card_id = 0): bool
     {
         return (bool) $this->userCardRepository->create([
-            'user_id' => Auth::user()->id,
-            'card_id' => $this->cardRepository->getId(Arr::get($this->card,'number', null))
+            'user_id' => Auth::user()->id ?? $id,
+            'card_id' => $this->cardRepository->getId(Arr::get($this->card,'number', 0) ?? $card_id)
         ]) ?? false;
     }
 
@@ -123,9 +123,9 @@ class CardService
      * Return all information about user cards
      * @return Collection
      */
-    public function getUserCards(): Collection
+    public function getUserCards($id = 1): Collection
     {
-        $cardsId = $this->userRepository->getCards(Auth::user()->id);
+        $cardsId = $this->userRepository->getCards(Auth::user()->id ?? $id);
         return $this->cardRepository->findAll($cardsId);
     }
 
@@ -137,7 +137,7 @@ class CardService
     public function newCreditCard($sum, $loanId): ?Model
     {
         $userCards = array();
-        foreach ($this->userCardRepository->cardIdByUser(Auth::user()->id) as $one) {
+        foreach ($this->userCardRepository->cardIdByUser(Auth::user()->id ?? 0) as $one) {
             $userCards[] = Arr::get($one, 'card_id', null);
         }
         $ifCard = $this->cardRepository->credit($userCards, $loanId);
@@ -151,7 +151,7 @@ class CardService
                 'new_sum' => Arr::get($ifCard, 'sum', null) + $sum,
                 'currency' => Arr::get($ifCard, 'currency', null),
                 'comment' => 'Loan money',
-                'user_id' => Auth::user()->id
+                'user_id' => Auth::user()->id ?? 0
             ]);
             return $ifCard;
         } else {
@@ -167,9 +167,9 @@ class CardService
                 'new_sum' => $sum,
                 'currency' => Arr::get($card, 'currency', null),
                 'comment' => 'Loan money',
-                'user_id' => Auth::user()->id
+                'user_id' => Auth::user()->id ?? 0
             ]);
-            $this->userCardRepository->createNew(Auth::user()->id, Arr::get($card, 'id', null));
+            $this->userCardRepository->createNew(Auth::user()->id ?? 0, Arr::get($card, 'id', null));
             return $card ?? null;
         }
     }
@@ -180,13 +180,13 @@ class CardService
     public function check(): array
     {
         if (!$this->cardExist()) {
-            return ['error', self::RESPONSES['notExist']];
+            return ['error', Arr::get(self::RESPONSES, 'notExist', null)];
         } elseif ($this->cardAdded()) {
-            return ['error', self::RESPONSES['used']];
+            return ['error', Arr::get(self::RESPONSES, 'used', null)];
         } elseif ($this->createCard()) {
-            return ['success', self::RESPONSES['done']];
+            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         } else {
-            return ['error', self::RESPONSES['form']];
+            return ['error', Arr::get(self::RESPONSES, 'form', null)];
         }
     }
 }

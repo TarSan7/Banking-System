@@ -41,6 +41,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function getUsername($email): String
     {
-        return $this->model->where('email', $email)->get('name')[0]['name'];
+        return $this->model->where('email', $email)->first()->name;
     }
 }

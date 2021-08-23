@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Arr;
 
 /**
  * Class LoanController
@@ -58,7 +59,7 @@ class LoanController extends Controller
     {
         return view('loanInfo', [
             'loan' => $this->loanService->oneLoan($id),
-            'sum' => $request['sum'],
+            'sum' => Arr::get($request, 'sum', null),
             'id' => $id
         ]);
     }
@@ -70,11 +71,13 @@ class LoanController extends Controller
      */
     public function accept(Request $request, $id)
     {
-        $response = $this->loanService->accept($request['sum'], $id);
-        if ($response[0] === 'success') {
-            return redirect(route('user.takeLoan', ['id' => $id]))->with('success', $response[1]);
+        $response = $this->loanService->accept(Arr::get($request, 'sum', null), $id);
+        if (Arr::get($response, 0, null) === 'success') {
+            return redirect(route('user.takeLoan',
+                ['id' => $id]))->with('success', Arr::get($response, 1, null));
         } else {
-            return redirect(route('user.takeLoan', ['id' => $id]))->withErrors(['error' => $response[1]]);
+            return redirect(route('user.takeLoan',
+                ['id' => $id]))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 }

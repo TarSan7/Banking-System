@@ -49,9 +49,9 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function cardExist($validate): bool
     {
-        return $this->model->where('number', Arr::get($validate, 'number', null))
+        return (bool) $this->model->where('number', Arr::get($validate, 'number', null))
             ->where('cvv', Arr::get($validate, 'cvv', null))
-            ->where('expires_end', Arr::get($validate, 'expires-end', null))->exists();
+            ->where('expires_end', Arr::get($validate, 'expires-end', null));
     }
 
     /**
@@ -60,7 +60,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function getId($number): int
     {
-        return $this->model->where('number', $number)->get('id')[0]['id'];
+        return $this->model->where('number', $number)->first()->id;
     }
 
     /**
@@ -69,7 +69,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function getCardByNum($number): ?Model
     {
-        return $this->model->where('number', $number)->get('*')[0];
+        return $this->model->where('number', $number)->first();
     }
 
     /**
@@ -78,7 +78,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function getSumFrom($numberFrom): float
     {
-        return $this->model->where('id', $numberFrom)->get('sum')[0]['sum'];
+        return $this->model->where('id', $numberFrom)->first()->sum;
     }
 
     /**
@@ -87,7 +87,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function getSumTo($numberTo): float
     {
-        return $this->model->where('number', $numberTo)->get('sum')[0]['sum'];
+        return $this->model->where('number', $numberTo)->first()->sum;
     }
 
     /**
@@ -114,7 +114,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function getCurrencyFrom($numberFrom): String
     {
-        return $this->model->where('id', $numberFrom)->get('currency')[0]['currency'];
+        return $this->model->where('id', $numberFrom)->first()->currency;
     }
 
     /**
@@ -123,7 +123,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function getCurrencyTo($numberTo): String
     {
-        return $this->model->where('number', $numberTo)->get('currency')[0]['currency'];
+        return $this->model->where('number', $numberTo)->first()->currency;
     }
 
     /**
@@ -133,7 +133,17 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     public function getGeneralCardNum($numberFrom): String
     {
         return $this->model->where('type', 'general')->where('currency',
-            $this->getCurrencyFrom($numberFrom))->get('number')[0]['number'];
+            $this->getCurrencyFrom($numberFrom))->first()->number;
+    }
+
+    /**
+     * @param float $sum
+     * @param string $currency
+     * @return bool
+     */
+    public function checkGeneralSum($sum, $currency): bool
+    {
+        return $this->model->where('type', 'general')->where('currency', $currency)->first()->sum >= $sum;
     }
 
     /**
@@ -143,7 +153,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function updateSum($id, $sum): bool
     {
-        $updated = $this->model->find($id)['sum'] - $sum;
+        $updated = $this->model->find($id)->sum - $sum;
         return (bool) $this->model->find($id)->update(['sum' => $updated]);
     }
 
@@ -153,7 +163,8 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function getNumber($id): string
     {
-        return $this->model->where('id', $id)->get('number')[0]['number'];
+        $num = $this->model->where('id', $id)->get('number');
+        return count($num) > 0 ? $num->first()->number : $num;
     }
 
     /**
@@ -163,9 +174,35 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function credit($userCards, $loanId): ?Model
     {
-        $currency = Loan::find($loanId)['currency'];
+        $currency = Loan::find($loanId)->currency;
         $card = $this->model->whereIn('id', $userCards)->where('type', 'credit')
             ->where('currency', $currency)->get();
         return Arr::get($card, 0, null);
+    }
+
+    /**
+     * @param string $currency
+     * @param array $toUpdate
+     */
+    public function updateGeneral($currency, $toUpdate): void
+    {
+        $this->model->where('type', 'general')->where('currency', $currency)->update($toUpdate);
+    }
+
+    /**
+     * @param string $currency
+     * @return int
+     */
+    public function generalSumByCurrency($currency): int
+    {
+        return $this->getGeneral()->where('currency', $currency)->first()->sum;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getGeneral(): Collection
+    {
+        return $this->model->where('type', 'general')->get();
     }
 }

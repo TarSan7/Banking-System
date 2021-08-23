@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Card;
 use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
@@ -17,7 +18,7 @@ class DepositService
     /**
      * @var DepositRepository
      */
-    private $depositRepository, $cardService, $activeDepositRepository, $cardRepository, $transferRepository;
+    private $depositRepository, $activeDepositRepository, $cardRepository, $transferRepository;
 
     /**
      * Responses for controller
@@ -33,20 +34,17 @@ class DepositService
 
     /**
      * @param DepositRepository $depositRepository
-     * @param CardService $cardService
      * @param ActiveDepositRepository $activeDepositRepository
      * @param CardRepository $cardRepository
      * @param TransferRepository $transferRepository
      */
     public function __construct(
         DepositRepository $depositRepository,
-        CardService $cardService,
         ActiveDepositRepository $activeDepositRepository,
         CardRepository $cardRepository,
         TransferRepository $transferRepository
     ) {
         $this->depositRepository = $depositRepository;
-        $this->cardService = $cardService;
         $this->activeDepositRepository = $activeDepositRepository;
         $this->cardRepository = $cardRepository;
         $this->transferRepository = $transferRepository;
@@ -92,32 +90,37 @@ class DepositService
     public function accept($deposit, $id): array
     {
         if ($this->countUserDeposits() < 3) {
+            $currency = Arr::get($deposit, 'currency', null);
+            $sum = Arr::get($deposit, 'sum', 0);
             $cardNum = Arr::get($deposit, 'numberFrom', null);
             $cardSum = $this->cardRepository->getSumTo(Arr::get($deposit, 'numberFrom', null));
-            $deposit['numberFrom'] = $this->cardRepository->getId($deposit['numberFrom']);
-            if ($cardSum < Arr::get($deposit, 'sum', 0)) {
-                return ['error', self::RESPONSES['money']];
-            } elseif ($this->cardRepository->getCurrencyFrom(Arr::get($deposit, 'numberFrom', null)) !=
-                        Arr::get($deposit, 'currency', null)) {
-                return ['error', self::RESPONSES['currency']];
+            $numberFrom = Arr::get($deposit, 'numberFrom', null);
+            $deposit['numberFrom'] = $this->cardRepository->getId($numberFrom);
+            if ($cardSum < $sum) {
+                return ['error', Arr::get(self::RESPONSES, 'money', null)];
+            } elseif ($this->cardRepository->getCurrencyFrom($numberFrom) != $currency) {
+                return ['error', Arr::get(self::RESPONSES, 'currency', null)];
             } elseif ($this->newDeposit($deposit, $id)) {
-                $this->cardRepository->updateSum($deposit['numberFrom'], $deposit['sum']);
+                $this->cardRepository->updateSum($numberFrom, $sum);
+                $bankSum = $this->cardRepository->generalSumByCurrency($currency);
+                $this->cardRepository->updateGeneral($currency, ['sum' => $bankSum + $sum]);
+
                 $this->transferRepository->create([
                     'card_from' => $cardNum,
                     'card_to' => 'Bank',
                     'date' => date('Y-m-d H:i:s'),
-                    'sum' => Arr::get($deposit, 'sum', null),
-                    'new_sum' => Arr::get($deposit, 'sum', null),
-                    'currency' => Arr::get($deposit, 'currency', null),
-                    'comment' => 'Took a deposit',
-                    'user_id' => Auth::user()->id
+                    'sum' => $sum,
+                    'new_sum' => $sum,
+                    'currency' => $currency,
+                    'comment' => 'Take a deposit',
+                    'user_id' => Auth::user()->id ?? 0
                 ]);
-                return ['success', self::RESPONSES['done']];
+                return ['success', Arr::get(self::RESPONSES ,'done', null)];
             } else {
-                return ['error', self::RESPONSES['form']];
+                return ['error', Arr::get(self::RESPONSES, 'form', null)];
             }
         } else {
-            return ['error', self::RESPONSES['tooMuch']];
+            return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
         }
     }
 
@@ -126,7 +129,7 @@ class DepositService
      */
     public function countUserDeposits(): int
     {
-        return count($this->activeDepositRepository->userDeposits(Auth::user()->id));
+        return count($this->activeDepositRepository->userDeposits(Auth::user()->id ?? 0));
     }
 
     /**
@@ -134,7 +137,7 @@ class DepositService
      */
     public function getUserDeposits(): array
     {
-        $deposits = $this->activeDepositRepository->userDeposits(Auth::user()->id);
+        $deposits = $this->activeDepositRepository->userDeposits(Auth::user()->id ?? 0);
         $rez = array();
         foreach ($deposits as $deposit) {
             $base = $this->depositRepository->getDeposit(Arr::get($deposit, 'deposit_id', null));
@@ -169,9 +172,9 @@ class DepositService
             'new_sum' => Arr::get($deposit, 'total_sum', null),
             'currency' => Arr::get($deposit, 'currency', null),
             'comment' => 'Closing deposit',
-            'user_id' => Auth::user()->id
+            'user_id' => Auth::user()->id ?? 0
         ]);
         $this->activeDepositRepository->delete($id);
-        return ['success', self::RESPONSES['closed']];
+        return ['success', Arr::get(self::RESPONSES, 'closed', null)];
     }
 }

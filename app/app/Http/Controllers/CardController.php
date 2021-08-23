@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Arr;
 use Illuminate\View\View;
 
 /**
@@ -41,10 +42,10 @@ class CardController extends Controller
     {
         $this->cardService->setCard($request->validated());
         $response = $this->cardService->check();
-        if ($response[0] === 'success') {
-            return redirect(route('user.addCard'))->with('success', $response[1]);
+        if (Arr::get($response, 0, null) === 'success') {
+            return redirect(route('user.addCard'))->with('success', Arr::get($response, 1, null));
         } else {
-            return redirect(route('user.addCard'))->withErrors(['error' => $response[1]]);
+            return redirect(route('user.addCard'))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 

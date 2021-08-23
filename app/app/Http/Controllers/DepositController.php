@@ -60,8 +60,10 @@ class DepositController extends Controller
      */
     public function details(Request $request, $id)
     {
+        $cardFrom = $this->cardService->getCardById(Arr::get($request, 'numberFrom', null));
+        $cardNumber = Arr::get($cardFrom, 'number', null);
         return view('depositInfo', [
-            'cardFrom' => $this->cardService->getCardById(Arr::get($request, 'numberFrom', null))['number'],
+            'cardFrom' => $cardNumber,
             'deposit' => $this->depositService->oneDeposit($id),
             'currency' => Arr::get($request, 'currency', null),
             'duration' => Arr::get($request, 'duration', 0),
@@ -79,10 +81,12 @@ class DepositController extends Controller
     public function accept(Request $request, $id)
     {
         $response = $this->depositService->accept($request, $id);
-        if ($response[0] === 'success') {
-            return redirect(route('user.takeDeposit', ['id' => $id]))->with('success', $response[1]);
+        if (Arr::get($response, 0, null) === 'success') {
+            return redirect(route('user.takeDeposit',
+                ['id' => $id]))->with('success', Arr::get($response, 1, null));
         } else {
-            return redirect(route('user.takeDeposit', ['id' => $id]))->withErrors(['error' => $response[1]]);
+            return redirect(route('user.takeDeposit',
+                ['id' => $id]))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 
@@ -93,10 +97,10 @@ class DepositController extends Controller
     public function close($id)
     {
         $response = $this->depositService->close($id);
-        if ($response[0] === 'success') {
-            return redirect(route('user.allDeposits'))->with('success', $response[1]);
+        if (Arr::get($response, 0, null) === 'success') {
+            return redirect(route('user.allDeposits'))->with('success', Arr::get($response, 1, null));
         } else {
-            return redirect(route('user.allDeposits'))->withErrors(['error' => $response[1]]);
+            return redirect(route('user.allDeposits'))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 }

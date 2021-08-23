@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 use App\Models\ActiveLoan;
+use App\Models\Card;
 use App\Models\Loan;
 use App\Repository\LoanRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -13,14 +14,17 @@ use phpDocumentor\Reflection\Types\Integer;
 
 class LoanRepository extends BaseRepository implements LoanRepositoryInterface
 {
+    private $cardRepository, $activeLoan;
     /**
      * LoanRepository constructor.
      *
      * @param Loan $model
      */
-    public function __construct(Loan $model)
+    public function __construct(Loan $model, CardRepository $cardRepository, ActiveLoan $activeLoan)
     {
         parent::__construct($model);
+        $this->cardRepository = $cardRepository;
+        $this->activeLoan = $activeLoan;
     }
 
     /**
@@ -46,7 +50,7 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
      */
     public function getCurrency($id): String
     {
-        return $this->model->find($id)->get('currency')[0]['currency'];
+        return $this->model->find($id)->first()->currency;
     }
 
     /**
@@ -58,14 +62,18 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
     public function newLoan($id, $sum, $card_id, $user_id): bool
     {
         $loan = $this->getLoan($id);
-        $total = $sum + ($sum * (Arr::get($loan, 'percent', 0)
-                    * Arr::get($loan, 'duration', 0)) / 12 * 0.01);
-        return (bool) ActiveLoan::create([
+        $cardSum = $this->cardRepository->generalSumByCurrency(Arr::get($loan, 'currency', null));
+        $percent = Arr::get($loan, 'percent', 0);
+        $duration = Arr::get($loan, 'duration', null);
+        $sumPercents = $sum * ($percent * $duration) / 12 * 0.01;
+        $total = $sum + $sumPercents;
+        $this->cardRepository->updateGeneral(Arr::get($loan, 'currency', null), ['sum' => $cardSum - $sum]);
+        return (bool) $this->activeLoan->create([
             'loan_id' => $id,
             'sum' => $sum,
             'total_sum' => $total,
-            'month_pay' => $total / Arr::get($loan, 'duration', 0),
-            'month_left' => Arr::get($loan, 'duration', 0),
+            'month_pay' => $total / $duration,
+            'month_left' => $duration,
             'card_id' => $card_id,
             'user_id' => $user_id
         ]) ?? false;

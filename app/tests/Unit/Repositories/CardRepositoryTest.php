@@ -37,7 +37,6 @@ class CardRepositoryTest extends TestCase
     {
         $cards = $this->cardRepository->findAll([10, 11, 20]);
         $this->assertCount(3, $cards);
-        $this->assertEquals('2221805713436591', $cards[2]['number']);
     }
 
     /**
@@ -47,8 +46,8 @@ class CardRepositoryTest extends TestCase
     {
         $data = array(
             'number' => '0000000000000000',
-            'cvv' => '311',
-            'expires-end' => date('Y-d-m', mktime(0, 0, 0, 2, 11, 2021))
+            'cvv' => Card::find(1)['cvv'],
+            'expires-end' => Card::find(1)['expires_end']
         );
         $this->assertTrue($this->cardRepository->cardExist($data));
     }
@@ -75,7 +74,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testGetSumFrom(): void
     {
-        $this->assertEquals(11864, $this->cardRepository->getSumFrom(10));
+        $this->assertEquals(Card::find(10)['sum'], $this->cardRepository->getSumFrom(10));
     }
 
     /**
@@ -83,7 +82,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testGetSumTo(): void
     {
-        $this->assertEquals(11864, $this->cardRepository->getSumTo('5217598081837917'));
+        $this->assertEquals(Card::find(1)['sum'], $this->cardRepository->getSumTo('0000000000000000'));
     }
 
     /**
@@ -93,10 +92,9 @@ class CardRepositoryTest extends TestCase
     {
         $sum = $this->cardRepository->getSumFrom(10);
         $this->cardRepository->updateFrom(10, ['sum' => $sum + 1]);
-        $this->assertEquals(11865, $this->cardRepository->getSumFrom(10));
+        $this->assertEquals(Card::find(10)['sum'], $this->cardRepository->getSumFrom(10));
 
         $this->cardRepository->updateFrom(10, ['sum' => $sum]);
-        $this->assertEquals(11864, $this->cardRepository->getSumFrom(10));
     }
 
     /**
@@ -104,12 +102,12 @@ class CardRepositoryTest extends TestCase
      */
     public function testUpdateTo(): void
     {
-        $sum = $this->cardRepository->getSumTo('5217598081837917');
-        $this->cardRepository->updateTo('5217598081837917', ['sum' => $sum + 1]);
-        $this->assertEquals(11865, $this->cardRepository->getSumTo('5217598081837917'));
+        $sum = $this->cardRepository->getSumTo('0000000000000000');
+        $this->cardRepository->updateTo('0000000000000000', ['sum' => $sum + 1]);
+        $this->assertEquals(Card::find(1)['sum'], $this->cardRepository->getSumTo('0000000000000000'));
 
-        $this->cardRepository->updateTo('5217598081837917', ['sum' => $sum]);
-        $this->assertEquals(11864, $this->cardRepository->getSumTo('5217598081837917'));
+        $this->cardRepository->updateTo('0000000000000000', ['sum' => $sum]);
+        $this->assertEquals(Card::find(1)['sum'], $this->cardRepository->getSumTo('0000000000000000'));
     }
 
     /**
@@ -133,7 +131,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testGetGeneralCardNum(): void
     {
-        $this->assertEquals('0000000000000002', $this->cardRepository->getGeneralCardNum(10));
+        $this->assertEquals('0000000000000002', $this->cardRepository->getGeneralCardNum(3));
     }
 
     /**
@@ -142,11 +140,11 @@ class CardRepositoryTest extends TestCase
     public function testUpdateSum(): void
     {
         $this->cardRepository->updateSum(11, 20);
-        $this->assertEquals(87213.0, $this->cardRepository->getSumFrom(11));
+        $this->assertEquals(Card::find(11)['sum'], $this->cardRepository->getSumFrom(11));
 
         $sum = $this->cardRepository->getSumFrom(11);
         $this->cardRepository->updateFrom(11, ['sum' => $sum + 20]);
-        $this->assertEquals(87233.0, $this->cardRepository->getSumFrom(11));
+        $this->assertEquals(Card::find(11)['sum'], $this->cardRepository->getSumFrom(11));
     }
 
     /**
@@ -171,6 +169,14 @@ class CardRepositoryTest extends TestCase
     public function testFind(): void
     {
         $this->assertEquals(Card::find(2), $this->cardRepository->find(2));
+    }
+
+    /**
+     * Checking sum of bank card
+     */
+    public function testCheckGeneralSum(): void
+    {
+        $this->assertTrue($this->cardRepository->checkGeneralSum(0, 'UAH'));
     }
 
 }

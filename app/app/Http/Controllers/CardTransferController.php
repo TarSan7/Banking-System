@@ -8,6 +8,7 @@ use App\Services\TransferService;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Arr;
 use Illuminate\View\Factory;
 use Illuminate\View\View;
 
@@ -49,10 +50,10 @@ class CardTransferController extends Controller
     {
         $this->transferService->setInfo($request->validated());
         $response = $this->transferService->cardCheck();
-        if ($response[0] === 'success') {
-            return redirect(route('user.cardTransfer'))->with('success', $response[1]);
+        if (Arr::get($response, 0, null) === 'success') {
+            return redirect(route('user.cardTransfer'))->with('success', Arr::get($response, 1, null));
         } else {
-            return redirect(route('user.cardTransfer'))->withErrors(['error' => $response[1]]);
+            return redirect(route('user.cardTransfer'))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 

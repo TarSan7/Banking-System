@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent;
 use App\Models\ActiveLoan;
 use App\Models\Card;
 use App\Models\CardTransfer;
+use App\Models\Loan;
 use App\Repository\ActiveLoanRepositoryInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -12,16 +13,20 @@ use Illuminate\Support\Facades\Auth;
 
 class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositoryInterface
 {
-    private $cardRepository;
+    private $cardRepository, $transferRepository;
     /**
      * LoanRepository constructor.
      *
      * @param ActiveLoan $model
      */
-    public function __construct(ActiveLoan $model, CardRepository $cardRepository)
-    {
+    public function __construct(
+        ActiveLoan $model,
+        CardRepository $cardRepository,
+        TransferRepository $transferRepository
+    ) {
         parent::__construct($model);
         $this->cardRepository = $cardRepository;
+        $this->transferRepository = $transferRepository;
     }
 
     /**
@@ -41,32 +46,37 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
     }
 
     /**
-     * @param array $cardId
+     * @param array $loans
      * @return bool
      */
     public function decrease($loans): bool
     {
         foreach ($loans as $loan) {
-            $loanId = $loan['id'];
-            $monthLeft = $this->model->where('id', $loanId)
-                ->get('month_left')[0]['month_left'];
+            $loanId = Arr::get($loan, 'id', null);
+            $monthLeft = Arr::get($this->model->where('id', $loanId)->first(), 'month_left', null);
+            $createDate = date('d', strtotime(Arr::get($loan, 'created_at', null)));
             if ($monthLeft <= 0) {
                 $this->delete($loanId);
-            } elseif (date('d', strtotime($loan['created_at'])) == date('d')) {
+            } elseif ($createDate === date('d')) {
                 $change = $monthLeft - 1;
-                $monthSum = $this->model->where('id', $loanId)->get('month_pay')[0]['month_pay'];
+                $monthSum = Arr::get($this->model->where('id', $loanId)->first(), 'month_pay', null);
                 $this->model->where('id', $loanId)->update(['month_left' => $change]);
-                $this->cardRepository->updateSum($loan['card_id'], $monthSum);
-                CardTransfer::create([
-                    'card_from' => $this->cardRepository->getNumber($loan['card_id']),
+                $this->cardRepository->updateSum(Arr::get($loan, 'card_id', null), $monthSum);
+
+                $baseLoanId = Arr::get($this->model->find($loanId), 'loan_id', null);
+                $bankCurrency = Arr::get(Loan::find($baseLoanId), 'currency', null);
+                $bankSum = $this->cardRepository->generalSumByCurrency($bankCurrency);
+                $this->cardRepository->updateGeneral($bankCurrency, ['sum' => $bankSum + $monthSum]);
+
+                $this->transferRepository->create([
+                    'card_from' => $this->cardRepository->getNumber(Arr::get($loan, 'card_id', null)),
                     'card_to' => 'Bank',
                     'date' => date('Y-m-d H:i:s'),
                     'sum' => $monthSum,
                     'new_sum' => $monthSum,
-                    'currency' => Card::where('id', Arr::get($loan, 'card_id', null), $monthSum)
-                        ->get('currency')[0]['currency'],
-                    'comment' => "Loan decrease",
-                    'user_id' => $loan['user_id']
+                    'currency' => $this->cardRepository->getCurrencyFrom(Arr::get($loan, 'card_id', null)),
+                    'comment' => 'Loan decrease',
+                    'user_id' => Arr::get($loan, 'user_id', null)
                 ]);
             }
         }

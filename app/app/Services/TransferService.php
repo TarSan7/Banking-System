@@ -174,16 +174,16 @@ class TransferService
     public function cardCheck(): array
     {
         if ($this->transferSum() > $this->getBalanceFrom()) {
-            return ['error', self::RESPONSES['sum']];
+            return ['error', Arr::get(self::RESPONSES, 'sum', null)];
         } elseif (!$this->compareCurrency()) {
-            return ['error', self::RESPONSES['currency']];
+            return ['error', Arr::get(self::RESPONSES, 'currency', null)];
         } elseif ($this->compareNumbers()) {
-            return ['error', self::RESPONSES['cards']];
+            return ['error', Arr::get(self::RESPONSES, 'cards', null)];
         } elseif ($this->createTransfer()) {
             $this->updateCards();
-            return ['success', self::RESPONSES['done']];
+            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         } else {
-            return ['error', self::RESPONSES['form']];
+            return ['error', Arr::get(self::RESPONSES, 'form', null)];
         }
     }
 
@@ -194,14 +194,14 @@ class TransferService
     public function otherCheck($id): array
     {
         if ($id === self::PHONE && !$this->checkPhoneNumber()) {
-            return ['error', self::RESPONSES['phone']];
+            return ['error', Arr::get(self::RESPONSES, 'phone', null)];
         } elseif ($this->transferSum() > $this->getBalanceFrom()) {
-            return ['error', self::RESPONSES['sum']];
+            return ['error', Arr::get(self::RESPONSES, 'sum', null)];
         } elseif ($this->createTransfer()) {
             $this->updateCards();
-            return ['success', self::RESPONSES['done']];
+            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         } else {
-            return ['error', self::RESPONSES['form']];
+            return ['error', Arr::get(self::RESPONSES, 'form', null)];
         }
     }
 
@@ -213,7 +213,7 @@ class TransferService
         $transactions = array();
         $all = array();
         foreach ($this->userRepository->getCards(Auth::id()) as $one) {
-            $all[] = $this->cardRepository->getNumber($one['card_id']);
+            $all[] = $this->cardRepository->getNumber(Arr::get($one, 'card_id', null));
         }
         foreach ($all as $card) {
             $oneCard = $this->transferRepository->getCardTransactions($card);

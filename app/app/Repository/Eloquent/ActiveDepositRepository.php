@@ -3,7 +3,6 @@
 namespace App\Repository\Eloquent;
 
 use App\Models\ActiveDeposit;
-use App\Models\ActiveLoan;
 use App\Models\Card;
 use App\Models\CardTransfer;
 use App\Repository\ActiveDepositRepositoryInterface;
@@ -12,7 +11,7 @@ use Illuminate\Support\Collection;
 
 class ActiveDepositRepository extends BaseRepository implements ActiveDepositRepositoryInterface
 {
-    private $cardRepository;
+    private $cardRepository, $transferRepository;
     /**
      * DepositRepository constructor.
      *
@@ -20,10 +19,12 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
      */
     public function __construct(
         ActiveDeposit $model,
-        CardRepository $cardRepository
+        CardRepository $cardRepository,
+        TransferRepository $transferRepository
     ) {
         parent::__construct($model);
         $this->cardRepository = $cardRepository;
+        $this->transferRepository = $transferRepository;
     }
 
     /**
@@ -57,7 +58,12 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     public function getMoney($deposit_id): void
     {
         $deposit = $this->find($deposit_id);
-        echo $deposit;
+        $currency = Arr::get($deposit, 'currency', null);
+        $bankSum = $this->cardRepository->generalSumByCurrency($currency);
+        $this->cardRepository->updateGeneral(
+            $currency,
+            ['sum' => $bankSum - Arr::get($deposit, 'total_sum', 0)]
+        );
         $this->cardRepository->updateSum(
             Arr::get($deposit, 'card_id', null),
             -Arr::get($deposit, 'total_sum', 0)
@@ -70,38 +76,38 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
      */
     public function delete($id): bool
     {
-        return (bool)$this->model->where('id', $id)->delete();
+        return (bool) $this->model->where('id', $id)->delete();
     }
 
     /**
-     * @param array $cardId
+     * @param array $deposits
      * @return bool
      */
     public function decrease($deposits): bool
     {
         foreach ($deposits as $deposit) {
-            $depositId = $deposit['id'];
-            $monthLeft = $this->model->where('id', $depositId)
-                ->get('month_left')[0]['month_left'];
+            $depositId = Arr::get($deposit, 'id', 0);
+            $monthLeft = Arr::get($this->model->where('id', $depositId)->first(), 'month_left', null);
+            $createDate = date('d', strtotime(Arr::get($deposit, 'created_at', null)));
             if ($monthLeft <= 0) {
                 $this->getMoney($depositId);
                 $this->delete($depositId);
-            } elseif (date('d', strtotime($deposit['created_at'])) == date('d')) {
+            } elseif ($createDate === date('d')) {
                 $change = $monthLeft - 1;
-                $monthSum = $this->model->where('id', $depositId)->get('month_pay')[0]['month_pay'];
+                $monthSum = Arr::get($this->model->where('id', $depositId)->first(), 'month_pay', null);
                 $this->model->where('id', $depositId)->update([
                     'month_left' => $change,
-                    'total_sum' => $deposit['total_sum'] + $monthSum
+                    'total_sum' => Arr::get($deposit, 'total_sum', null) + $monthSum
                 ]);
-                CardTransfer::create([
+                $this->transferRepository->create([
                     'card_from' => 'Bank',
                     'card_to' => 'Deposit',
                     'date' => date('Y-m-d H:i:s'),
                     'sum' => $monthSum,
                     'new_sum' => $monthSum,
-                    'currency' => $deposit['currency'],
-                    'comment' => "Percents to deposit",
-                    'user_id' => $deposit['user_id']
+                    'currency' => Arr::get($deposit, 'currency', null),
+                    'comment' => 'Percents to deposit',
+                    'user_id' => Arr::get($deposit, 'user_id', null)
                 ]);
             }
         }

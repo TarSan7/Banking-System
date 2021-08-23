@@ -35,7 +35,7 @@ class UserCardRepositoryTest extends TestCase
      */
     public function testCards(): void
     {
-        $this->assertFalse($this->usercardRepository->cards(1));
+        $this->assertTrue($this->usercardRepository->cards(1));
     }
 
     /**
@@ -43,8 +43,7 @@ class UserCardRepositoryTest extends TestCase
      */
     public function testCardIdByUser(): void
     {
-        $this->assertCount(5,
-            $this->usercardRepository->cardIdByUser(1));
+        $this->assertIsInt(count($this->usercardRepository->cardIdByUser(1)));
     }
 
     /**
@@ -68,9 +67,10 @@ class UserCardRepositoryTest extends TestCase
     public function testCreate():void
     {
         $this->usercardRepository->create([
-            'user_id' => '3',
+            'user_id' => '0',
             'card_id' => '100'
         ]);
-        $this->assertTrue((bool) UserCard::where('user_id', 3)->get());
+        $this->assertTrue((bool) UserCard::where('user_id', 0)->get());
+        UserCard::where('user_id', 0)->delete();
     }
 }
