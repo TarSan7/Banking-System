@@ -44,7 +44,7 @@ class CreateCardsTable extends Migration
             'number' => $number,
             'cvv' => rand(100, 999),
             'expires_end' => date('Y-m-d', strtotime( '+'.mt_rand(0,300).' days')),
-            'sum' => 10000000000000000000000000000,
+            'sum' => 1000000000,
             'currency' => $currency
         ));
     }

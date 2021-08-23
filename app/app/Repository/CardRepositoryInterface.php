@@ -79,6 +79,13 @@ interface CardRepositoryInterface
     public function getGeneralCardNum($numberFrom): String;
 
     /**
+     * @param float $sum
+     * @param string $currency
+     * @return bool
+     */
+    public function checkGeneralSum($sum, $currency): bool;
+
+    /**
      * @param integer $id
      * @param float $sum
      * @return bool

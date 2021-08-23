@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Card;
 use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
@@ -102,6 +103,10 @@ class DepositService
                 return ['error', self::RESPONSES['currency']];
             } elseif ($this->newDeposit($deposit, $id)) {
                 $this->cardRepository->updateSum($deposit['numberFrom'], $deposit['sum']);
+                $bankSum = Card::where('type', 'general')->where('currency', $deposit['currency'])->get('sum')[0]['sum'];
+                Card::where('type', 'general')->where('currency', $deposit['currency'])->
+                    update(['sum' => $bankSum + $deposit['sum']]);
+
                 $this->transferRepository->create([
                     'card_from' => $cardNum,
                     'card_to' => 'Bank',

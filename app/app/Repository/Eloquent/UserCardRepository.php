@@ -33,7 +33,7 @@ class UserCardRepository extends BaseRepository implements UserCardRepositoryInt
      */
     public function cards($id): bool
     {
-        return $this->model->where('card_id', $id)->exists();
+        return (bool) $this->model->where('card_id', $id)->get();
     }
 
     /**

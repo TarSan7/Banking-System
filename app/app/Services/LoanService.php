@@ -23,7 +23,8 @@ class LoanService
     const RESPONSES = array(
         'form' => 'An error occurred!',
         'done' => 'Done!',
-        'tooMuch' => 'Too much loans for one User!'
+        'tooMuch' => 'Too much loans for one User!',
+        'money' => 'Bank doesn`t have so much money'
     );
 
     /**
@@ -41,14 +42,6 @@ class LoanService
         $this->activeLoanRepository = $activeLoanRepository;
         $this->cardRepository = $cardRepository;
     }
-
-//    /**
-//     * @return int
-//     */
-//    public function userId(): int
-//    {
-//        return Auth::user()->id;
-//    }
 
     /**
      * Get all existing loans
@@ -75,8 +68,12 @@ class LoanService
      */
     public function newLoan($card, $id): bool
     {
-        return $this->loanRepository
-            ->newLoan($id, Arr::get($card, 'sum', null), Arr::get($card, 'id', null), Auth::id()) ?? false;
+        return $this->loanRepository->newLoan(
+            $id,
+            Arr::get($card, 'sum', null),
+            Arr::get($card, 'id', null),
+            Auth::id(),
+        ) ?? false;
     }
 
     /**
@@ -90,6 +87,8 @@ class LoanService
             $card = $this->cardService->newCreditCard($sum, $id);
             if (!$card) {
                 return ['error', self::RESPONSES['form']];
+            } elseif (!$this->cardRepository->checkGeneralSum($sum, Arr::get($card, 'currency', null))) {
+                return ['error', self::RESPONSES['money']];
             } elseif ($this->newLoan($card, $id)) {
                 return ['success', self::RESPONSES['done']];
             } else {

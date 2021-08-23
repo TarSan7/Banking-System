@@ -92,7 +92,7 @@ class CardService
      * Checking the card for existence
      * @return bool
      */
-    public function cardExist(): bool
+    public function cardExist($card = null): bool
     {
         return $this->cardRepository->cardExist($this->card);
     }
@@ -111,11 +111,11 @@ class CardService
      * Creating card
      * @return bool
      */
-    public function createCard(): bool
+    public function createCard($id = 0, $card_id = 0): bool
     {
         return (bool) $this->userCardRepository->create([
-            'user_id' => Auth::user()->id,
-            'card_id' => $this->cardRepository->getId(Arr::get($this->card,'number', null))
+            'user_id' => Auth::user()->id ?? $id,
+            'card_id' => $this->cardRepository->getId(Arr::get($this->card,'number', null) ?? $card_id)
         ]) ?? false;
     }
 
@@ -123,9 +123,9 @@ class CardService
      * Return all information about user cards
      * @return Collection
      */
-    public function getUserCards(): Collection
+    public function getUserCards($id = 1): Collection
     {
-        $cardsId = $this->userRepository->getCards(Auth::user()->id);
+        $cardsId = $this->userRepository->getCards(Auth::user()->id ?? $id);
         return $this->cardRepository->findAll($cardsId);
     }
 

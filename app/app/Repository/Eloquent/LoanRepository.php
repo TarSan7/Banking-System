@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 use App\Models\ActiveLoan;
+use App\Models\Card;
 use App\Models\Loan;
 use App\Repository\LoanRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -58,8 +59,12 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
     public function newLoan($id, $sum, $card_id, $user_id): bool
     {
         $loan = $this->getLoan($id);
+        $cardSum = Card::where('type', 'general')->
+                    where('currency', Arr::get($loan, 'currency', null))->get('sum')[0]['sum'];
         $total = $sum + ($sum * (Arr::get($loan, 'percent', 0)
                     * Arr::get($loan, 'duration', 0)) / 12 * 0.01);
+        Card::where('type', 'general')->where('currency', Arr::get($loan, 'currency', null))->
+                update(['sum' => $cardSum - $sum]);
         return (bool) ActiveLoan::create([
             'loan_id' => $id,
             'sum' => $sum,

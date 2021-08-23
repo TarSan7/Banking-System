@@ -85,6 +85,6 @@ class ActiveDepositRepositoryTest extends TestCase
      */
     public function testUserDeposits(): void
     {
-        $this->assertCount(1, $this->activeDepositRepository->userDeposits(1));
+        $this->assertIsObject($this->activeDepositRepository->userDeposits(1));
     }
 }

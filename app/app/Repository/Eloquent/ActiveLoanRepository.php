@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent;
 use App\Models\ActiveLoan;
 use App\Models\Card;
 use App\Models\CardTransfer;
+use App\Models\Loan;
 use App\Repository\ActiveLoanRepositoryInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -57,6 +58,11 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
                 $monthSum = $this->model->where('id', $loanId)->get('month_pay')[0]['month_pay'];
                 $this->model->where('id', $loanId)->update(['month_left' => $change]);
                 $this->cardRepository->updateSum($loan['card_id'], $monthSum);
+
+                $bankCurrency = Loan::find(ActiveLoan::find($loanId)['loan_id'])['currency'];
+                $bankSum = Card::where('type', 'general')->where('currency', $bankCurrency)->get('sum')[0]['sum'];
+                Card::where('type', 'general')->where('currency', $bankCurrency)->update(['sum' => $bankSum + $monthSum]);
+
                 CardTransfer::create([
                     'card_from' => $this->cardRepository->getNumber($loan['card_id']),
                     'card_to' => 'Bank',

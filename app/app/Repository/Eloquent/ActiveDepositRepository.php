@@ -57,7 +57,9 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     public function getMoney($deposit_id): void
     {
         $deposit = $this->find($deposit_id);
-        echo $deposit;
+        $bankSum = Card::where('type', 'general')->where('currency', $deposit['currency'])->get('sum')[0]['sum'];
+        Card::where('type', 'general')->where('currency', $deposit['currency'])->
+            update(['sum' => $bankSum - $deposit['total_sum']]);
         $this->cardRepository->updateSum(
             Arr::get($deposit, 'card_id', null),
             -Arr::get($deposit, 'total_sum', 0)
