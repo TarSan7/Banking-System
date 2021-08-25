@@ -10,7 +10,7 @@
 @section('content')
     <h1 class="index-title">Sign up</h1>
     <div class="container to-center">
-        <form action="{{ route('user.registration') }}" method="post">
+        <form action="{{ route('user.registration') }}" method="post" class="form-auth">
             @csrf
             <div class="form-group">
                 <label for="name" class="form-label">Your Name</label>

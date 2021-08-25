@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Commands\DepositCommand;
+use App\Console\Commands\LoanCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +15,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        LoanCommand::class,
+        DepositCommand::class
     ];
 
     /**
@@ -24,7 +27,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('loan:start')->daily();
+        $schedule->command('deposit:start')->daily();
     }
 
     /**

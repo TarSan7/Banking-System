@@ -7,6 +7,15 @@
     margin-bottom: 0;
 }
 
+.success{
+    color: green;
+    margin-bottom: 0;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 200;
+    font-size: 24px;
+}
+
 .index-title{
     text-align: center;
     font-family: 'Montserrat', sans-serif;
@@ -34,7 +43,9 @@
 
 .form{
     display: flex;
+    align-items: center;
     justify-content: center;
+    margin-bottom: 300px;
 }
 
 .form-group{
@@ -45,9 +56,21 @@
     max-width: 700px;
 }
 
+.bold{
+    font-weight: 500;
+    font-size: 30px;
+}
+
 .form-label{
     margin-bottom: 0;
     margin-right: 40px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 26px;
+}
+
+.form-label-r{
+    margin-bottom: 0;
     font-family: 'Montserrat', sans-serif;
     font-weight: 300;
     font-size: 26px;
@@ -74,6 +97,7 @@
     font-size: 20px;
     background-color: #a0aec0;
 }
+
 .form-button:hover{
     background-color: #718096;
 }
@@ -86,7 +110,24 @@
     background-color: beige;
 }
 
-.card-title, .card-info{
+.loans, .deposits{
+    min-width: 70%;
+}
+
+.loan, .deposit{
+    border-radius: 50px;
+    padding: 50px;
+    margin-bottom: 30px;
+    width: 100%;
+    background-color: #e2e8f0;
+    color: black;
+}
+
+.loan-title, .deposit-title{
+    text-align: center;
+}
+
+.card-title, .card-info, .loan-title, .deposit-title{
     text-decoration: none;
 }
 
@@ -109,7 +150,7 @@
     font-weight: 300;
     font-size: 26px;
     margin-top: 60px;
-    margin-bottom: 60px;
+    margin-bottom: 100px;
 }
 
 .card-link{
@@ -128,6 +169,30 @@
     justify-content: space-between;
 }
 
+.menu-transfer{
+    padding: 0;
+    margin-top: 20px;
+    text-decoration: none;
+    text-align: center;
+    margin-bottom: 450px;
+}
+
+.form-auth{
+    margin-bottom: 350px;
+}
+
+.transfer-form{
+    margin-bottom: 200px;
+}
+
+.loan-form{
+    margin-bottom: 250px;
+}
+
+#text-transfers{
+    font-size: 26px;
+}
+
 #menu{
     margin-bottom: 50px;
 }
@@ -141,10 +206,46 @@ p.navbar-brand{
     margin-top: 30px;
 }
 
-footer{
+.transactions{
+    padding-bottom: 200px;
+}
+
+.transaction{
+    margin-bottom: 80px;
+}
+
+.card-to{
+    color: green;
+}
+
+.card-from{
+    color: darkred;
+}
+
+.footer{
+    position: fixed;
+    bottom: 0;
     display: flex;
+    width:100%;
+    height:60px;
     justify-content: center;
-    margin-top: 400px;
-    height: 100px;
+    align-items: center;
     background-color: #0D6EFD;
+}
+
+#currency, #month{
+    width: 75px;
+}
+
+#duration, #percent{
+    width: 90px;
+}
+
+.duration, .percent{
+    display: flex;
+    justify-content: flex-end;
+}
+
+input.form-label, input.form-label-r{
+    border: none;
 }

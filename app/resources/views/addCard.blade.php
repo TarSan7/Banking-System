@@ -9,6 +9,9 @@
 
 @section('content')
     <h1 class="index-title">Add your card</h1>
+    @if (session()->has('success'))
+        <p class="success">{{ session('success') }}</p>
+    @endif
     <div class="container">
         <div class="form">
             <form action="{{ route('user.addCard') }}" method="post">
@@ -32,6 +35,9 @@
                 <div class="alert">{{ $message }}</div>
                 @enderror
                 @error('expires-end')
+                <div class="alert">{{ $message }}</div>
+                @enderror
+                @error('error')
                 <div class="alert">{{ $message }}</div>
                 @enderror
                 <div class="form-group" id="button">

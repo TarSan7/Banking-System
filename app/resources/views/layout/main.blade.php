@@ -18,8 +18,8 @@
 
     @yield('content')
 
-    <footer>
+    <nav class="footer">
         <p class="navbar-brand">@All rights served</p>
-    </footer>
+    </nav>
 </body>
 </html>
