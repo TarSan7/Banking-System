@@ -1,9 +1,17 @@
 name: bank
 recipe: laravel
 config:
-  webroot: .
+  php: '7.4'
+  webroot: /app/public
 
 services:
   database:
     type: mysql
     portforward: 3306
+  pma:
+    type: phpmyadmin
+    hosts:
+      - database
+proxy:
+  pma:
+    - pma.lndo.site

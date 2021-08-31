@@ -43,19 +43,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * @param $password
+     */
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = Hash::make($password);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function usercards()
     {
         return $this->HasMany(UserCard::class);
     }
 
-    public static function getCards($userId)
-    {
-        $cardsId = UserCard::select('card_id')->where('user_id', $userId)->get();
-        return $cardsId;
-    }
 }

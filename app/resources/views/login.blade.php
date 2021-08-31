@@ -11,7 +11,7 @@
 @section('content')
     <h1 class="index-title">Sign in</h1>
     <div class="container to-center">
-        <form action="{{ route('user.login') }}" method="post">
+        <form action="{{ route('user.login') }}" method="post" class="form-auth">
             @csrf
             <div class="form-group">
                 <label for="email" class="form-label">Your Email</label>

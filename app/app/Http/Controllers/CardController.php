@@ -3,40 +3,61 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddCardRequest;
-use App\Models\UserCard;
-use App\Models\Card;
-use Illuminate\Support\Facades\Auth;
+use App\Services\CardService;
+use App\Services\TransferService;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Arr;
+use Illuminate\View\View;
 
+/**
+ * Class CardController
+ * @package App\Http\Controllers
+ */
 class CardController extends Controller
 {
-    public function addCard(AddCardRequest $request)
+    /**
+     * @var TransferService
+     * @var CardService
+     */
+    private $transferService, $cardService;
+
+    /**
+     * @param TransferService $transferService
+     * @param CardService $cardService
+     */
+    public function __construct(TransferService $transferService, CardService $cardService)
     {
-        $validate = $request->validated();
-
-        if (!Card::where('number', $validate['number'])->where('cvv', $validate['cvv'])
-            ->where('expires_end', $validate['expires-end'])->exists()) {
-            return redirect(route('user.addCard'))->withErrors([
-                'number' => 'This card doesn`t exist! Try again!'
-            ]);
-        }
-        if (UserCard::cardsNumber($validate['number'])) {
-            return redirect(route('user.addCard'))->withErrors([
-                'number' => 'This card has already used!'
-            ]);
-        }
-        $uCard = UserCard::create(['user_id' => Auth::user()->id,
-                 'card_id' => UserCard::cardsId($validate['number'])]);
-        if ($uCard) {
-            return redirect(route('user.private'));
-        }
-
-        return redirect(route('user.login'))->withErrors([
-            'formError' => 'An error occurred while saving data!'
-        ]);
+        $this->transferService = $transferService;
+        $this->cardService = $cardService;
     }
 
-    public function cardInfo($cardId)
+    /**
+     * @param AddCardRequest $request
+     * @return Application|RedirectResponse|Redirector
+     */
+    public function add(AddCardRequest $request)
     {
-        return view('oneCard', ['card' => Card::find($cardId)]);
+        $this->cardService->setCard($request->validated());
+        $response = $this->cardService->check();
+        if (Arr::get($response, 0, null) === 'success') {
+            return redirect(route('user.addCard'))->with('success', Arr::get($response, 1, null));
+        } else {
+            return redirect(route('user.addCard'))->withErrors(['error' => Arr::get($response, 1, null)]);
+        }
+    }
+
+    /**
+     * @param int $cardId
+     * @return Application|Factory|View
+     */
+    public function info($cardId)
+    {
+        return view('oneCard', [
+            'card' => $this->cardService->getCardById($cardId),
+            'transactions' => $this->transferService->getCardTransfers($cardId)
+        ]);
     }
 }
