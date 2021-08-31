@@ -72,7 +72,7 @@ class LoanService
             $id,
             Arr::get($card, 'sum', null),
             Arr::get($card, 'id', null),
-            Auth::id(),
+            Auth::user()->id ?? 0,
         ) ?? false;
     }
 
@@ -104,7 +104,7 @@ class LoanService
      */
     public function countUserLoans(): int
     {
-        return count($this->activeLoanRepository->userLoans(Auth::user()->id));
+        return count($this->activeLoanRepository->userLoans(Auth::user()->id ?? 0));
     }
 
     /**
@@ -112,7 +112,7 @@ class LoanService
      */
     public function getUserLoans(): array
     {
-        $loans = $this->activeLoanRepository->userLoans(Auth::user()->id);
+        $loans = $this->activeLoanRepository->userLoans(Auth::user()->id ?? 0);
         $rez = array();
         foreach ($loans as $loan) {
             $base = $this->loanRepository->getLoan(Arr::get($loan, 'loan_id', null));

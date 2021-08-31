@@ -1,23 +1,54 @@
 @extends('layout.main')
-@extends('layout.headerPrivate')
 
-@section('title') Take deposit @endsection
+@section('title') {{ __('takeDeposit.take') }} @endsection
 
 @section('style')
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="/css/main.css">
 @endsection
 
 @section('content')
-    <h1 class="index-title">Calculate your deposit<br>"{{ $deposit['title'] }}"</h1>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ route('user.private', app()->getLocale()) }}">YourBank</a>
+            <div class="d-flex">
+                <div class="nav-item active">
+                    <div class="nav-item">
+                        <a class="nav-link active" href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), ['en', 'id' => $deposit['id']])}}">
+                    <span class="sr-only">
+                        EN
+                    </span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link active" href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), ['ru', 'id' => $deposit['id']]) }}">
+                    <span class="sr-only">
+                        RU
+                    </span>
+                        </a>
+                    </div>
+                    <a class="nav-link" href="{{ route('user.private', app()->getLocale()) }}"><span class="sr-only">{{ __('index.home') }}</span></a>
+                    <a class="nav-link" href="{{ route('user.logout', app()->getLocale()) }}"><span class="sr-only">{{ __('index.out') }}</span></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <a href="{{ url()->previous(app()->getLocale()) }}" class="arrow">
+            <img src="/img/arr.png" alt="arrow" class="arrow">
+        </a>
+    </div>
+
+    <h1 class="index-title">{{ __('takeDeposit.calculate') }}<br>"{{ $deposit['title'] }}"</h1>
     @if (session()->has('success'))
         <p class="success">{{ session('success') }}</p>
     @endif
     <div class="container">
         <div class="to-center">
-            <form action="{{ route('user.takeDeposit', ['id' => $deposit['id']]) }}" method="post" class="deposit-form">
+            <form action="{{ route('user.takeDeposit', [app()->getLocale(), 'id' => $deposit['id']]) }}"
+                  method="post" class="deposit-form">
                 @csrf
                 <div class="form-group">
-                    <label for="numberFrom" class="form-label">Card from</label>
+                    <label for="numberFrom" class="form-label">{{ __('takeDeposit.from') }}</label>
                     <select name="numberFrom" id="numberFrom" class="input-field" required>
                         @foreach($cards as $card)
                             <option value="{{ $card['id'] }}"> {{ $card['number'] }} </option>
@@ -25,7 +56,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="sum" class="form-label"> Sum </label>
+                    <label for="sum" class="form-label"> {{ __('takeDeposit.sum') }} </label>
                     <input type="number" id="deposit-sum" min="100" step="1" max="{{ $deposit['max_sum'] }}"
                            name="sum" class="input-field" placeholder="Sum" required>
                     <select name="currency" id="currency" class="input-field" required>
@@ -38,7 +69,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="duration" class="form-label"> Duration</label>
+                    <label for="duration" class="form-label"> {{ __('takeDeposit.duration') }}</label>
                     <select name="duration" id="duration" class="input-field" required>
                         @for ($i = $deposit['min_duration']; $i <= $deposit['max_duration']; $i++)
                             <option value="{{ $i }}"> {{ $i }} mm</option>
@@ -47,18 +78,18 @@
                 </div>
                 <div class="form-group">
                     <fieldset>
-                        <label for="duration" class="form-label"> Percents:</label>
+                        <label for="duration" class="form-label"> {{ __('takeDeposit.percents') }}:</label>
                         <div class="check">
                             <input class="form-label" type="radio" id="early_percent"
                                    name="percents" value="{{ $deposit['early_percent'] }}" checked>
-                            <label class="form-label" for="early_percent">Early percent:
+                            <label class="form-label" for="early_percent">{{ __('takeDeposit.early') }}
                                 <span class="bold">{{ $deposit['early_percent'] }}% </span>
                             </label>
                         </div>
                         <div class="check">
                             <input class="form-label" type="radio" id="intime_percent"
                                    name="percents" value="{{ $deposit['intime_percent'] }}">
-                            <label class="form-label" for="intime_percent">Intime percent:
+                            <label class="form-label" for="intime_percent">{{ __('takeDeposit.intime') }}
                                 <span class="bold">{{ $deposit['intime_percent'] }}% </span>
                             </label>
                         </div>
@@ -71,7 +102,7 @@
                 <div class="alert">{{ $message }}</div>
                 @enderror
                 <div class="form-group" id="button">
-                    <button name="send" type="submit" class="form-button">See details</button>
+                    <button name="send" type="submit" class="form-button">{{ __('takeDeposit.see') }}</button>
                 </div>
             </form>
         </div>

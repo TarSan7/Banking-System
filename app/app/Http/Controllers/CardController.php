@@ -43,9 +43,9 @@ class CardController extends Controller
         $this->cardService->setCard($request->validated());
         $response = $this->cardService->check();
         if (Arr::get($response, 0, null) === 'success') {
-            return redirect(route('user.addCard'))->with('success', Arr::get($response, 1, null));
+            return redirect(route('user.addCard', app()->getLocale()))->with('success', Arr::get($response, 1, null));
         } else {
-            return redirect(route('user.addCard'))->withErrors(['error' => Arr::get($response, 1, null)]);
+            return redirect(route('user.addCard', app()->getLocale()))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 
@@ -53,9 +53,10 @@ class CardController extends Controller
      * @param int $cardId
      * @return Application|Factory|View
      */
-    public function info($cardId)
+    public function info($lang, $cardId)
     {
         return view('oneCard', [
+            app()->getLocale(),
             'card' => $this->cardService->getCardById($cardId),
             'transactions' => $this->transferService->getCardTransfers($cardId)
         ]);

@@ -21,76 +21,81 @@ use App\Http\Controllers\OtherTransferController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::redirect('/', '/en');
 
-Route::get('/', function () {
-    return view('index');
-})->name('home');
+Route::prefix('{locale}')->group(function () {
 
-Route::name('user.') -> group(function () {
-    Route::get('/private', [LoginController::class, 'toPrivate'])
-        ->middleware('auth')->name('private');
+    Route::get('/', function () {
+        return view('index');
+    })->name('home');
 
-    Route::get('/login', function () {
-        if (Auth::check()) {
-            return redirect(route('user.private'));
-        }
-        return view('login');
-    })->name('login');
+    Route::name('user.') -> group(function () {
+        Route::get('/private', [LoginController::class, 'toPrivate'])
+            ->middleware('auth')->name('private');
 
-    Route::post('/login', [LoginController::class, 'login']);
+        Route::get('/login', function () {
+            if (Auth::check()) {
+                return redirect(route('user.private', app()->getLocale()));
+            }
+            return view('login');
+        })->name('login');
 
-    Route::get('/logout', function () {
-        Auth::logout();
-        return redirect(route('home'));
-    })->name('logout');
+        Route::post('/login', [LoginController::class, 'login']);
 
-    Route::get('/registration', function () {
-        if (Auth::check()) {
-            return redirect(route('user.private'));
-        }
-        return view('registration');
-    })->name('registration');
+        Route::get('/logout', function () {
+            Auth::logout();
+            return redirect(route('home', app()->getLocale()));
+        })->name('logout');
 
-    Route::post('/registration', [RegisterController::class, 'saveUser']);
+        Route::get('/registration', function () {
+            if (Auth::check()) {
+                return redirect(route('user.private', app()->getLocale()));
+            }
+            return view('registration');
+        })->name('registration');
 
-    Route::get('/addCard', function () {
-        return view('addCard');
-    })->name('addCard');
+        Route::post('/registration', [RegisterController::class, 'saveUser']);
 
-    Route::post('/addCard', [CardController::class, 'add']);
+        Route::get('/addCard', function () {
+            return view('addCard');
+        })->name('addCard');
 
-    Route::get('/card/{id}', [CardController::class, 'info'])->name('card');
+        Route::post('/addCard', [CardController::class, 'add']);
 
-    Route::get('/transfers', function () {
-        return view('chooseTransfer');
-    })->name('transfers');
+        Route::get('/card/{id}', [CardController::class, 'info'])->name('card');
 
-    Route::get('/cardTransfer', [CardTransferController::class, 'index'])->name('cardTransfer');
+        Route::get('/transfers', function () {
+            return view('chooseTransfer');
+        })->name('transfers');
 
-    Route::post('/cardTransfer', [CardTransferController::class, 'make']);
+        Route::get('/cardTransfer', [CardTransferController::class, 'index'])->name('cardTransfer');
 
-    Route::get('/otherTransfer/{id}', [OtherTransferController::class, 'index'])->name('otherTransfer');
+        Route::post('/cardTransfer', [CardTransferController::class, 'make']);
 
-    Route::post('/otherTransfer/{id}', [OtherTransferController::class, 'make']);
+        Route::get('/otherTransfer/{id}', [OtherTransferController::class, 'index'])->name('otherTransfer');
 
-    Route::get('/allLoans', [LoanController::class, 'all'])->name('allLoans');
+        Route::post('/otherTransfer/{id}', [OtherTransferController::class, 'make']);
 
-    Route::get('/takeLoan/{id}', [LoanController::class, 'take'])->name('takeLoan');
+        Route::get('/allLoans', [LoanController::class, 'all'])->name('allLoans');
 
-    Route::post('/takeLoan/{id}', [LoanController::class, 'details']);
+        Route::get('/takeLoan/{id}', [LoanController::class, 'take'])->name('takeLoan');
 
-    Route::post('/acceptLoan/{id}', [LoanController::class, 'accept'])->name('acceptLoan');
+        Route::post('/takeLoan/{id}', [LoanController::class, 'details']);
 
-    Route::get('/transactions', [TransactionController::class, 'all'])->name('transactions');
+        Route::post('/acceptLoan/{id}', [LoanController::class, 'accept'])->name('acceptLoan');
 
-    Route::get('/allDeposits', [DepositController::class, 'all'])->name('allDeposits');
+        Route::get('/transactions', [TransactionController::class, 'all'])->name('transactions');
 
-    Route::get('/takeDeposit/{id}', [DepositController::class, 'take'])->name('takeDeposit');
+        Route::get('/allDeposits', [DepositController::class, 'all'])->name('allDeposits');
 
-    Route::post('/takeDeposit/{id}', [DepositController::class, 'details']);
+        Route::get('/takeDeposit/{id}', [DepositController::class, 'take'])->name('takeDeposit');
 
-    Route::post('/acceptDeposit/{id}', [DepositController::class, 'accept'])->name('acceptDeposit');
+        Route::post('/takeDeposit/{id}', [DepositController::class, 'details']);
 
-    Route::post('/closeDeposit/{id}', [DepositController::class, 'close'])->name('closeDeposit');
+        Route::post('/acceptDeposit/{id}', [DepositController::class, 'accept'])->name('acceptDeposit');
 
+        Route::post('/closeDeposit/{id}', [DepositController::class, 'close'])->name('closeDeposit');
+
+    });
 });
+

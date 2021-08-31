@@ -54,7 +54,6 @@ class CardServiceTest extends TestCase
     public function testCardExists(): void
     {
         $this->cardService->setCard(Card::find(1));
-
         $this->assertTrue($this->cardService->cardExist());
     }
 
@@ -71,9 +70,9 @@ class CardServiceTest extends TestCase
      */
     public function testCardAdded(): void
     {
-        $this->cardService->setCard(Card::find(1));
+        $this->cardService->setCard(['number' => '0000000000000000']);
 
-        $this->assertTrue($this->cardService->cardAdded());
+        $this->assertFalse($this->cardService->cardAdded());
     }
 
     /**

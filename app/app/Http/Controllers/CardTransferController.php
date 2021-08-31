@@ -39,7 +39,7 @@ class CardTransferController extends Controller
      */
     public function index()
     {
-        return view('cardTransfer', ['cards' => $this->cardService->getUserCards()]);
+        return view('cardTransfer', [app()->getLocale(), 'cards' => $this->cardService->getUserCards()]);
     }
 
     /**
@@ -51,9 +51,9 @@ class CardTransferController extends Controller
         $this->transferService->setInfo($request->validated());
         $response = $this->transferService->cardCheck();
         if (Arr::get($response, 0, null) === 'success') {
-            return redirect(route('user.cardTransfer'))->with('success', Arr::get($response, 1, null));
+            return redirect(route('user.cardTransfer', app()->getLocale()))->with('success', Arr::get($response, 1, null));
         } else {
-            return redirect(route('user.cardTransfer'))->withErrors(['error' => Arr::get($response, 1, null)]);
+            return redirect(route('user.cardTransfer', app()->getLocale()))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 

@@ -58,7 +58,7 @@ class TransferService
         $this->tranInfo = $info;
         if ($id) {
             $this->phoneNumber = Arr::get($this->tranInfo, 'numberTo', null);
-            $this->tranInfo['comment'] .= "To: " . Arr::get($this->tranInfo, 'numberTo', null);
+            $this->tranInfo['comment'] .= __('cardTrans.to') . Arr::get($this->tranInfo, 'numberTo', null);
             $this->tranInfo['numberTo'] = $this->cardRepository
                 ->getGeneralCardNum(Arr::get($this->tranInfo, 'numberFrom', null));
         }

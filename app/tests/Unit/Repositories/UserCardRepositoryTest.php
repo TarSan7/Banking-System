@@ -35,7 +35,7 @@ class UserCardRepositoryTest extends TestCase
      */
     public function testCards(): void
     {
-        $this->assertTrue($this->usercardRepository->cards(1));
+        $this->assertFalse($this->usercardRepository->cards(1));
     }
 
     /**

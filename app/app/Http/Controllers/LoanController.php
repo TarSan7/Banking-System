@@ -45,9 +45,9 @@ class LoanController extends Controller
      * @param integer $id
      * @return Application|Factory|View
      */
-    public function take($id)
+    public function take($lang, $id)
     {
-        return view('takeLoan', ['loan' => $this->loanService->oneLoan($id)]);
+        return view('takeLoan', [app()->getLocale(), 'loan' => $this->loanService->oneLoan($id)]);
     }
 
     /**
@@ -55,9 +55,10 @@ class LoanController extends Controller
      * @param integer $id
      * @return Application|Factory|View
      */
-    public function details(Request $request, $id)
+    public function details(Request $request, $lang, $id)
     {
         return view('loanInfo', [
+            app()->getLocale(),
             'loan' => $this->loanService->oneLoan($id),
             'sum' => Arr::get($request, 'sum', null),
             'id' => $id
@@ -69,15 +70,15 @@ class LoanController extends Controller
      * @param integer $id
      * @return Application|RedirectResponse|Redirector
      */
-    public function accept(Request $request, $id)
+    public function accept(Request $request, $lang, $id)
     {
         $response = $this->loanService->accept(Arr::get($request, 'sum', null), $id);
         if (Arr::get($response, 0, null) === 'success') {
             return redirect(route('user.takeLoan',
-                ['id' => $id]))->with('success', Arr::get($response, 1, null));
+                [app()->getLocale(), 'id' => $id]))->with('success', Arr::get($response, 1, null));
         } else {
             return redirect(route('user.takeLoan',
-                ['id' => $id]))->withErrors(['error' => Arr::get($response, 1, null)]);
+                [app()->getLocale(), 'id' => $id]))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 }

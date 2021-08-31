@@ -78,7 +78,7 @@ class DepositService
         return $this->depositRepository->newDeposit(
             $id,
             $deposit,
-            Auth::id()
+            Auth::id() ?? 0
         ) ?? false;
     }
 
@@ -91,20 +91,19 @@ class DepositService
     {
         if ($this->countUserDeposits() < 3) {
             $currency = Arr::get($deposit, 'currency', null);
-            $sum = Arr::get($deposit, 'sum', 0);
+            $sum = Arr::get($deposit, 'sum', null);
             $cardNum = Arr::get($deposit, 'numberFrom', null);
             $cardSum = $this->cardRepository->getSumTo(Arr::get($deposit, 'numberFrom', null));
             $numberFrom = Arr::get($deposit, 'numberFrom', null);
             $deposit['numberFrom'] = $this->cardRepository->getId($numberFrom);
             if ($cardSum < $sum) {
                 return ['error', Arr::get(self::RESPONSES, 'money', null)];
-            } elseif ($this->cardRepository->getCurrencyFrom($numberFrom) != $currency) {
+            } elseif ($this->cardRepository->getCurrencyFrom(Arr::get($deposit, 'numberFrom', null)) != $currency) {
                 return ['error', Arr::get(self::RESPONSES, 'currency', null)];
             } elseif ($this->newDeposit($deposit, $id)) {
-                $this->cardRepository->updateSum($numberFrom, $sum);
+                $this->cardRepository->updateSum(Arr::get($deposit, 'numberFrom', null), $sum);
                 $bankSum = $this->cardRepository->generalSumByCurrency($currency);
                 $this->cardRepository->updateGeneral($currency, ['sum' => $bankSum + $sum]);
-
                 $this->transferRepository->create([
                     'card_from' => $cardNum,
                     'card_to' => 'Bank',
