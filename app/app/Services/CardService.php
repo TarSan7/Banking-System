@@ -137,7 +137,8 @@ class CardService
     public function newCreditCard($sum, $loanId): ?Model
     {
         $userCards = array();
-        foreach ($this->userCardRepository->cardIdByUser(Auth::user()->id ?? 0) as $one) {
+        $allCardsId = $this->userCardRepository->cardIdByUser(Auth::user()->id ?? 0) ?? [];
+        foreach ($allCardsId as $one) {
             $userCards[] = Arr::get($one, 'card_id', null);
         }
         $ifCard = $this->cardRepository->credit($userCards, $loanId);

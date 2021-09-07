@@ -49,8 +49,11 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
      * @param array $loans
      * @return bool
      */
-    public function decrease($loans): bool
+    public function decrease($loans = null): bool
     {
+        if (!$loans) {
+            $loans = $this->model->all();
+        }
         foreach ($loans as $loan) {
             $loanId = Arr::get($loan, 'id', null);
             $monthLeft = Arr::get($this->model->where('id', $loanId)->first(), 'month_left', null);
@@ -87,9 +90,13 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
      * @param int $id
      * @return bool
      */
-    public function delete($id): bool
+    public function delete($id = null): bool
     {
-        $this->model->where('id', $id)->delete();
+        if (!$id) {
+            $this->model->delete();
+        } else {
+            $this->model->where('id', $id)->delete();
+        }
         return true;
     }
 

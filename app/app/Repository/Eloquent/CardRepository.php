@@ -49,9 +49,10 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function cardExist($validate): bool
     {
-        return (bool) $this->model->where('number', Arr::get($validate, 'number', null))
+        $card = $this->model->where('number', Arr::get($validate, 'number', null))
             ->where('cvv', Arr::get($validate, 'cvv', null))
-            ->where('expires_end', Arr::get($validate, 'expires-end', null));
+            ->where('expires_end', Arr::get($validate, 'expires-end', null))->get();
+        return (bool) count($card);
     }
 
     /**
@@ -195,7 +196,8 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function generalSumByCurrency($currency): int
     {
-        return $this->getGeneral()->where('currency', $currency)->first()->sum;
+        $genSum =  $this->getGeneral()->where('currency', $currency)->first();
+        return Arr::get($genSum,'sum', 0);
     }
 
     /**

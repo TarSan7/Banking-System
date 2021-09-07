@@ -10,11 +10,14 @@ use App\Repository\Eloquent\ActiveLoanRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\LoanRepository;
 use App\Repository\Eloquent\TransferRepository;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class LoanRepositoryTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @var LoanRepository
      */
@@ -43,7 +46,7 @@ class LoanRepositoryTest extends TestCase
      */
     public function testAll(): void
     {
-        $this->assertEquals(Loan::all(), $this->loanRepository->all());
+        $this->assertCount(5, $this->loanRepository->all());
     }
 
     /**
@@ -68,12 +71,8 @@ class LoanRepositoryTest extends TestCase
      */
     public function testNewLoan(): void
     {
-        if ($this->loanRepository->newLoan(1, 250, 2, 0)) {
-            $this->assertTrue(ActiveLoan::where('loan_id', 1)->where('sum', 250)
-                ->where('card_id', 2)->where('user_id', 0)->exists());
-            $loan = ActiveLoan::where('loan_id', 1)->where('sum', 250)->where('user_id', 0)->first();
-            CardTransfer::where('user_id', 0)->delete();
-            $this->activeLoanRepository->delete(Arr::get($loan, 'id', null));
+        if ($this->loanRepository->newLoan(1, 250, 2, 1)) {
+            $this->assertCount(1, $this->activeLoanRepository->userLoans(1));
         }
     }
 }

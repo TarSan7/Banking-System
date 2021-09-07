@@ -53,7 +53,11 @@ class DepositRepository extends BaseRepository implements DepositRepositoryInter
         $percent = Arr::get($deposit, 'percent', 0);
         $duration = Arr::get($deposit, 'duration', null);
         $sum = Arr::get($deposit, 'sum', 0);
-        $monthPay = round(($percent * 0.01 * $sum) / $duration, 2);
+        if ($duration === 0) {
+            $monthPay = 0;
+        } else {
+            $monthPay = round(($percent * 0.01 * $sum) / $duration, 2);
+        }
         $earlyPercent = Arr::get($baseDeposit, 'early_percent', null) == $percent;
         $intimePercent = Arr::get($baseDeposit, 'intime_percent', null) == $percent;
 

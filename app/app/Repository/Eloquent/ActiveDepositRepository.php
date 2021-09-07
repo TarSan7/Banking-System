@@ -74,20 +74,28 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
      * @param int $id
      * @return bool
      */
-    public function delete($id): bool
+    public function delete($id = null): bool
     {
-        return (bool) $this->model->where('id', $id)->delete();
+        if ($id === null) {
+            $this->model->delete();
+        } else {
+            $this->model->where('id', $id)->delete();
+        }
+        return true;
     }
 
     /**
      * @param array $deposits
      * @return bool
      */
-    public function decrease($deposits): bool
+    public function decrease($deposits = null): bool
     {
+        if (!$deposits) {
+            $deposits = $this->model->all();
+        }
         foreach ($deposits as $deposit) {
-            $depositId = Arr::get($deposit, 'id', 0);
-            $monthLeft = Arr::get($this->model->where('id', $depositId)->first(), 'month_left', null);
+            $depositId = Arr::get($deposit, 'id', 1);
+            $monthLeft = Arr::get($this->model->where('id', $depositId)->first(), 'month_left', 1);
             $createDate = date('d', strtotime(Arr::get($deposit, 'created_at', null)));
             if ($monthLeft <= 0) {
                 $this->getMoney($depositId);

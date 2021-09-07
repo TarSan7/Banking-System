@@ -58,7 +58,7 @@ class TransferService
         $this->tranInfo = $info;
         if ($id) {
             $this->phoneNumber = Arr::get($this->tranInfo, 'numberTo', null);
-            $this->tranInfo['comment'] .= __('cardTrans.to') . Arr::get($this->tranInfo, 'numberTo', null);
+            $this->tranInfo['comment'] .= 'To: ' . Arr::get($this->tranInfo, 'numberTo', null);
             $this->tranInfo['numberTo'] = $this->cardRepository
                 ->getGeneralCardNum(Arr::get($this->tranInfo, 'numberFrom', null));
         }
@@ -97,7 +97,7 @@ class TransferService
      */
     public function compareCurrency(): bool
     {
-        if ($this->cardRepository->getCurrencyFrom(Arr::get($this->tranInfo, 'numberFrom', null)) ==
+        if ($this->cardRepository->getCurrencyFrom(Arr::get($this->tranInfo, 'numberFrom', null)) ===
             $this->cardRepository->getCurrencyTo(Arr::get($this->tranInfo, 'numberTo', null))) {
             return true;
         }
@@ -110,7 +110,7 @@ class TransferService
      */
     public function compareNumbers(): bool
     {
-        if ($this->cardRepository->getId(Arr::get($this->tranInfo, 'numberTo', null)) ==
+        if ($this->cardRepository->getId(Arr::get($this->tranInfo, 'numberTo', null)) ===
             Arr::get($this->tranInfo, 'numberFrom', null)) {
             return true;
         }
@@ -142,7 +142,7 @@ class TransferService
             'currency' => $this->cardRepository
                 ->getCurrencyFrom(Arr::get($this->tranInfo, 'numberFrom', null)),
             'comment' => Arr::get($this->tranInfo, 'comment', null),
-            'user_id' => Auth::user()->id
+            'user_id' => Auth::user()->id ?? 0
         ]) ?? false;
     }
 

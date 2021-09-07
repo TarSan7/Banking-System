@@ -96,6 +96,7 @@ class DepositService
             $cardSum = $this->cardRepository->getSumTo(Arr::get($deposit, 'numberFrom', null));
             $numberFrom = Arr::get($deposit, 'numberFrom', null);
             $deposit['numberFrom'] = $this->cardRepository->getId($numberFrom);
+
             if ($cardSum < $sum) {
                 return ['error', Arr::get(self::RESPONSES, 'money', null)];
             } elseif ($this->cardRepository->getCurrencyFrom(Arr::get($deposit, 'numberFrom', null)) != $currency) {
@@ -104,16 +105,9 @@ class DepositService
                 $this->cardRepository->updateSum(Arr::get($deposit, 'numberFrom', null), $sum);
                 $bankSum = $this->cardRepository->generalSumByCurrency($currency);
                 $this->cardRepository->updateGeneral($currency, ['sum' => $bankSum + $sum]);
-                $this->transferRepository->create([
-                    'card_from' => $cardNum,
-                    'card_to' => 'Bank',
-                    'date' => date('Y-m-d H:i:s'),
-                    'sum' => $sum,
-                    'new_sum' => $sum,
-                    'currency' => $currency,
-                    'comment' => 'Take a deposit',
-                    'user_id' => Auth::user()->id ?? 0
-                ]);
+
+                $this->createDepositTransfer($cardNum, $sum, $currency);
+
                 return ['success', Arr::get(self::RESPONSES ,'done', null)];
             } else {
                 return ['error', Arr::get(self::RESPONSES, 'form', null)];
@@ -121,6 +115,25 @@ class DepositService
         } else {
             return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
         }
+    }
+
+    /**
+     * @param string $cardNum
+     * @param float $sum
+     * @param string $currency
+     */
+    public function createDepositTransfer($cardNum, $sum, $currency)
+    {
+        $this->transferRepository->create([
+            'card_from' => $cardNum,
+            'card_to' => 'Bank',
+            'date' => date('Y-m-d H:i:s'),
+            'sum' => $sum,
+            'new_sum' => $sum,
+            'currency' => $currency,
+            'comment' => 'Take a deposit',
+            'user_id' => Auth::user()->id ?? 0
+        ]);
     }
 
     /**

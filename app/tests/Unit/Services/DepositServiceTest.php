@@ -3,23 +3,41 @@
 namespace Tests\Unit;
 
 use App\Models\ActiveDeposit;
-use App\Models\Card;
-use App\Models\CardTransfer;
 use App\Models\Deposit;
 use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
 use App\Repository\Eloquent\TransferRepository;
 use App\Services\DepositService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
+use \Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class DepositServiceTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @var DepositService
      */
     private $depositService;
+    /**
+     * @var CardRepository|mixed|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $mockCardRepository;
+    /**
+     * @var TransferRepository|mixed|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $mockTransferRepository;
+    /**
+     * @var ActiveDepositRepository|mixed|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $mockActiveDepositRepository;
+    /**
+     * @var DepositRepository|mixed|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $mockDepositRepository;
 
     /**
      * Set up the test environment.
@@ -27,15 +45,17 @@ class DepositServiceTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        $this->mockCardRepository = $this->createMock(CardRepository::class);
+        $this->mockTransferRepository = $this->createMock(TransferRepository::class);
+        $this->mockActiveDepositRepository = $this->createMock(ActiveDepositRepository::class);
+        $this->mockDepositRepository = $this->createMock(DepositRepository::class);
+
         $this->depositService = new DepositService(
-            new DepositRepository(new Deposit(), new ActiveDeposit()),
-            new ActiveDepositRepository(
-                new ActiveDeposit(),
-                new CardRepository(new Card()),
-                new TransferRepository(new CardTransfer())
-            ),
-            new CardRepository(new Card()),
-            new TransferRepository(new CardTransfer()),
+            $this->mockDepositRepository,
+            $this->mockActiveDepositRepository,
+            $this->mockCardRepository,
+            $this->mockTransferRepository,
         );
     }
 
@@ -44,7 +64,8 @@ class DepositServiceTest extends TestCase
      */
     public function testGetBaseDeposits(): void
     {
-        $this->assertCount(Deposit::all()->count(), $this->depositService->getBaseDeposits());
+        $this->mockDepositRepository->method('all')->willReturn(Deposit::all());
+        $this->assertCount(5, $this->depositService->getBaseDeposits());
     }
 
     /**
@@ -52,81 +73,91 @@ class DepositServiceTest extends TestCase
      */
     public function testOneDeposit(): void
     {
-        $this->assertEquals(Deposit::find(1), $this->depositService->oneDeposit(1));
+        $this->mockDepositRepository->method('find')->willReturn(new Deposit([
+            'id' => 1,
+            'title' => 'Junior',
+            'early_percent' => 6,
+            'intime_percent' => 7,
+            'min_duration' => 9,
+            'max_duration' => 12,
+            'max_sum' => 500000
+        ]));
+        $this->assertEquals('Junior', Arr::get($this->depositService->oneDeposit(1), 'title', null));
     }
 
+    /**
+     * Test accepting deposit
+     */
     public function testAccept(): void
     {
-        $arr = $this->depositService->accept([
+        $this->mockActiveDepositRepository->method('userDeposits')
+            ->willReturn(new Collection(), new Collection(), new Collection(), collect([1, 2, 3]), new Collection());
+        $this->mockCardRepository->method('getSumTo')->willReturn(0., 1000000000., 1000000000., 1000000000.);
+        $this->mockCardRepository->method('getId')->willReturn(2);
+        $this->mockCardRepository->method('getCurrencyFrom')->willReturn('EUR');
+        $this->mockCardRepository->method('updateSum')->willReturn(true);
+        $this->mockCardRepository->method('generalSumByCurrency')->willReturn(1000000);
+        $this->mockCardRepository->method('updateGeneral');
+        $this->mockDepositRepository->method('newDeposit')->willReturn(false, true, true);
+        $this->mockTransferRepository->method('create');
+
+        $deposit = array(
             'currency' => 'EUR',
             'sum' => 198,
             'numberFrom' => '0000000000000001',
             'percent' => 6,
             'duration' => 9
-        ], 1);
-        $this->assertEquals('success', Arr::get($arr, 0, null));
+        );
 
-        $arrError = $this->depositService->accept([
-            'currency' => 'UAH',
-            'sum' => 198,
-            'numberFrom' => '0000000000000001',
-            'percent' => 6,
-            'duration' => 9
-        ], 1);
-        $this->assertEquals('Different currencies.', Arr::get($arrError, 1, null));
+        $result = $this->depositService->accept($deposit, 1);
+        $this->assertEquals('Not enough money for deposit.', Arr::get($result, 1, null));
 
-        $arrSecError = $this->depositService->accept([
-            'currency' => 'EUR',
-            'sum' => 10000000000,
-            'numberFrom' => '0000000000000001',
-            'percent' => 6,
-            'duration' => 9
-        ], 1);
-        $this->assertEquals('error', Arr::get($arrSecError, 0, null));
+        $deposit['currency'] = 'UAH';
+        $result = $this->depositService->accept($deposit, 1);
+        $this->assertEquals('Different currencies.', Arr::get($result, 1, null));
 
-        $arrFormErrorFirst = $this->depositService->accept([
-            'currency' => 'EUR',
-            'sum' => 100,
-            'numberFrom' => '0000000000000001',
-            'percent' => 6,
-            'duration' => 9
-        ], 1);
+        $deposit['currency'] = 'EUR';
+        $result = $this->depositService->accept($deposit, 1);
+        $this->assertEquals('An error occurred!', Arr::get($result, 1, null));
 
-        $arrFormErrorSec= $this->depositService->accept([
-            'currency' => 'EUR',
-            'sum' => 100,
-            'numberFrom' => '0000000000000001',
-            'percent' => 6,
-            'duration' => 9
-        ], 1);
-        $arrFormErrorThird= $this->depositService->accept([
-            'currency' => 'EUR',
-            'sum' => 100,
-            'numberFrom' => '0000000000000001',
-            'percent' => 6,
-            'duration' => 9
-        ], 1);
-        $this->assertEquals('error', Arr::get($arrFormErrorThird, 0, null));
+        $result = $this->depositService->accept($deposit, 1);
+        $this->assertEquals('Too much deposits for one User!', Arr::get($result, 1, null));
 
+        $result = $this->depositService->accept($deposit, 1);
+        $this->assertEquals('success', Arr::get($result, 0, null));
     }
 
+    /**
+     * Count user deposits
+     */
     public function testCountUserDeposits(): void
     {
-        $this->assertCount($this->depositService->countUserDeposits(), $this->depositService->getUserDeposits());
+        $this->mockActiveDepositRepository->method('userDeposits')->willReturn(new Collection());
+        $this->assertCount(0, $this->depositService->getUserDeposits());
     }
 
+    /**
+     * Getting user deposits
+     */
     public function testGetUserDeposits(): void
     {
+        $this->mockActiveDepositRepository->method('userDeposits')->willReturn(new Collection);
+
         $userDeposits = $this->depositService->getUserDeposits();
-        $this->assertCount(3, $userDeposits);
-
-        $first = Arr::get($userDeposits, 0, null);
-        $this->assertEquals('Junior', Arr::get($first, 'title', null));
-
-        foreach ($userDeposits as $one) {
-            $result = $this->depositService->close(Arr::get($one, 'id', null));
-            $this->assertEquals('success', Arr::get($result,0, null));
-        }
+        $this->assertCount(0, $userDeposits);
     }
 
+    /**
+     * Test closing deposits
+     */
+    public function testClose(): void
+    {
+        $this->mockActiveDepositRepository->method('getMoney');
+        $this->mockActiveDepositRepository->method('find')->willReturn(new ActiveDeposit());
+        $this->mockTransferRepository->method('create');
+        $this->mockActiveDepositRepository->method('delete');
+
+        $result = $this->depositService->close(1);
+        $this->assertEquals('success', Arr::get($result,0, null));
+    }
 }
