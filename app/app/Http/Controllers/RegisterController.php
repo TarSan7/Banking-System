@@ -43,7 +43,8 @@ class RegisterController extends Controller
 
         if ($user) {
             Auth::login($user);
-            return redirect(route('user.private'));
+            return redirect(route('user.private',
+                app()->getLocale()));
         }
 
         return redirect(route('user.login'))->withErrors([
