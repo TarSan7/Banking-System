@@ -10,6 +10,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\CardTransferController;
 use App\Http\Controllers\OtherTransferController;
+use Illuminate\Support\Facades\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,7 @@ Route::prefix('{locale}')->group(function () {
 
         Route::get('/login', function () {
             if (Auth::check()) {
-                return redirect(route('user.private', app()->getLocale()));
+                return redirect(route('user.private'));
             }
             return view('login');
         })->name('login');
@@ -97,5 +98,13 @@ Route::prefix('{locale}')->group(function () {
         Route::post('/closeDeposit/{id}', [DepositController::class, 'close'])->name('closeDeposit');
 
     });
+
+//    Route::('locale', function($route)
+//    {
+//        $locale = $route->getParameter('locale');
+//
+//        Session::put('locale', $locale);
+//    });
 });
+
 

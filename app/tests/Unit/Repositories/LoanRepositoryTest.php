@@ -71,8 +71,10 @@ class LoanRepositoryTest extends TestCase
      */
     public function testNewLoan(): void
     {
-        if ($this->loanRepository->newLoan(1, 250, 2, 1)) {
-            $this->assertCount(1, $this->activeLoanRepository->userLoans(1));
+        if ($this->loanRepository->newLoan(1, 250, 2, 2)) {
+            $this->assertDatabaseHas('active_loans', [
+                'user_id' => 2
+            ]);
         }
     }
 }

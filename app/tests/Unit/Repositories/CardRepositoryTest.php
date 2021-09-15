@@ -94,7 +94,9 @@ class CardRepositoryTest extends TestCase
     public function testUpdateFrom(): void
     {
         $this->cardRepository->updateFrom(1, ['sum' => 1]);
-        $this->assertEquals(1, $this->cardRepository->getSumFrom(1));
+        $this->assertDatabaseHas('cards', [
+            'sum' => 1
+        ]);
     }
 
     /**
@@ -102,8 +104,10 @@ class CardRepositoryTest extends TestCase
      */
     public function testUpdateTo(): void
     {
-        $this->cardRepository->updateTo('0000000000000000', ['sum' => 1]);
-        $this->assertEquals(1, $this->cardRepository->getSumTo('0000000000000000'));
+        $this->cardRepository->updateTo('0000000000000000', ['sum' => 11]);
+        $this->assertDatabaseHas('cards', [
+            'sum' => 11
+        ]);
     }
 
     /**
@@ -136,7 +140,9 @@ class CardRepositoryTest extends TestCase
     public function testUpdateSum(): void
     {
         $this->cardRepository->updateSum(6, 20);
-        $this->assertEquals(999999980, $this->cardRepository->getSumFrom(6));
+        $this->assertDatabaseHas('cards', [
+            'sum' => 999999980
+        ]);
     }
 
     /**

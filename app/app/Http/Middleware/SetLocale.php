@@ -16,7 +16,7 @@ class SetLocale
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next, $locale)
     {
         $uri = $request->path();
         $uri = explode('/', $uri);

@@ -10,7 +10,7 @@ interface UserCardRepositoryInterface
      * @param integer $id
      * @return bool
      */
-    public function cards($id): bool;
+    public function cardsExist($id): bool;
 
     /**
      * @return Collection|null

@@ -1,7 +1,7 @@
 @extends('layout.main')
 @extends('layout.headerPrivate')
 
-@section('title') {{ __('cardTrans.card-transfer') }} @endsection
+@section('title') {{ __('cardTrans.card-trans') }} @endsection
 
 @section('style')
     <link rel="stylesheet" href="../css/main.css">

@@ -91,7 +91,7 @@ class CardServiceTest extends TestCase
     public function testCardAdded(): void
     {
         $this->mockCardRepository->method('getId')->willReturn(1);
-        $this->mockUserCardRepository->method('cards')->willReturn(false);
+        $this->mockUserCardRepository->method('cardsExist')->willReturn(false);
 
         $this->cardService->setCard(['number' => '0000000000000000']);
 

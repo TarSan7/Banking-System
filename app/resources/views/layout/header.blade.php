@@ -2,20 +2,15 @@
     <div class="container">
         <a class="navbar-brand" href="{{ route('home', app()->getLocale()) }}">YourBank</a>
         <div class="d-flex">
-            <div class="nav-item">
-                <a class="nav-link active" href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), 'en') }}">
-                    <span class="sr-only">
-                        EN
-                    </span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link active" href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), 'ru') }}">
-                    <span class="sr-only">
-                        RU
-                    </span>
-                </a>
-            </div>
+            @foreach (config('app.available_locales') as $locale)
+                <div class="nav-item">
+                    <a class="nav-link active" href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), $locale)}}">
+                        <span class="sr-only">
+                            @if (app()->getLocale() == $locale) @endif {{ strtoupper($locale) }}
+                        </span>
+                    </a>
+                </div>
+            @endforeach
             <div class="nav-item">
                 <a class="nav-link active" href="{{ route('user.login', app()->getLocale()) }}">
                     <span class="sr-only">

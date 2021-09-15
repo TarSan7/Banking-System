@@ -104,7 +104,7 @@ class CardService
     public function cardAdded(): bool
     {
         $cardId = $this->cardRepository->getId(Arr::get($this->card, 'number', 0));
-        return $this->userCardRepository->cards($cardId);
+        return $this->userCardRepository->cardsExist($cardId);
     }
 
     /**

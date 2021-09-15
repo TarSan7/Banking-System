@@ -10,6 +10,7 @@ use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
 use App\Repository\Eloquent\TransferRepository;
+use Database\Seeders\ActiveDepositSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
@@ -49,6 +50,7 @@ class ActiveDepositRepositoryTest extends TestCase
         parent::setUp();
 
         $this->seed(UserSeeder::class);
+        $this->seed(ActiveDepositSeeder::class);
 
         $this->activeDepositRepository = new ActiveDepositRepository(
             new ActiveDeposit(),
@@ -63,7 +65,10 @@ class ActiveDepositRepositoryTest extends TestCase
      */
     public function testAll(): void
     {
-        $this->assertCount(0, $this->activeDepositRepository->all());
+        $deposit = $this->activeDepositRepository->all();
+        $this->assertCount(1, $deposit);
+        $depositFirst = Arr::get($deposit, 0, null);
+        $this->assertEquals(12, Arr::get($depositFirst, 'duration', null));
     }
 
     /**
@@ -72,7 +77,7 @@ class ActiveDepositRepositoryTest extends TestCase
     public function testGetCardsId(): void
     {
         $cards = $this->activeDepositRepository->getCardsId();
-        $this->assertCount(0, $cards);
+        $this->assertCount(1, $cards);
     }
 
     /**
@@ -98,6 +103,6 @@ class ActiveDepositRepositoryTest extends TestCase
      */
     public function testUserDeposits(): void
     {
-        $this->assertCount(0, $this->activeDepositRepository->userDeposits(1));
+        $this->assertCount(1, $this->activeDepositRepository->userDeposits(1));
     }
 }

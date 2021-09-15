@@ -39,6 +39,7 @@ class LoginController extends Controller
         $this->userRepository = $userRepository;
         $this->cardRepository= $cardRepository;
         $this->userCardRepossitory = $userCardRepository;
+
     }
 
     /**

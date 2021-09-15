@@ -67,8 +67,10 @@ class DepositRepositoryTest extends TestCase
      */
     public function testNewDeposit(): void
     {
-        if ($this->depositRepository->newDeposit(1, $this->newDeposit, 1)) {
-            $this->assertCount(1, $this->activeDepositRepository->userDeposits(1));
+        if ($this->depositRepository->newDeposit(1, $this->newDeposit, 2)) {
+            $this->assertDatabaseHas('active_deposits', [
+                'user_id' => 2
+            ]);
         }
     }
 }
