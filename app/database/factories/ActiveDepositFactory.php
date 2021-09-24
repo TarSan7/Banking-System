@@ -14,6 +14,8 @@ class ActiveDepositFactory extends Factory
      */
     protected $model = ActiveDeposit::class;
 
+    private $currency = array('UAH', 'EUR', 'USD', 'RUR', 'GBP', 'PLN');
+
     /**
      * Define the model's default state.
      *
@@ -22,17 +24,17 @@ class ActiveDepositFactory extends Factory
     public function definition()
     {
         return [
-            'deposit_id' => 1,
-            'sum' => 1200,
-            'total_sum' => 1250,
-            'currency' => 'EUR',
-            'month_pay' => 100,
-            'duration' => 12,
-            'month_left' => 12,
-            'early_percent' => 0,
-            'intime_percent' => 1,
-            'card_id' => 1,
-            'user_id' => 1
+            'deposit_id' => rand(1, 5),
+            'sum' => rand(100, 1000),
+            'total_sum' => rand(100, 500),
+            'currency' => $this->currency[rand(0, 5)],
+            'month_pay' => rand(1, 1000),
+            'duration' => rand(4, 24),
+            'month_left' => rand(0, 24),
+            'early_percent' => 1,
+            'intime_percent' => 0,
+            'card_id' => rand(1, 1100000),
+            'user_id' => rand(1, 100000)
         ];
     }
 }

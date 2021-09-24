@@ -20,7 +20,7 @@ interface ActiveLoanRepositoryInterface
      * @param array
      * @return bool
      */
-    public function decrease($loans): bool;
+    public function decrease(): bool;
 
     /**
      * @param int $id

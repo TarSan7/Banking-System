@@ -19,7 +19,6 @@
     </div>
 </nav>
 <div class="container">
-    {{--    @if ()--}}
     <a href="{{ url()->previous(app()->getLocale()) }}" class="arrow">
         <img src="/img/arr.png" alt="arrow" class="arrow">
     </a>

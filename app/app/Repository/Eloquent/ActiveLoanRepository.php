@@ -10,6 +10,7 @@ use App\Repository\ActiveLoanRepositoryInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositoryInterface
 {
@@ -45,42 +46,58 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
         return $this->model->get('card_id');
     }
 
+    public function getLoansByDate(): object
+    {
+        $date = date('d');
+        return $this->model->where('created_at', 'like', "%-$date %")->get();
+    }
+
     /**
-     * @param array $loans
      * @return bool
      */
-    public function decrease($loans = null): bool
+    public function decrease(): bool
     {
-        if (!$loans) {
-            $loans = $this->model->all();
-        }
+        $loans = $this->getLoansByDate();
+
         foreach ($loans as $loan) {
             $loanId = Arr::get($loan, 'id', null);
-            $monthLeft = Arr::get($this->model->where('id', $loanId)->first(), 'month_left', null);
-            $createDate = date('d', strtotime(Arr::get($loan, 'created_at', null)));
-            if ($monthLeft <= 0) {
-                $this->delete($loanId);
-            } elseif ($createDate === date('d')) {
-                $change = $monthLeft - 1;
-                $monthSum = Arr::get($this->model->where('id', $loanId)->first(), 'month_pay', null);
-                $this->model->where('id', $loanId)->update(['month_left' => $change]);
+            $monthLeft = Arr::get($loan, 'month_left', null);
+
+            $time1 = microtime(TRUE);
+
+            $monthSum = Arr::get($loan, 'month_pay', null);
+            $cardFrom = $this->cardRepository->find(Arr::get($loan, 'card_id', null));
+            $bankCurrency = Arr::get($cardFrom, 'currency', null);
+            $bankSum = $this->cardRepository->generalSumByCurrency($bankCurrency);
+
+            DB::transaction(function () use ($cardFrom, $bankSum, $bankCurrency, $monthSum, $loan, $monthLeft, $loanId) {
+                $this->model->where('id', $loanId)->update(['month_left' => $monthLeft-1]);
                 $this->cardRepository->updateSum(Arr::get($loan, 'card_id', null), $monthSum);
-
-                $baseLoanId = Arr::get($this->model->find($loanId), 'loan_id', null);
-                $bankCurrency = Arr::get(Loan::find($baseLoanId), 'currency', null);
-                $bankSum = $this->cardRepository->generalSumByCurrency($bankCurrency);
                 $this->cardRepository->updateGeneral($bankCurrency, ['sum' => $bankSum + $monthSum]);
-
                 $this->transferRepository->create([
-                    'card_from' => $this->cardRepository->getNumber(Arr::get($loan, 'card_id', null)),
+                    'card_from' => Arr::get($cardFrom, 'id', null),
                     'card_to' => 'Bank',
                     'date' => date('Y-m-d H:i:s'),
                     'sum' => $monthSum,
                     'new_sum' => $monthSum,
-                    'currency' => $this->cardRepository->getCurrencyFrom(Arr::get($loan, 'card_id', null)),
+                    'currency' => Arr::get($cardFrom, 'currency', null),
                     'comment' => 'Loan decrease',
                     'user_id' => Arr::get($loan, 'user_id', null)
                 ]);
+            });
+
+            $time2 = microtime(TRUE);
+            $time = $time2 - $time1;
+            file_put_contents('debug.txt', "\n\n Updating time: " . $time, FILE_APPEND);
+
+            if ($monthLeft <= 0) {
+                $time1 = microtime(TRUE);
+
+                $this->delete($loanId);
+
+                $time2 = microtime(TRUE);
+                $time = $time2 - $time1;
+                file_put_contents('debug.txt', "\n\n Deleting time: " . $time, FILE_APPEND);
             }
         }
         return true;
@@ -108,4 +125,24 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
     {
         return $this->model->where('user_id', $userId)->get();
     }
+
+    /**
+     * Getting dates of creation
+     * @return object
+     */
+    public function getIds(): object
+    {
+        return $this->model->select('id')->get();
+    }
+
+    /**
+     * @param $id
+     * @param $newDate
+     * @return bool
+     */
+    public function updateDate($id, $newDate): bool
+    {
+        return $this->model->where('id', $id)->update(['created_at' => $newDate]);
+    }
+
 }

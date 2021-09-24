@@ -47,7 +47,7 @@ class RegisterController extends Controller
                 app()->getLocale()));
         }
 
-        return redirect(route('user.login'))->withErrors([
+        return redirect(route('user.login', app()->getLocale()))->withErrors([
            'formError' => 'An error occurred while saving data!'
         ]);
     }

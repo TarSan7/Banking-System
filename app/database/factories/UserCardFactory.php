@@ -22,8 +22,8 @@ class UserCardFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => 1,
-            'card_id' => rand(1, 3)
+            'user_id' => rand(1, 100000),
+            'card_id' => $this->faker->unique()->numberBetween(6, 1000000)
         ];
     }
 }

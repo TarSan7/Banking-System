@@ -47,10 +47,6 @@ class LoanCommand extends Command
      */
     public function handle(): bool
     {
-        $allLoans = $this->activeLoanRepository->all();
-        if ($allLoans) {
-            return $this->activeLoanRepository->decrease($allLoans);
-        }
-        return true;
+        return $this->activeLoanRepository->decrease();
     }
 }

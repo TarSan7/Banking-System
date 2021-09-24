@@ -83,17 +83,10 @@ class LoanService
      */
     public function accept($sum, $id): array
     {
-        if ($this->countUserLoans() < 3) {
-            $card = $this->cardService->newCreditCard($sum, $id);
-            if (!$card) {
-                return ['error', Arr::get(self::RESPONSES, 'form', null)];
-            } elseif (!$this->cardRepository->checkGeneralSum($sum, Arr::get($card, 'currency', null))) {
-                return ['error', Arr::get(self::RESPONSES, 'money', null)];
-            } elseif ($this->newLoan($card, $id)) {
-                return ['success', Arr::get(self::RESPONSES, 'done', null)];
-            } else {
-                return ['error', Arr::get(self::RESPONSES, 'form', null)];
-            }
+        $loanCurr = $this->loanRepository->getCurrency($id);
+        if ($this->countUserLoans() < 3 && $this->cardRepository->checkGeneralSum($sum, $loanCurr)) {
+            $this->cardService->newCreditCard($sum, $id);
+            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         } else {
             return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
         }

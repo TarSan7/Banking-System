@@ -18,7 +18,7 @@ class DepositService
     /**
      * @var DepositRepository
      */
-    private $depositRepository, $activeDepositRepository, $cardRepository, $transferRepository;
+    private $depositRepository, $activeDepositRepository, $cardRepository, $transferRepository, $allTransactionsService;
 
     /**
      * Responses for controller
@@ -42,12 +42,14 @@ class DepositService
         DepositRepository $depositRepository,
         ActiveDepositRepository $activeDepositRepository,
         CardRepository $cardRepository,
-        TransferRepository $transferRepository
+        TransferRepository $transferRepository,
+        AllTransactionsService $allTransactionsService
     ) {
         $this->depositRepository = $depositRepository;
         $this->activeDepositRepository = $activeDepositRepository;
         $this->cardRepository = $cardRepository;
         $this->transferRepository = $transferRepository;
+        $this->allTransactionsService = $allTransactionsService;
     }
 
     /**
@@ -101,16 +103,16 @@ class DepositService
                 return ['error', Arr::get(self::RESPONSES, 'money', null)];
             } elseif ($this->cardRepository->getCurrencyFrom(Arr::get($deposit, 'numberFrom', null)) != $currency) {
                 return ['error', Arr::get(self::RESPONSES, 'currency', null)];
-            } elseif ($this->newDeposit($deposit, $id)) {
-                $this->cardRepository->updateSum(Arr::get($deposit, 'numberFrom', null), $sum);
-                $bankSum = $this->cardRepository->generalSumByCurrency($currency);
-                $this->cardRepository->updateGeneral($currency, ['sum' => $bankSum + $sum]);
-
-                $this->createDepositTransfer($cardNum, $sum, $currency);
-
-                return ['success', Arr::get(self::RESPONSES ,'done', null)];
             } else {
-                return ['error', Arr::get(self::RESPONSES, 'form', null)];
+                $this->allTransactionsService->takeDeposit(
+                    $this->createDepositTransfer($cardNum, $sum, $currency),
+                    $deposit,
+                    $id,
+                    $currency,
+                    $sum,
+                    $numberFrom
+                );
+                return ['success', Arr::get(self::RESPONSES ,'done', null)];
             }
         } else {
             return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
@@ -122,9 +124,9 @@ class DepositService
      * @param float $sum
      * @param string $currency
      */
-    public function createDepositTransfer($cardNum, $sum, $currency)
+    public function createDepositTransfer($cardNum, $sum, $currency): array
     {
-        $this->transferRepository->create([
+        return array(
             'card_from' => $cardNum,
             'card_to' => 'Bank',
             'date' => date('Y-m-d H:i:s'),
@@ -133,7 +135,7 @@ class DepositService
             'currency' => $currency,
             'comment' => 'Take a deposit',
             'user_id' => Auth::user()->id ?? 0
-        ]);
+        );
     }
 
     /**

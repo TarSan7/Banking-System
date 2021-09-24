@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\UserCard;
+use Database\Factories\UserCardFactory;
 use Illuminate\Database\Seeder;
 
 class UserCardSeeder extends Seeder
@@ -14,6 +15,9 @@ class UserCardSeeder extends Seeder
      */
     public function run()
     {
-        UserCard::factory(2)->create();
+        UserCard::factory(1)->create([
+            'user_id' => 1,
+            'card_id' => 1
+        ]);
     }
 }

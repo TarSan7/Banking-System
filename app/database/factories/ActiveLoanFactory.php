@@ -22,13 +22,18 @@ class ActiveLoanFactory extends Factory
     public function definition()
     {
         return [
-            'loan_id' => 1,
-            'sum' => 1200,
-            'total_sum' => 1250,
-            'month_pay' => 100,
-            'month_left' => 12,
-            'card_id' => 1,
-            'user_id' => 1
+            'loan_id' => rand(1, 5),
+            'sum' => rand(100, 5000),
+            'total_sum' => rand(100, 5000),
+            'month_pay' => rand(1, 1000),
+            'month_left' => rand(0, 24),
+            'card_id' => rand(1, 1100000),
+            'user_id' => rand(1, 100000)
         ];
+    }
+
+    public function date()
+    {
+        return $this->faker->dateTime;
     }
 }

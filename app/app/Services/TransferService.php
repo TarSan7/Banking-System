@@ -18,7 +18,7 @@ class TransferService
      * @var array
      * @var string
      */
-    private $cardRepository, $transferRepository, $userRepository, $tranInfo, $phoneNumber;
+    private $cardRepository, $transferRepository, $userRepository, $allTransactionService, $tranInfo, $phoneNumber;
 
     const PHONE = 'phone', INTERNET = 'internet';
     /**
@@ -41,11 +41,13 @@ class TransferService
     public function __construct(
         CardRepository $cardRepository,
         TransferRepository $transferRepository,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        AllTransactionsService $allTransactionService
     ) {
         $this->cardRepository = $cardRepository;
         $this->transferRepository = $transferRepository;
         $this->userRepository = $userRepository;
+        $this->allTransactionService = $allTransactionService;
     }
 
     /**
@@ -128,11 +130,11 @@ class TransferService
 
     /**
      * Return result of creating transaction
-     * @return bool
+     * @return array
      */
-    public function createTransfer(): bool
+    public function createTransfer(): array
     {
-        return (bool) $this->transferRepository->create([
+        return array(
             'card_from' => $this->cardRepository
                 ->find(Arr::get($this->tranInfo, 'numberFrom', null))['number'],
             'card_to' => Arr::get($this->tranInfo, 'numberTo', null),
@@ -143,7 +145,7 @@ class TransferService
                 ->getCurrencyFrom(Arr::get($this->tranInfo, 'numberFrom', null)),
             'comment' => Arr::get($this->tranInfo, 'comment', null),
             'user_id' => Auth::user()->id ?? 0
-        ]) ?? false;
+        );
     }
 
     /**
@@ -169,6 +171,30 @@ class TransferService
     }
 
     /**
+     * Return info about card
+     * @return array
+     */
+    public function numberFromInfo(): array
+    {
+        return array(
+            'number' => Arr::get($this->tranInfo, 'numberFrom', null),
+            'sum' => $this->getBalanceFrom() - Arr::get($this->tranInfo, 'sum', null)
+        );
+    }
+
+    /**
+     * Return info about card
+     * @return array
+     */
+    public function numberToInfo(): array
+    {
+        return array(
+            'number' => Arr::get($this->tranInfo, 'numberTo', null),
+            'sum' => $this->getBalanceTo() + Arr::get($this->tranInfo, 'sum', null)
+        );
+    }
+
+    /**
      * @return array
      */
     public function cardCheck(): array
@@ -179,11 +205,13 @@ class TransferService
             return ['error', Arr::get(self::RESPONSES, 'currency', null)];
         } elseif ($this->compareNumbers()) {
             return ['error', Arr::get(self::RESPONSES, 'cards', null)];
-        } elseif ($this->createTransfer()) {
-            $this->updateCards();
-            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         } else {
-            return ['error', Arr::get(self::RESPONSES, 'form', null)];
+            $this->allTransactionService->make(
+                $this->createTransfer(),
+                $this->numberFromInfo(),
+                $this->numberToInfo()
+            );
+            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         }
     }
 
@@ -197,11 +225,13 @@ class TransferService
             return ['error', Arr::get(self::RESPONSES, 'phone', null)];
         } elseif ($this->transferSum() > $this->getBalanceFrom()) {
             return ['error', Arr::get(self::RESPONSES, 'sum', null)];
-        } elseif ($this->createTransfer()) {
-            $this->updateCards();
-            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         } else {
-            return ['error', Arr::get(self::RESPONSES, 'form', null)];
+            $this->allTransactionService->make(
+                $this->createTransfer(),
+                $this->numberFromInfo(),
+                $this->numberToInfo()
+            );
+            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         }
     }
 

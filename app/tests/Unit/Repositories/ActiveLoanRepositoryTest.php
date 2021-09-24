@@ -71,7 +71,6 @@ class ActiveLoanRepositoryTest extends TestCase
      */
     public function testDecrease(): void
     {
-        $this->loanRepository->newLoan(1, 250, 2, 1);
         for ($i = 0; $i < 6; $i++) {
             $this->assertTrue($this->activeLoanRepository->decrease());
         }
@@ -82,7 +81,7 @@ class ActiveLoanRepositoryTest extends TestCase
      */
     public function testDelete(): void
     {
-        $this->loanRepository->newLoan(1, 250, 2, 1);
+
         $this->assertTrue($this->activeLoanRepository->delete());
     }
 
