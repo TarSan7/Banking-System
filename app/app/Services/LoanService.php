@@ -15,7 +15,7 @@ class LoanService
     /**
      * @var LoanRepository
      */
-    private $loanRepository, $cardRepository, $cardService, $activeLoanRepository;
+    private $loanRepository, $cardRepository, $cardService, $activeLoanRepository, $allTransactionsService;
 
     /**
      * Responses for controller
@@ -35,12 +35,14 @@ class LoanService
         LoanRepository $loanRepository,
         CardService $cardService,
         ActiveLoanRepository $activeLoanRepository,
-        CardRepository $cardRepository
+        CardRepository $cardRepository,
+        AllTransactionsService $allTransactionsService
     ) {
         $this->loanRepository = $loanRepository;
         $this->cardService = $cardService;
         $this->activeLoanRepository = $activeLoanRepository;
         $this->cardRepository = $cardRepository;
+        $this->allTransactionsService = $allTransactionsService;
     }
 
     /**
@@ -99,6 +101,38 @@ class LoanService
     {
         return count($this->activeLoanRepository->userLoans(Auth::user()->id ?? 0));
     }
+
+    /**
+     * @return bool
+     */
+    public function decrease(): bool
+    {
+        $loans = $this->activeLoanRepository->getLoansByDate();
+
+        foreach ($loans as $loan) {
+            $loanId = Arr::get($loan, 'id', null);
+            $monthLeft = Arr::get($loan, 'month_left', null);
+
+            $time1 = microtime(TRUE);
+
+            $this->allTransactionsService->decreaseLoan($loan, $monthLeft, $loanId);
+
+            $time2 = microtime(TRUE);
+            $time = $time2 - $time1;
+            file_put_contents('debug.txt', "\n\n Updating time: " . $time, FILE_APPEND);
+            if ($monthLeft <= 0) {
+                $time1 = microtime(TRUE);
+
+                $this->activeLoanRepository->delete($loanId);
+
+                $time2 = microtime(TRUE);
+                $time = $time2 - $time1;
+                file_put_contents('debug.txt', "\n\n Deleting time: " . $time, FILE_APPEND);
+            }
+        }
+        return true;
+    }
+
 
     /**
      * @return array

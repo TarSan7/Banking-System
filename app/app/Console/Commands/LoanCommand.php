@@ -19,7 +19,7 @@ class LoanCommand extends Command
     /**
      * @var ActiveLoanRepository
      */
-    private $activeLoanRepository;
+    private $loanService;
 
     /**
      * The console command description.
@@ -31,13 +31,13 @@ class LoanCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @param ActiveLoanRepository $loanRepository
+     * @param LoanService $loanService
      * @return void
      */
-    public function __construct(ActiveLoanRepository $activeLoanRepository)
+    public function __construct(LoanService $loanService)
     {
         parent::__construct();
-        $this->activeLoanRepository = $activeLoanRepository;
+        $this->loanService = $loanService;
     }
 
     /**
@@ -47,6 +47,6 @@ class LoanCommand extends Command
      */
     public function handle(): bool
     {
-        return $this->activeLoanRepository->decrease();
+        return $this->loanService->decrease();
     }
 }

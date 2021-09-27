@@ -1,0 +1,1073 @@
+
+
+ Updating time: 0.0067548751831055
+
+ Updating time: 0.0043380260467529
+
+ Updating time: 0.0041170120239258
+
+ Updating time: 0.0043079853057861
+
+ Updating time: 0.0046570301055908
+
+ Updating time: 0.0043129920959473
+
+ Updating time: 0.0042300224304199
+
+ Updating time: 0.0041980743408203
+
+ Updating time: 0.0042979717254639
+
+ Updating time: 0.0049080848693848
+
+ Updating time: 0.0042479038238525
+
+ Updating time: 0.0042788982391357
+
+ Updating time: 0.0050010681152344
+
+ Updating time: 0.0046191215515137
+
+ Updating time: 0.0047519207000732
+
+ Updating time: 0.00565505027771
+
+ Updating time: 0.0047290325164795
+
+ Updating time: 0.0047428607940674
+
+ Updating time: 0.0044541358947754
+
+ Updating time: 0.004612922668457
+
+ Updating time: 0.0048511028289795
+
+ Updating time: 0.0048348903656006
+
+ Updating time: 0.0050749778747559
+
+ Updating time: 0.0052299499511719
+
+ Updating time: 0.0051841735839844
+
+ Updating time: 0.0047438144683838
+
+ Updating time: 0.0045621395111084
+
+ Updating time: 0.0049209594726562
+
+ Updating time: 0.0043478012084961
+
+ Updating time: 0.0048408508300781
+
+ Updating time: 0.0045461654663086
+
+ Updating time: 0.0042710304260254
+
+ Updating time: 0.0042920112609863
+
+ Updating time: 0.0042600631713867
+
+ Updating time: 0.004539966583252
+
+ Updating time: 0.0041959285736084
+
+ Updating time: 0.007673978805542
+
+ Updating time: 0.0042588710784912
+
+ Updating time: 0.0043940544128418
+
+ Updating time: 0.0042710304260254
+
+ Updating time: 0.0048620700836182
+
+ Updating time: 0.0046989917755127
+
+ Updating time: 0.0041849613189697
+
+ Updating time: 0.0041420459747314
+
+ Updating time: 0.010941982269287
+
+ Updating time: 0.0049300193786621
+
+ Updating time: 0.0044419765472412
+
+ Updating time: 0.004119873046875
+
+ Updating time: 0.0041201114654541
+
+ Updating time: 0.004127025604248
+
+ Updating time: 0.0046610832214355
+
+ Updating time: 0.0056769847869873
+
+ Updating time: 0.0046389102935791
+
+ Updating time: 0.0045421123504639
+
+ Updating time: 0.0044000148773193
+
+ Updating time: 0.0043580532073975
+
+ Updating time: 0.0048680305480957
+
+ Updating time: 0.0044059753417969
+
+ Updating time: 0.0046999454498291
+
+ Updating time: 0.0045349597930908
+
+ Updating time: 0.0043690204620361
+
+ Updating time: 0.0042350292205811
+
+ Updating time: 0.0043330192565918
+
+ Updating time: 0.0042622089385986
+
+ Updating time: 0.0041220188140869
+
+ Updating time: 0.0043280124664307
+
+ Updating time: 0.0042679309844971
+
+ Updating time: 0.0045039653778076
+
+ Updating time: 0.0057299137115479
+
+ Updating time: 0.0065770149230957
+
+ Updating time: 0.0053131580352783
+
+ Updating time: 0.005141019821167
+
+ Updating time: 0.0049688816070557
+
+ Updating time: 0.0060570240020752
+
+ Updating time: 0.0051090717315674
+
+ Updating time: 0.0050218105316162
+
+ Updating time: 0.0050649642944336
+
+ Updating time: 0.0054810047149658
+
+ Updating time: 0.0058619976043701
+
+ Updating time: 0.0050270557403564
+
+ Updating time: 0.0045559406280518
+
+ Updating time: 0.0057981014251709
+
+ Updating time: 0.0079941749572754
+
+ Updating time: 0.0053069591522217
+
+ Updating time: 0.0047299861907959
+
+ Updating time: 0.0044581890106201
+
+ Updating time: 0.0042800903320312
+
+ Updating time: 0.0049829483032227
+
+ Updating time: 0.0045051574707031
+
+ Updating time: 0.0044040679931641
+
+ Updating time: 0.0043179988861084
+
+ Updating time: 0.0041999816894531
+
+ Updating time: 0.0042970180511475
+
+ Updating time: 0.0042030811309814
+
+ Updating time: 0.0043652057647705
+
+ Updating time: 0.0048270225524902
+
+ Updating time: 0.0042481422424316
+
+ Updating time: 0.004256010055542
+
+ Updating time: 0.0053951740264893
+
+ Updating time: 0.0045599937438965
+
+ Updating time: 0.0043160915374756
+
+ Updating time: 0.0042369365692139
+
+ Updating time: 0.0043570995330811
+
+ Updating time: 0.0051758289337158
+
+ Updating time: 0.004486083984375
+
+ Updating time: 0.0046181678771973
+
+ Updating time: 0.0043439865112305
+
+ Updating time: 0.0040709972381592
+
+ Updating time: 0.004080057144165
+
+ Updating time: 0.0040550231933594
+
+ Updating time: 0.0040559768676758
+
+ Updating time: 0.0041670799255371
+
+ Updating time: 0.0041859149932861
+
+ Updating time: 0.0042819976806641
+
+ Updating time: 0.0043280124664307
+
+ Updating time: 0.0044991970062256
+
+ Updating time: 0.0043919086456299
+
+ Updating time: 0.004472017288208
+
+ Updating time: 0.0046951770782471
+
+ Updating time: 0.004828929901123
+
+ Updating time: 0.0044097900390625
+
+ Updating time: 0.0045959949493408
+
+ Updating time: 0.0043349266052246
+
+ Updating time: 0.0045759677886963
+
+ Updating time: 0.0042400360107422
+
+ Updating time: 0.0046150684356689
+
+ Updating time: 0.0042929649353027
+
+ Updating time: 0.0044698715209961
+
+ Updating time: 0.0043079853057861
+
+ Updating time: 0.0044760704040527
+
+ Updating time: 0.0042870044708252
+
+ Updating time: 0.0041840076446533
+
+ Updating time: 0.004166841506958
+
+ Updating time: 0.0041558742523193
+
+ Updating time: 0.0040910243988037
+
+ Updating time: 0.0041189193725586
+
+ Updating time: 0.0041961669921875
+
+ Updating time: 0.0041260719299316
+
+ Updating time: 0.0043690204620361
+
+ Updating time: 0.0041871070861816
+
+ Updating time: 0.0042309761047363
+
+ Updating time: 0.0043330192565918
+
+ Updating time: 0.0040280818939209
+
+ Updating time: 0.014080047607422
+
+ Updating time: 0.0057001113891602
+
+ Updating time: 0.0048341751098633
+
+ Updating time: 0.0044610500335693
+
+ Updating time: 0.0044248104095459
+
+ Updating time: 0.0042119026184082
+
+ Updating time: 0.0047218799591064
+
+ Updating time: 0.0043339729309082
+
+ Updating time: 0.0042719841003418
+
+ Updating time: 0.0044078826904297
+
+ Updating time: 0.0041401386260986
+
+ Updating time: 0.0041501522064209
+
+ Updating time: 0.0041260719299316
+
+ Updating time: 0.0042250156402588
+
+ Updating time: 0.0043220520019531
+
+ Updating time: 0.0042340755462646
+
+ Updating time: 0.0043268203735352
+
+ Updating time: 0.0044479370117188
+
+ Updating time: 0.0041429996490479
+
+ Updating time: 0.0041978359222412
+
+ Updating time: 0.0041961669921875
+
+ Updating time: 0.0043489933013916
+
+ Updating time: 0.0042388439178467
+
+ Updating time: 0.0046310424804688
+
+ Updating time: 0.0043861865997314
+
+ Updating time: 0.0043671131134033
+
+ Updating time: 0.0041999816894531
+
+ Updating time: 0.0042879581451416
+
+ Updating time: 0.0043790340423584
+
+ Updating time: 0.0044138431549072
+
+ Updating time: 0.0044980049133301
+
+ Updating time: 0.0053930282592773
+
+ Updating time: 0.0049819946289062
+
+ Updating time: 0.0045108795166016
+
+ Updating time: 0.0044519901275635
+
+ Updating time: 0.0041608810424805
+
+ Updating time: 0.0043089389801025
+
+ Updating time: 0.0044529438018799
+
+ Updating time: 0.0045301914215088
+
+ Updating time: 0.0043139457702637
+
+ Updating time: 0.0042018890380859
+
+ Updating time: 0.004119873046875
+
+ Updating time: 0.0040650367736816
+
+ Updating time: 0.0050358772277832
+
+ Updating time: 0.0044460296630859
+
+ Updating time: 0.0042669773101807
+
+ Updating time: 0.0045609474182129
+
+ Updating time: 0.0042250156402588
+
+ Updating time: 0.0042860507965088
+
+ Updating time: 0.012616872787476
+
+ Updating time: 0.0054118633270264
+
+ Updating time: 0.0044209957122803
+
+ Updating time: 0.0041580200195312
+
+ Updating time: 0.0041320323944092
+
+ Updating time: 0.0042150020599365
+
+ Updating time: 0.0042521953582764
+
+ Updating time: 0.0042541027069092
+
+ Updating time: 0.0041680335998535
+
+ Updating time: 0.004176139831543
+
+ Updating time: 0.0042397975921631
+
+ Updating time: 0.004133939743042
+
+ Updating time: 0.0042150020599365
+
+ Updating time: 0.0039961338043213
+
+ Updating time: 0.0043411254882812
+
+ Updating time: 0.0040569305419922
+
+ Updating time: 0.0054459571838379
+
+ Updating time: 0.004688024520874
+
+ Updating time: 0.0044460296630859
+
+ Updating time: 0.0044040679931641
+
+ Updating time: 0.0046219825744629
+
+ Updating time: 0.0043010711669922
+
+ Updating time: 0.0044319629669189
+
+ Updating time: 0.004561185836792
+
+ Updating time: 0.0043098926544189
+
+ Updating time: 0.0043461322784424
+
+ Updating time: 0.0044319629669189
+
+ Updating time: 0.0042788982391357
+
+ Updating time: 0.0041978359222412
+
+ Updating time: 0.0041968822479248
+
+ Updating time: 0.0041828155517578
+
+ Updating time: 0.004155158996582
+
+ Updating time: 0.004288911819458
+
+ Updating time: 0.0041279792785645
+
+ Updating time: 0.0042397975921631
+
+ Updating time: 0.0056600570678711
+
+ Updating time: 0.0047049522399902
+
+ Updating time: 0.0045368671417236
+
+ Updating time: 0.0047609806060791
+
+ Updating time: 0.0045840740203857
+
+ Updating time: 0.0044229030609131
+
+ Updating time: 0.0047149658203125
+
+ Updating time: 0.0044009685516357
+
+ Updating time: 0.0045630931854248
+
+ Updating time: 0.0044360160827637
+
+ Updating time: 0.0048389434814453
+
+ Updating time: 0.0045709609985352
+
+ Updating time: 0.0046150684356689
+
+ Updating time: 0.0047540664672852
+
+ Updating time: 0.0044810771942139
+
+ Updating time: 0.0045990943908691
+
+ Updating time: 0.0043330192565918
+
+ Updating time: 0.0048849582672119
+
+ Updating time: 0.0045261383056641
+
+ Updating time: 0.0044238567352295
+
+ Updating time: 0.0043289661407471
+
+ Updating time: 0.0048589706420898
+
+ Updating time: 0.0044941902160645
+
+ Updating time: 0.0043089389801025
+
+ Updating time: 0.011186838150024
+
+ Updating time: 0.0046470165252686
+
+ Updating time: 0.0043268203735352
+
+ Updating time: 0.0048069953918457
+
+ Updating time: 0.0054190158843994
+
+ Updating time: 0.0047371387481689
+
+ Updating time: 0.0045058727264404
+
+ Updating time: 0.005363941192627
+
+ Updating time: 0.0044641494750977
+
+ Updating time: 0.0043880939483643
+
+ Updating time: 0.004472017288208
+
+ Updating time: 0.0045878887176514
+
+ Updating time: 0.0043420791625977
+
+ Updating time: 0.0043520927429199
+
+ Updating time: 0.0044000148773193
+
+ Updating time: 0.004310131072998
+
+ Updating time: 0.0042309761047363
+
+ Updating time: 0.0042600631713867
+
+ Updating time: 0.0049440860748291
+
+ Updating time: 0.0041618347167969
+
+ Updating time: 0.022706031799316
+
+ Updating time: 0.0047099590301514
+
+ Updating time: 0.0042281150817871
+
+ Updating time: 0.0043041706085205
+
+ Updating time: 0.0045201778411865
+
+ Updating time: 0.0042321681976318
+
+ Updating time: 0.0041871070861816
+
+ Updating time: 0.0040020942687988
+
+ Updating time: 0.0040290355682373
+
+ Updating time: 0.0042660236358643
+
+ Updating time: 0.0042381286621094
+
+ Updating time: 0.0042378902435303
+
+ Updating time: 0.0042040348052979
+
+ Updating time: 0.0041909217834473
+
+ Updating time: 0.0042769908905029
+
+ Updating time: 0.0042860507965088
+
+ Updating time: 0.0043349266052246
+
+ Updating time: 0.0041558742523193
+
+ Updating time: 0.0043060779571533
+
+ Updating time: 0.0042171478271484
+
+ Updating time: 0.0042068958282471
+
+ Updating time: 0.0042591094970703
+
+ Updating time: 0.0042171478271484
+
+ Updating time: 0.0046470165252686
+
+ Updating time: 0.0046131610870361
+
+ Updating time: 0.0042390823364258
+
+ Updating time: 0.0041801929473877
+
+ Updating time: 0.0045268535614014
+
+ Updating time: 0.0044240951538086
+
+ Updating time: 0.0042350292205811
+
+ Updating time: 0.0044548511505127
+
+ Updating time: 0.0042848587036133
+
+ Updating time: 0.0043768882751465
+
+ Updating time: 0.0056049823760986
+
+ Updating time: 0.0045077800750732
+
+ Updating time: 0.0045161247253418
+
+ Updating time: 0.0042641162872314
+
+ Updating time: 0.0042810440063477
+
+ Updating time: 0.0043151378631592
+
+ Updating time: 0.0047109127044678
+
+ Updating time: 0.0045177936553955
+
+ Updating time: 0.0044169425964355
+
+ Updating time: 0.0042500495910645
+
+ Updating time: 0.0042288303375244
+
+ Updating time: 0.0042691230773926
+
+ Updating time: 0.0041890144348145
+
+ Updating time: 0.0042479038238525
+
+ Updating time: 0.0042579174041748
+
+ Updating time: 0.0044150352478027
+
+ Updating time: 0.0041990280151367
+
+ Updating time: 0.0042698383331299
+
+ Updating time: 0.0042350292205811
+
+ Updating time: 0.0044889450073242
+
+ Updating time: 0.0044319629669189
+
+ Updating time: 0.0043089389801025
+
+ Updating time: 0.0043549537658691
+
+ Updating time: 0.0046608448028564
+
+ Updating time: 0.0045578479766846
+
+ Updating time: 0.0043001174926758
+
+ Updating time: 0.0044140815734863
+
+ Updating time: 0.0043010711669922
+
+ Updating time: 0.004241943359375
+
+ Updating time: 0.004324197769165
+
+ Updating time: 0.004260778427124
+
+ Updating time: 0.0043709278106689
+
+ Updating time: 0.0052309036254883
+
+ Updating time: 0.0047659873962402
+
+ Updating time: 0.0042009353637695
+
+ Updating time: 0.0041589736938477
+
+ Updating time: 0.0041840076446533
+
+ Updating time: 0.0041651725769043
+
+ Updating time: 0.0040519237518311
+
+ Updating time: 0.0040919780731201
+
+ Updating time: 0.0050048828125
+
+ Updating time: 0.0041408538818359
+
+ Updating time: 0.0046439170837402
+
+ Updating time: 0.0040390491485596
+
+ Updating time: 0.0039689540863037
+
+ Updating time: 0.0040929317474365
+
+ Updating time: 0.004241943359375
+
+ Updating time: 0.0042309761047363
+
+ Updating time: 0.0040080547332764
+
+ Updating time: 0.0040140151977539
+
+ Updating time: 0.004378080368042
+
+ Updating time: 0.0041999816894531
+
+ Updating time: 0.0042390823364258
+
+ Updating time: 0.0051100254058838
+
+ Updating time: 0.00465989112854
+
+ Updating time: 0.0044629573822021
+
+ Updating time: 0.0042839050292969
+
+ Updating time: 0.0042328834533691
+
+ Updating time: 0.0042600631713867
+
+ Updating time: 0.0043060779571533
+
+ Updating time: 0.0050561428070068
+
+ Updating time: 0.0043060779571533
+
+ Updating time: 0.0042548179626465
+
+ Updating time: 0.0043931007385254
+
+ Updating time: 0.0044910907745361
+
+ Updating time: 0.0042450428009033
+
+ Updating time: 0.0042450428009033
+
+ Updating time: 0.0042688846588135
+
+ Updating time: 0.0043869018554688
+
+ Updating time: 0.0043158531188965
+
+ Updating time: 0.0044040679931641
+
+ Updating time: 0.0043468475341797
+
+ Updating time: 0.0041930675506592
+
+ Updating time: 0.0042300224304199
+
+ Updating time: 0.0041229724884033
+
+ Updating time: 0.004152774810791
+
+ Updating time: 0.0041129589080811
+
+ Updating time: 0.004141092300415
+
+ Updating time: 0.0041348934173584
+
+ Updating time: 0.0041360855102539
+
+ Updating time: 0.0042967796325684
+
+ Updating time: 0.0046589374542236
+
+ Updating time: 0.0043740272521973
+
+ Updating time: 0.004127025604248
+
+ Updating time: 0.0041408538818359
+
+ Updating time: 0.0041749477386475
+
+ Updating time: 0.0042910575866699
+
+ Updating time: 0.0043771266937256
+
+ Updating time: 0.0044820308685303
+
+ Updating time: 0.0041780471801758
+
+ Updating time: 0.0042979717254639
+
+ Updating time: 0.0042250156402588
+
+ Updating time: 0.0043120384216309
+
+ Updating time: 0.0041790008544922
+
+ Updating time: 0.0075719356536865
+
+ Updating time: 0.0041680335998535
+
+ Updating time: 0.0042209625244141
+
+ Updating time: 0.0042250156402588
+
+ Updating time: 0.0042040348052979
+
+ Updating time: 0.004148006439209
+
+ Updating time: 0.004270076751709
+
+ Updating time: 0.004223108291626
+
+ Updating time: 0.0042798519134521
+
+ Updating time: 0.0041899681091309
+
+ Updating time: 0.004166841506958
+
+ Updating time: 0.0071139335632324
+
+ Updating time: 0.0043339729309082
+
+ Updating time: 0.0041999816894531
+
+ Updating time: 0.0043129920959473
+
+ Updating time: 0.0047340393066406
+
+ Updating time: 0.0044610500335693
+
+ Updating time: 0.0044550895690918
+
+ Updating time: 0.0045039653778076
+
+ Updating time: 0.0043890476226807
+
+ Updating time: 0.0043160915374756
+
+ Updating time: 0.0043380260467529
+
+ Updating time: 0.0042200088500977
+
+ Updating time: 0.0045249462127686
+
+ Updating time: 0.0045390129089355
+
+ Updating time: 0.004227876663208
+
+ Updating time: 0.0043268203735352
+
+ Updating time: 0.0045950412750244
+
+ Updating time: 0.004141092300415
+
+ Updating time: 0.0043060779571533
+
+ Updating time: 0.0041389465332031
+
+ Updating time: 0.0041060447692871
+
+ Updating time: 0.0040090084075928
+
+ Updating time: 0.0042810440063477
+
+ Updating time: 0.0045430660247803
+
+ Updating time: 0.0042760372161865
+
+ Updating time: 0.0045919418334961
+
+ Updating time: 0.0041379928588867
+
+ Updating time: 0.0042581558227539
+
+ Updating time: 0.0041170120239258
+
+ Updating time: 0.004364013671875
+
+ Updating time: 0.0042200088500977
+
+ Updating time: 0.0042440891265869
+
+ Updating time: 0.0043559074401855
+
+ Updating time: 0.0041799545288086
+
+ Updating time: 0.0047538280487061
+
+ Updating time: 0.0049760341644287
+
+ Updating time: 0.0045478343963623
+
+ Updating time: 0.004845142364502
+
+ Updating time: 0.016263961791992
+
+ Updating time: 0.011849880218506
+
+ Updating time: 0.0067880153656006
+
+ Updating time: 0.0047640800476074
+
+ Updating time: 0.0046389102935791
+
+ Updating time: 0.0041849613189697
+
+ Updating time: 0.004213809967041
+
+ Updating time: 0.0043249130249023
+
+ Updating time: 0.0044739246368408
+
+ Updating time: 0.0044181346893311
+
+ Updating time: 0.0042629241943359
+
+ Updating time: 0.0042719841003418
+
+ Updating time: 0.0042450428009033
+
+ Updating time: 0.010329961776733
+
+ Updating time: 0.0046021938323975
+
+ Updating time: 0.0042018890380859
+
+ Updating time: 0.0042040348052979
+
+ Updating time: 0.005702018737793
+
+ Updating time: 0.0044999122619629
+
+ Updating time: 0.0042710304260254
+
+ Updating time: 0.0040299892425537
+
+ Updating time: 0.0039980411529541
+
+ Updating time: 0.004011869430542
+
+ Updating time: 0.0040690898895264
+
+ Updating time: 0.004194974899292
+
+ Updating time: 0.0051338672637939
+
+ Updating time: 0.0044538974761963
+
+ Updating time: 0.0042431354522705
+
+ Updating time: 0.0043082237243652
+
+ Updating time: 0.0063388347625732
+
+ Updating time: 0.0041780471801758
+
+ Updating time: 0.0041770935058594
+
+ Updating time: 0.0042130947113037
+
+ Updating time: 0.0042338371276855
+
+ Updating time: 0.0042459964752197
+
+ Updating time: 0.0042181015014648
+
+ Updating time: 0.0044429302215576
+
+ Updating time: 0.0078740119934082
+
+ Updating time: 0.004539966583252
+
+ Updating time: 0.0043652057647705
+
+ Updating time: 0.0043208599090576
+
+ Updating time: 0.0055978298187256
+
+ Updating time: 0.0044920444488525
+
+ Updating time: 0.0042970180511475
+
+ Updating time: 0.0042479038238525
+
+ Updating time: 0.0042541027069092
+
+ Updating time: 0.0041971206665039
+
+ Updating time: 0.0042529106140137
+
+ Updating time: 0.0041818618774414
+
+ Updating time: 0.0042409896850586
+
+ Updating time: 0.0041780471801758
+
+ Updating time: 0.0042250156402588
+
+ Updating time: 0.0041699409484863
+
+ Updating time: 0.0042150020599365
+
+ Updating time: 0.0043389797210693
+
+ Updating time: 0.0041642189025879
+
+ Updating time: 0.004119873046875
+
+ Updating time: 0.0044951438903809
+
+ Updating time: 0.0041730403900146
+
+ Updating time: 0.0047130584716797
+
+ Updating time: 0.0043179988861084
+
+ Updating time: 0.004263162612915
+
+ Updating time: 0.004410982131958
+
+ Updating time: 0.0042128562927246
+
+ Updating time: 0.0042109489440918
+
+ Updating time: 0.0043740272521973
+
+ Updating time: 0.0042240619659424
+
+ Updating time: 0.004302978515625
+
+ Updating time: 0.0043179988861084
+
+ Updating time: 0.0071349143981934
+
+ Updating time: 0.0043349266052246
+
+ Updating time: 0.0043618679046631
+
+ Updating time: 0.0042400360107422
+
+ Updating time: 0.0042200088500977
+
+ Updating time: 0.0045580863952637
+
+ Updating time: 0.0046241283416748
+
+ Updating time: 0.0044040679931641
+
+ Updating time: 0.0043470859527588
+
+ Updating time: 0.0043909549713135
+
+ Updating time: 0.0042221546173096
+
+ Updating time: 0.0042710304260254
+
+ Updating time: 0.0042200088500977
+
+ Updating time: 0.0043690204620361
+
+ Updating time: 0.0041739940643311
+
+ Updating time: 0.0042798519134521
+
+ Updating time: 0.0042450428009033
+
+ Updating time: 0.0040988922119141
+
+ Updating time: 0.0045788288116455
+
+ Updating time: 0.004601001739502

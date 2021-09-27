@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ActiveDeposit;
 use App\Models\Card;
 use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
@@ -73,20 +74,6 @@ class DepositService
     /**
      * @param array $deposit
      * @param integer $id
-     * @return bool
-     */
-    public function newDeposit($deposit, $id): bool
-    {
-        return $this->depositRepository->newDeposit(
-            $id,
-            $deposit,
-            Auth::id() ?? 0
-        ) ?? false;
-    }
-
-    /**
-     * @param array $deposit
-     * @param integer $id
      * @return array
      */
     public function accept($deposit, $id): array
@@ -109,8 +96,7 @@ class DepositService
                     $deposit,
                     $id,
                     $currency,
-                    $sum,
-                    $numberFrom
+                    $sum
                 );
                 return ['success', Arr::get(self::RESPONSES ,'done', null)];
             }
@@ -176,19 +162,37 @@ class DepositService
      */
     public function close($id): array
     {
-        $this->activeDepositRepository->getMoney($id);
         $deposit = $this->activeDepositRepository->find($id);
-        $this->transferRepository->create([
-            'card_from' => 'Bank',
-            'card_to' => $this->cardRepository->getNumber(Arr::get($deposit, 'card_id', null)),
-            'date' => date('Y-m-d H:i:s'),
-            'sum' => Arr::get($deposit, 'total_sum', null),
-            'new_sum' => Arr::get($deposit, 'total_sum', null),
-            'currency' => Arr::get($deposit, 'currency', null),
-            'comment' => 'Closing deposit',
-            'user_id' => Auth::user()->id ?? 0
-        ]);
-        $this->activeDepositRepository->delete($id);
+        $this->allTransactionsService->closeDeposit($id, $deposit);
+
         return ['success', Arr::get(self::RESPONSES, 'closed', null)];
+    }
+
+    /**
+     * @return bool
+     */
+    public function decrease(): bool
+    {
+        $deposits = $this->activeDepositRepository->getDepositsByDate();
+
+        foreach ($deposits as $deposit) {
+            $depositId = Arr::get($deposit, 'id', 1);
+
+            $time1 = microtime(TRUE);
+
+            $monthLeft = $this->activeDepositRepository->getMonthsLeft($depositId);
+            $monthSum = $this->activeDepositRepository->getMonthSum($depositId);
+
+            $this->allTransactionsService->depositDecrease($depositId, $monthLeft, $monthSum, $deposit);
+
+            $time2 = microtime(TRUE);
+            $time = $time2 - $time1;
+            file_put_contents('debugDep.txt', "\n\n Updating time: " . $time, FILE_APPEND);
+
+            if ($monthLeft <= 0) {
+                $this->allTransactionsService->closeDeposit($depositId);
+            }
+        }
+        return true;
     }
 }

@@ -6,6 +6,7 @@ use App\Models\ActiveDeposit;
 use App\Models\Card;
 use App\Models\CardTransfer;
 use App\Repository\ActiveDepositRepositoryInterface;
+use App\Services\AllTransactionsService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -84,42 +85,39 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
         return true;
     }
 
+    public function getDepositsByDate(): object
+    {
+        $date = date('d');
+        return $this->model->where('created_at', 'like', "%-$date %")->get();
+    }
+
+    public function getMonthsLeft($depositId)
+    {
+        return Arr::get($this->model->where('id', $depositId)->first(), 'month_left', 1);
+    }
+
+    public function getMonthSum($depositId)
+    {
+        return Arr::get($this->model->where('id', $depositId)->first(), 'month_pay', null);
+    }
+
     /**
-     * @param array $deposits
+     * Getting dates of creation
+     * @return object
+     */
+    public function getIds(): object
+    {
+        return $this->model->select('id')->get();
+    }
+
+    /**
+     * @param $id
+     * @param $newDate
      * @return bool
      */
-    public function decrease($deposits = null): bool
+    public function updateDate($id, $newDate): bool
     {
-        if (!$deposits) {
-            $deposits = $this->model->all();
-        }
-        foreach ($deposits as $deposit) {
-            $depositId = Arr::get($deposit, 'id', 1);
-            $monthLeft = Arr::get($this->model->where('id', $depositId)->first(), 'month_left', 1);
-            $createDate = date('d', strtotime(Arr::get($deposit, 'created_at', null)));
-            if ($monthLeft <= 0) {
-                $this->getMoney($depositId);
-                $this->delete($depositId);
-            } elseif ($createDate === date('d')) {
-                $change = $monthLeft - 1;
-                $monthSum = Arr::get($this->model->where('id', $depositId)->first(), 'month_pay', null);
-                $this->model->where('id', $depositId)->update([
-                    'month_left' => $change,
-                    'total_sum' => Arr::get($deposit, 'total_sum', null) + $monthSum
-                ]);
-                $this->transferRepository->create([
-                    'card_from' => 'Bank',
-                    'card_to' => 'Deposit',
-                    'date' => date('Y-m-d H:i:s'),
-                    'sum' => $monthSum,
-                    'new_sum' => $monthSum,
-                    'currency' => Arr::get($deposit, 'currency', null),
-                    'comment' => 'Percents to deposit',
-                    'user_id' => Arr::get($deposit, 'user_id', null)
-                ]);
-            }
-        }
-        return true;
+        return $this->model->where('id', $id)->update(['created_at' => $newDate]);
     }
 
 }
