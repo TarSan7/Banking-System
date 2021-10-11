@@ -96,9 +96,11 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
      * Getting deposits by current date
      * @return object
      */
-    public function getDepositsByDate(): object  //think about it
+    public function getDepositsByDate($date = null): object
     {
-        $date = date('d');
+        if (!$date) {
+            $date = date('d');
+        }
         return $this->model->where('date', 'like', "%-$date")->get();
     }
 

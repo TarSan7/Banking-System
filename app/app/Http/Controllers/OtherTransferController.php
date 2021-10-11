@@ -50,7 +50,6 @@ class OtherTransferController extends Controller
      */
     public function make(TransferToPhoneRequest $request, $lang, $id)
     {
-        var_dump($id);
         $this->transferService->setInfo($request->validated(), $id);
         $response = $this->transferService->otherCheck($id);
         if (Arr::get($response, 0, null) === 'success') {

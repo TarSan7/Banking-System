@@ -63,12 +63,12 @@ class DepositRepository extends BaseRepository implements DepositRepositoryInter
         } else {
             $monthPay = round(($percent * 0.01 * $sum) / $duration, 2);
         }
-
-        if (in_array((int) date('d'), [29, 30, 31])) {
-            $date = date('Y-m-d', strtotime('first day of next month'));
-        } else {
-            $date = date('Y-m-d');
-        }
+//
+//        if (in_array((int) date('d'), [29, 30, 31])) {
+//            $date = date('Y-m-d', strtotime('first day of next month'));
+//        } else {
+//        }
+        $date = date('Y-m-d');
         $earlyPercent = Arr::get($baseDeposit, 'early_percent', null) == $percent;
         $intimePercent = Arr::get($baseDeposit, 'intime_percent', null) == $percent;
 

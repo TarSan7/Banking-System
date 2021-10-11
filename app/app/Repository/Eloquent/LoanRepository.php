@@ -72,11 +72,7 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
         $percent = Arr::get($loan, 'percent', 0);
         $duration = Arr::get($loan, 'duration', null);
         $sumPercents = $sum * ($percent * $duration) / 12 * 0.01;
-        if (in_array((int) date('d'), [29, 30, 31])) {
-            $date = date('Y-m-d', strtotime('first day of next month'));
-        } else {
-            $date = date('Y-m-d');
-        }
+        $date = date('Y-m-d');
         $total = $sum + $sumPercents;
         return (bool) $this->activeLoan->create([
             'loan_id' => $id,

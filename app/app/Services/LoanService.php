@@ -107,29 +107,15 @@ class LoanService
      * Decreasing sum of loan
      * @return bool
      */
-    public function decrease(): bool
+    public function decrease($loans): bool
     {
-        $loans = $this->activeLoanRepository->getLoansByDate();
 
         foreach ($loans as $loan) {
             $loanId = Arr::get($loan, 'id', null);
             $monthLeft = Arr::get($loan, 'month_left', null);
-
-//            $time1 = microtime(TRUE);
-
             $this->allTransactionsService->decreaseLoan($loan, $monthLeft, $loanId);
-
-//            $time2 = microtime(TRUE);
-//            $time = $time2 - $time1;
-//            file_put_contents('debug.txt', "\n\n Updating time: " . $time, FILE_APPEND);
             if ($monthLeft <= 0) {
-//                $time1 = microtime(TRUE);
-
                 $this->activeLoanRepository->delete($loanId);
-
-//                $time2 = microtime(TRUE);
-//                $time = $time2 - $time1;
-//                file_put_contents('debug.txt', "\n\n Deleting time: " . $time, FILE_APPEND);
             }
         }
         return true;

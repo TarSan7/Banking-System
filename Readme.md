@@ -32,6 +32,7 @@ Application that simulates the banking system.
 2. From project directory serve command:
    ```
    $ lando start
+   $ lando composer install
    $ lando artisan migrate
    ```
 

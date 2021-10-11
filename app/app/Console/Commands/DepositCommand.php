@@ -17,7 +17,7 @@ class DepositCommand extends Command
     /**
      * @var ActiveDepositRepository
      */
-    private $depositService;
+    private $depositService, $activeDepositRepository;
 
     /**
      * The console command description.
@@ -29,10 +29,11 @@ class DepositCommand extends Command
      * Create a new command instance.
      * @param ActiveDepositRepository $activeDepositRepository
      */
-    public function __construct(DepositService $depositService)
+    public function __construct(DepositService $depositService, ActiveDepositRepository $activeDepositRepository)
     {
         parent::__construct();
         $this->depositService = $depositService;
+        $this->activeDepositRepository = $activeDepositRepository;
     }
 
     /**
@@ -42,9 +43,14 @@ class DepositCommand extends Command
      */
     public function handle(): bool
     {
-
-        if (!in_array((int) date('d'), [29, 30, 31])) {
-            return $this->depositService->decrease();
+        if (date('d') === date('d', strtotime("last day of this month"))) {
+            for ($i = (int) date('d'); $i <= 31; $i++) {
+                $deposits = $this->activeDepositRepository->getDepositsByDate($i);
+                $this->depositService->decrease($deposits);
+            }
+        } else {
+            $deposits = $this->activeDepositRepository->getDepositsByDate();
+            return $this->depositService->decrease($deposits);
         }
         return true;
     }

@@ -20,7 +20,7 @@ class LoanCommand extends Command
     /**
      * @var ActiveLoanRepository
      */
-    private $loanService;
+    private $loanService, $activeLoanRepository;
 
     /**
      * The console command description.
@@ -35,10 +35,11 @@ class LoanCommand extends Command
      * @param LoanService $loanService
      * @return void
      */
-    public function __construct(LoanService $loanService)
+    public function __construct(LoanService $loanService, ActiveLoanRepository $activeLoanRepository)
     {
         parent::__construct();
         $this->loanService = $loanService;
+        $this->activeLoanRepository = $activeLoanRepository;
     }
 
     /**
@@ -48,8 +49,14 @@ class LoanCommand extends Command
      */
     public function handle(): bool
     {
-        if (!in_array((int) date('d'), [29, 30, 31])) {
-            return $this->loanService->decrease();
+        if (date('d') === date('d', strtotime("last day of this month"))) {
+            for ($i = (int) date('d'); $i <= 31; $i++) {
+                $loans = $this->activeLoanRepository->getLoansByDate($i);
+                $this->loanService->decrease($loans);
+            }
+        } else {
+            $loans = $this->activeLoanRepository->getLoansByDate();
+            return $this->loanService->decrease($loans);
         }
         return true;
     }

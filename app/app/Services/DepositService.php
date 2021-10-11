@@ -179,23 +179,14 @@ class DepositService
      * Decreasing deposit sum
      * @return bool
      */
-    public function decrease(): bool
+    public function decrease($deposits): bool
     {
-        $deposits = $this->activeDepositRepository->getDepositsByDate();
-
         foreach ($deposits as $deposit) {
             $depositId = Arr::get($deposit, 'id', 1);
-
-//            $time1 = microtime(TRUE);
-
             $monthLeft = $this->activeDepositRepository->getMonthsLeft($depositId);
             $monthSum = $this->activeDepositRepository->getMonthSum($depositId);
 
             $this->allTransactionsService->depositDecrease($depositId, $monthLeft, $monthSum, $deposit);
-
-//            $time2 = microtime(TRUE);
-//            $time = $time2 - $time1;
-//            file_put_contents('debugDep.txt', "\n\n Updating time: " . $time, FILE_APPEND);
 
             if ($monthLeft <= 0) {
                 $this->allTransactionsService->closeDeposit($depositId);
