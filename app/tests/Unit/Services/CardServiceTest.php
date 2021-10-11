@@ -13,6 +13,7 @@ use App\Repository\Eloquent\LoanRepository;
 use App\Repository\Eloquent\TransferRepository;
 use App\Repository\Eloquent\UserCardRepository;
 use App\Repository\Eloquent\UserRepository;
+use App\Services\AllTransactionsService;
 use App\Services\CardService;
 use Database\Factories\CardFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,7 @@ class CardServiceTest extends TestCase
     private $mockUserRepository;
     private $mockTransferRepository;
     private $mockLoanRepository;
+    private $mockAllTransactionsService;
     /**
      * Set up the test environment.
      */
@@ -45,14 +47,15 @@ class CardServiceTest extends TestCase
         $this->mockUserRepository = $this->createMock(UserRepository::class);
         $this->mockTransferRepository = $this->createMock(TransferRepository::class);
         $this->mockLoanRepository = $this->createMock(LoanRepository::class);
+        $this->mockAllTransactionsService = $this->createMock(AllTransactionsService::class);
 
         $this->cardService = new CardService(
             $this->mockCardRepository,
             $this->mockUserCardRepository,
             $this->mockUserRepository,
             new CardFactory(),
-            $this->mockTransferRepository,
             $this->mockLoanRepository,
+            $this->mockAllTransactionsService
         );
     }
 
@@ -119,23 +122,22 @@ class CardServiceTest extends TestCase
         $this->assertCount(0, $this->cardService->getUserCards());
     }
 
+    /**
+     * New credit card
+     */
     public function testNewCreditCard(): void
     {
         $this->assertTrue((bool) $this->cardService->check());
 
-//        $this->mockUserCardRepository->method('cardIdByUser')->willReturn([]);
-//        $this->mockCardRepository->method('credit')->willReturn([]);
-//        $this->mockCardRepository->method('create')->willReturn(new Card);
-//        $this->mockTransferRepository->method('create')->willReturn(new CardTransfer);
-//        $this->mockUserCardRepository->method('createNew')->willReturn(new UserCard);
-
+        $this->mockUserCardRepository->method('cardIdByUser')->willReturn(new \Illuminate\Support\Collection() );
+        $this->mockCardRepository->method('credit')->willReturn(null);
         $this->mockLoanRepository->method('getLoan')->willReturn(Loan::first());
+        $this->mockAllTransactionsService->method('cardCreate');
+        $this->mockCardRepository->method('generalSumByCurrency')->willReturn(10000);
         $this->mockCardRepository->method('getCardByNum')->willReturn(Card::first());
-
+        $this->mockAllTransactionsService->method('takeLoan');
 
         $newCard = $this->cardService->newCreditCard(-101, 1);
-        $this->assertIsObject($newCard);
-        $this->assertEquals($newCard, $this->cardService->newCreditCard(-101, 1));
-        $this->assertTrue((bool) $this->cardService->check());
+        $this->assertTrue($newCard);
     }
 }

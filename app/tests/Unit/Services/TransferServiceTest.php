@@ -7,6 +7,7 @@ use App\Models\CardTransfer;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\TransferRepository;
 use App\Repository\Eloquent\UserRepository;
+use App\Services\AllTransactionsService;
 use App\Services\TransferService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
@@ -34,6 +35,8 @@ class TransferServiceTest extends TestCase
      */
     private $mockUserRepository;
 
+    private $mockAllTransactionsService;
+
     private $setData = array(
         'sum' => 100.5,
         'numberFrom' => 1,
@@ -50,11 +53,13 @@ class TransferServiceTest extends TestCase
         $this->mockCardRepository = $this->createMock(CardRepository::class);
         $this->mockTransferRepository = $this->createMock(TransferRepository::class);
         $this->mockUserRepository = $this->createMock(UserRepository::class);
+        $this->mockAllTransactionsService = $this->createMock(AllTransactionsService::class);
 
         $this->transferService = new TransferService(
             $this->mockCardRepository,
             $this->mockTransferRepository,
-            $this->mockUserRepository
+            $this->mockUserRepository,
+            $this->mockAllTransactionsService
         );
     }
 
@@ -124,10 +129,30 @@ class TransferServiceTest extends TestCase
      */
     public function testCreateTransfer(): void
     {
-        $this->mockTransferRepository->method('create');
         $this->mockCardRepository->method('find')->willReturn(new Card());
+        $this->mockCardRepository->method('getSumFrom')->willReturn(100.);
+        $this->mockCardRepository->method('getCurrencyFrom')->willReturn('EUR');
 
-        $this->assertTrue($this->transferService->createTransfer());
+        $transfer = $this->transferService->createTransfer();
+        $this->assertEquals('EUR', Arr::get($transfer, 'currency', null));
+    }
+
+    /**
+     * Array with card information
+     */
+    public function testInfoFrom(): void
+    {
+        $this->mockCardRepository->method('getSumFrom')->willReturn(100.);
+        $this->assertIsArray($this->transferService->infoFrom());
+    }
+
+    /**
+     * Array with card information
+     */
+    public function testInfoTo(): void
+    {
+        $this->mockCardRepository->method('getSumTo')->willReturn(100.);
+        $this->assertIsArray($this->transferService->infoFrom());
     }
 
     /**

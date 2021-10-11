@@ -37,10 +37,8 @@ class RegisterController extends Controller
         if (Auth::check()) {
             return redirect(route('user.private'));
         }
-
         $validate = $request->validated();
         $user = $this->userRepository->create($validate);
-
         if ($user) {
             Auth::login($user);
             return redirect(route('user.private',

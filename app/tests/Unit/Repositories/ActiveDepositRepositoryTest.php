@@ -81,14 +81,6 @@ class ActiveDepositRepositoryTest extends TestCase
     }
 
     /**
-     * Decrease deposit sum
-     */
-    public function testDecrease(): void
-    {
-        $this->assertTrue($this->activeDepositRepository->decrease());
-    }
-
-    /**
      * Deleting active loan
      */
     public function testDelete(): void
@@ -102,5 +94,50 @@ class ActiveDepositRepositoryTest extends TestCase
     public function testUserDeposits(): void
     {
         $this->assertCount(1, $this->activeDepositRepository->userDeposits(1));
+    }
+
+    /**
+     * Checking deposits by current date
+     */
+    public function testGetDepositsByDate(): void
+    {
+        $deposits = $this->activeDepositRepository->getDepositsByDate();
+        $this->assertCount(1, $deposits);
+    }
+
+    /**
+     * Getting month left
+     */
+    public function testGetMonthsLeft(): void
+    {
+        $this->assertEquals(12, $this->activeDepositRepository->getMonthsLeft(6));
+    }
+
+    /**
+     * Getting month sum
+     */
+    public function testGetMonthSum(): void
+    {
+        $this->assertEquals(300, $this->activeDepositRepository->getMonthSum(7));
+    }
+
+    /**
+     * Getting ids of deposits
+     */
+    public function testGetIds(): void
+    {
+        $this->assertCount(1, $this->activeDepositRepository->getIds());
+    }
+
+    /**
+     * Update date of deposit
+     */
+    public function testUpdateDate(): void
+    {
+        $date = date('y-m-d');
+        $this->activeDepositRepository->updateDate(9, $date);
+        $this->assertDatabaseHas('active_deposits', [
+            'created_at' => $date
+        ]);
     }
 }

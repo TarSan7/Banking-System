@@ -36,12 +36,9 @@ class ActiveLoanRepositoryTest extends TestCase
 
         $this->activeLoanRepository = new ActiveLoanRepository(
             new ActiveLoan(),
-            new CardRepository(new Card()),
-            new TransferRepository(new CardTransfer())
         );
         $this->loanRepository = new LoanRepository(
             new Loan(),
-            new CardRepository(new Card()),
             new ActiveLoan()
         );
     }
@@ -67,13 +64,12 @@ class ActiveLoanRepositoryTest extends TestCase
     }
 
     /**
-     * Decrease loan sum
+     * Checking loan by current date
      */
-    public function testDecrease(): void
+    public function testGetLoansByDate(): void
     {
-        for ($i = 0; $i < 6; $i++) {
-            $this->assertTrue($this->activeLoanRepository->decrease());
-        }
+        $loans = $this->activeLoanRepository->getLoansByDate();
+        $this->assertCount(1, $loans);
     }
 
     /**
@@ -93,4 +89,24 @@ class ActiveLoanRepositoryTest extends TestCase
         $this->assertCount(1, $this->activeLoanRepository->userLoans(1));
     }
 
+    /**
+     * Getting ids of loans
+     */
+    public function testGetIds(): void
+    {
+        $this->assertCount(1, $this->activeLoanRepository->getIds());
+    }
+
+    /**
+     * Update date of deposit
+     */
+    public function testUpdateDate(): void
+    {
+        $date = date('y-m-d');
+        $this->activeLoanRepository->updateDate(7, $date);
+//        print_r($this->activeLoanRepository->all());
+        $this->assertDatabaseHas('active_loans', [
+            'created_at' => $date
+        ]);
+    }
 }

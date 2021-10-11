@@ -25,7 +25,8 @@ class ActiveDepositSeeder extends Seeder
             'early_percent' => 1,
             'intime_percent' => 0,
             'card_id' => 1,
-            'user_id' => 1
+            'user_id' => 1,
+            'date' => date('y-m-d')
         ]);
     }
 }

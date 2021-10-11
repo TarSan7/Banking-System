@@ -34,7 +34,8 @@ class ActiveDepositFactory extends Factory
             'early_percent' => 1,
             'intime_percent' => 0,
             'card_id' => rand(1, 1100000),
-            'user_id' => rand(1, 100000)
+            'user_id' => rand(1, 100000),
+            'date' => $this->faker->dateTimeInInterval('-10 years', '+27 days')
         ];
     }
 }

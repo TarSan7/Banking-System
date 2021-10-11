@@ -12,23 +12,26 @@ use Illuminate\Support\Collection;
 
 class ActiveDepositRepository extends BaseRepository implements ActiveDepositRepositoryInterface
 {
-    private $cardRepository, $transferRepository;
     /**
-     * DepositRepository constructor.
-     *
+     * @var CardRepository
+     */
+    private $cardRepository;
+
+    /**
+     * DepositRepository constructor
      * @param ActiveDeposit $model
+     * @param CardRepository $cardRepository
      */
     public function __construct(
         ActiveDeposit $model,
-        CardRepository $cardRepository,
-        TransferRepository $transferRepository
+        CardRepository $cardRepository
     ) {
         parent::__construct($model);
         $this->cardRepository = $cardRepository;
-        $this->transferRepository = $transferRepository;
     }
 
     /**
+     * Take all deposits
      * @return Collection
      */
     public function all(): Collection
@@ -37,6 +40,7 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
+     * Getting cards id
      * @return Collection
      */
     public function getCardsId(): Collection
@@ -45,6 +49,7 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
+     * Getting user deposits
      * @param int $userId
      * @return Collection
      */
@@ -54,6 +59,7 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
+     * Getting money when closing deposit
      * @param int $deposit_id
      */
     public function getMoney($deposit_id): void
@@ -72,6 +78,7 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
+     * Deleting deposit
      * @param int $id
      * @return bool
      */
@@ -85,24 +92,38 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
         return true;
     }
 
-    public function getDepositsByDate(): object
+    /**
+     * Getting deposits by current date
+     * @return object
+     */
+    public function getDepositsByDate(): object  //think about it
     {
         $date = date('d');
-        return $this->model->where('created_at', 'like', "%-$date %")->get();
+        return $this->model->where('date', 'like', "%-$date")->get();
     }
 
+    /**
+     * Getting number of month left
+     * @param int $depositId
+     * @return array|\ArrayAccess|mixed
+     */
     public function getMonthsLeft($depositId)
     {
         return Arr::get($this->model->where('id', $depositId)->first(), 'month_left', 1);
     }
 
+    /**
+     * Getting month payment
+     * @param int $depositId
+     * @return array|\ArrayAccess|mixed
+     */
     public function getMonthSum($depositId)
     {
         return Arr::get($this->model->where('id', $depositId)->first(), 'month_pay', null);
     }
 
     /**
-     * Getting dates of creation
+     * Getting id's of deposits
      * @return object
      */
     public function getIds(): object
@@ -111,13 +132,13 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
-     * @param $id
-     * @param $newDate
-     * @return bool
+     * Update dates for active deposits
+     * @param int $id
+     * @param string $newDate
      */
-    public function updateDate($id, $newDate): bool
+    public function updateDate($id, $newDate): void
     {
-        return $this->model->where('id', $id)->update(['created_at' => $newDate]);
+        $this->model->where('id', $id)->update(['created_at' => $newDate]);
     }
 
 }

@@ -19,6 +19,7 @@ class TransferRepository extends BaseRepository implements TransferRepositoryInt
     }
 
     /**
+     * Getting all transfers
      * @return Collection
      */
     public function all(): Collection
@@ -27,6 +28,7 @@ class TransferRepository extends BaseRepository implements TransferRepositoryInt
     }
 
     /**
+     * Getting transactions of card
      * @param integer $number
      * @return ?Collection
      */
@@ -37,6 +39,7 @@ class TransferRepository extends BaseRepository implements TransferRepositoryInt
     }
 
     /**
+     * Getting all user cards transactions
      * @param string $number
      * @return Collection
      */

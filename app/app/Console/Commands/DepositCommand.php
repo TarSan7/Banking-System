@@ -42,6 +42,10 @@ class DepositCommand extends Command
      */
     public function handle(): bool
     {
-        return $this->depositService->decrease();
+
+        if (!in_array((int) date('d'), [29, 30, 31])) {
+            return $this->depositService->decrease();
+        }
+        return true;
     }
 }

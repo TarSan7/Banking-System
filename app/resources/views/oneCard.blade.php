@@ -16,7 +16,7 @@
                         <div class="nav-item">
                             <a class="nav-link active" href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), [$locale, 'id' => $card['id']])}}">
                         <span class="sr-only">
-                            @if (app()->getLocale() == $locale) @endif {{ strtoupper($locale) }}
+                            {{ strtoupper($locale) }}
                         </span>
                             </a>
                         </div>

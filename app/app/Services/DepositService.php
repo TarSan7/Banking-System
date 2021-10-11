@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\ActiveDeposit;
 use App\Models\Card;
 use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
-use App\Repository\Eloquent\TransferRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -18,8 +16,13 @@ class DepositService
 
     /**
      * @var DepositRepository
+     * @var ActiveDepositRepository
+     * @var CardRepository
+     * @var AllTransactionsService
      */
-    private $depositRepository, $activeDepositRepository, $cardRepository, $transferRepository, $allTransactionsService;
+    private $depositRepository, $activeDepositRepository, $cardRepository, $allTransactionsService;
+
+    const MAX_DEPOSITS = 3;
 
     /**
      * Responses for controller
@@ -37,19 +40,17 @@ class DepositService
      * @param DepositRepository $depositRepository
      * @param ActiveDepositRepository $activeDepositRepository
      * @param CardRepository $cardRepository
-     * @param TransferRepository $transferRepository
+     * @param AllTransactionsService $allTransactionsService
      */
     public function __construct(
         DepositRepository $depositRepository,
         ActiveDepositRepository $activeDepositRepository,
         CardRepository $cardRepository,
-        TransferRepository $transferRepository,
         AllTransactionsService $allTransactionsService
     ) {
         $this->depositRepository = $depositRepository;
         $this->activeDepositRepository = $activeDepositRepository;
         $this->cardRepository = $cardRepository;
-        $this->transferRepository = $transferRepository;
         $this->allTransactionsService = $allTransactionsService;
     }
 
@@ -63,6 +64,7 @@ class DepositService
     }
 
     /**
+     * Getting one deposit by id
      * @param $id
      * @return Model|null
      */
@@ -72,13 +74,14 @@ class DepositService
     }
 
     /**
+     * Accepting deposit
      * @param array $deposit
      * @param integer $id
      * @return array
      */
     public function accept($deposit, $id): array
     {
-        if ($this->countUserDeposits() < 3) {
+        if ($this->countUserDeposits() < self::MAX_DEPOSITS) {
             $currency = Arr::get($deposit, 'currency', null);
             $sum = Arr::get($deposit, 'sum', null);
             $cardNum = Arr::get($deposit, 'numberFrom', null);
@@ -88,7 +91,7 @@ class DepositService
 
             if ($cardSum < $sum) {
                 return ['error', Arr::get(self::RESPONSES, 'money', null)];
-            } elseif ($this->cardRepository->getCurrencyFrom(Arr::get($deposit, 'numberFrom', null)) != $currency) {
+            } elseif ($this->cardRepository->getCurrencyFrom(Arr::get($deposit, 'numberFrom', null)) !== $currency) {
                 return ['error', Arr::get(self::RESPONSES, 'currency', null)];
             } else {
                 $this->allTransactionsService->takeDeposit(
@@ -106,6 +109,7 @@ class DepositService
     }
 
     /**
+     * Creating array with deposit transfer info
      * @param string $cardNum
      * @param float $sum
      * @param string $currency
@@ -125,6 +129,7 @@ class DepositService
     }
 
     /**
+     * Counting user deposits
      * @return int
      */
     public function countUserDeposits(): int
@@ -133,6 +138,7 @@ class DepositService
     }
 
     /**
+     * Getting all user deposits
      * @return array
      */
     public function getUserDeposits(): array
@@ -157,7 +163,8 @@ class DepositService
     }
 
     /**
-     * @param *int $id
+     * Closing deposits
+     * @param int $id
      * @return array
      */
     public function close($id): array
@@ -169,6 +176,7 @@ class DepositService
     }
 
     /**
+     * Decreasing deposit sum
      * @return bool
      */
     public function decrease(): bool
@@ -178,16 +186,16 @@ class DepositService
         foreach ($deposits as $deposit) {
             $depositId = Arr::get($deposit, 'id', 1);
 
-            $time1 = microtime(TRUE);
+//            $time1 = microtime(TRUE);
 
             $monthLeft = $this->activeDepositRepository->getMonthsLeft($depositId);
             $monthSum = $this->activeDepositRepository->getMonthSum($depositId);
 
             $this->allTransactionsService->depositDecrease($depositId, $monthLeft, $monthSum, $deposit);
 
-            $time2 = microtime(TRUE);
-            $time = $time2 - $time1;
-            file_put_contents('debugDep.txt', "\n\n Updating time: " . $time, FILE_APPEND);
+//            $time2 = microtime(TRUE);
+//            $time = $time2 - $time1;
+//            file_put_contents('debugDep.txt', "\n\n Updating time: " . $time, FILE_APPEND);
 
             if ($monthLeft <= 0) {
                 $this->allTransactionsService->closeDeposit($depositId);

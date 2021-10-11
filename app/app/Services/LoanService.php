@@ -14,8 +14,14 @@ class LoanService
 {
     /**
      * @var LoanRepository
+     * @var CardRepository
+     * @var CardService
+     * @var ActiveLoanRepository
+     * @var AllTransactionsService
      */
     private $loanRepository, $cardRepository, $cardService, $activeLoanRepository, $allTransactionsService;
+
+    const MAX_LOANS = 3;
 
     /**
      * Responses for controller
@@ -30,6 +36,9 @@ class LoanService
     /**
      * @param LoanRepository $loanRepository
      * @param CardService $cardService
+     * @param ActiveLoanRepository $activeLoanRepository
+     * @param CardRepository $cardRepository
+     * @param AllTransactionsService $allTransactionsService
      */
     public function __construct(
         LoanRepository $loanRepository,
@@ -55,6 +64,7 @@ class LoanService
     }
 
     /**
+     * Getting one loan by id
      * @param $id
      * @return Model|null
      */
@@ -64,21 +74,7 @@ class LoanService
     }
 
     /**
-     * @param array $card
-     * @param integer $id
-     * @return bool
-     */
-    public function newLoan($card, $id): bool
-    {
-        return $this->loanRepository->newLoan(
-            $id,
-            Arr::get($card, 'sum', null),
-            Arr::get($card, 'id', null),
-            Auth::user()->id ?? 0,
-        ) ?? false;
-    }
-
-    /**
+     * Accepting loan
      * @param float $sum
      * @param integer $id
      * @return array
@@ -86,15 +82,20 @@ class LoanService
     public function accept($sum, $id): array
     {
         $loanCurr = $this->loanRepository->getCurrency($id);
-        if ($this->countUserLoans() < 3 && $this->cardRepository->checkGeneralSum($sum, $loanCurr)) {
+        $countLoans = $this->countUserLoans();
+        if ($countLoans < self::MAX_LOANS && $this->cardRepository->checkGeneralSum($sum, $loanCurr)) {
             $this->cardService->newCreditCard($sum, $id);
             return ['success', Arr::get(self::RESPONSES, 'done', null)];
         } else {
-            return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
+            if ($countLoans >= self::MAX_LOANS) {
+                return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
+            }
+            return ['error', Arr::get(self::RESPONSES, 'money', null)];
         }
     }
 
     /**
+     * Counting user loans
      * @return int
      */
     public function countUserLoans(): int
@@ -103,6 +104,7 @@ class LoanService
     }
 
     /**
+     * Decreasing sum of loan
      * @return bool
      */
     public function decrease(): bool
@@ -113,21 +115,21 @@ class LoanService
             $loanId = Arr::get($loan, 'id', null);
             $monthLeft = Arr::get($loan, 'month_left', null);
 
-            $time1 = microtime(TRUE);
+//            $time1 = microtime(TRUE);
 
             $this->allTransactionsService->decreaseLoan($loan, $monthLeft, $loanId);
 
-            $time2 = microtime(TRUE);
-            $time = $time2 - $time1;
-            file_put_contents('debug.txt', "\n\n Updating time: " . $time, FILE_APPEND);
+//            $time2 = microtime(TRUE);
+//            $time = $time2 - $time1;
+//            file_put_contents('debug.txt', "\n\n Updating time: " . $time, FILE_APPEND);
             if ($monthLeft <= 0) {
-                $time1 = microtime(TRUE);
+//                $time1 = microtime(TRUE);
 
                 $this->activeLoanRepository->delete($loanId);
 
-                $time2 = microtime(TRUE);
-                $time = $time2 - $time1;
-                file_put_contents('debug.txt', "\n\n Deleting time: " . $time, FILE_APPEND);
+//                $time2 = microtime(TRUE);
+//                $time = $time2 - $time1;
+//                file_put_contents('debug.txt', "\n\n Deleting time: " . $time, FILE_APPEND);
             }
         }
         return true;
@@ -135,6 +137,7 @@ class LoanService
 
 
     /**
+     * Getting all user loans
      * @return array
      */
     public function getUserLoans(): array

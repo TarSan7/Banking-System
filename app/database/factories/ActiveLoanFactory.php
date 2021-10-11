@@ -28,7 +28,8 @@ class ActiveLoanFactory extends Factory
             'month_pay' => rand(1, 1000),
             'month_left' => rand(0, 24),
             'card_id' => rand(1, 1100000),
-            'user_id' => rand(1, 100000)
+            'user_id' => rand(1, 100000),
+            'date' => $this->faker->dateTimeInInterval('-10 years', '+27 days')
         ];
     }
 

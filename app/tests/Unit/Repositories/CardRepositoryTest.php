@@ -127,7 +127,7 @@ class CardRepositoryTest extends TestCase
     }
 
     /**
-     * Getting general card number by other card id
+     * Update general sum
      */
     public function testGetGeneralCardNum(): void
     {
@@ -177,4 +177,31 @@ class CardRepositoryTest extends TestCase
         $this->assertTrue($this->cardRepository->checkGeneralSum(0, 'UAH'));
     }
 
+    /**
+     * Update general card
+     */
+    public function testUpdateGeneral(): void
+    {
+        $this->cardRepository->updateGeneral('EUR', ['sum' => 999.99]);
+        $this->assertDatabaseHas('cards', [
+            'sum' => 999.99,
+            'type' => 'general'
+        ]);
+    }
+
+    /**
+     * Getting general cards
+     */
+    public function testGeneralSumByCurrency(): void
+    {
+        $this->assertEquals(1000000000, $this->cardRepository->generalSumByCurrency("EUR"));
+    }
+
+    /**
+     * Getting general card's sum by currency
+     */
+    public function testGetGeneral(): void
+    {
+        $this->assertCount(6, $this->cardRepository->getGeneral());
+    }
 }

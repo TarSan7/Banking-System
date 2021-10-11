@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\ActiveDeposit;
 use App\Models\ActiveLoan;
+use App\Models\Loan;
 use App\Repository\Eloquent\ActiveDepositRepository;
-use App\Repository\Eloquent\ActiveLoanRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
 use App\Repository\Eloquent\LoanRepository;
@@ -22,15 +22,25 @@ class AllTransactionsService
     /**
      * @var CardRepository
      * @var TransferRepository
-     * @var UserRepository
+     * @var UserCardRepository
+     * @var LoanRepository
+     * @var DepositRepository
+     * @var ActiveDepositRepository
+     * @var ActiveDeposit
+     * @var ActiveLoan
      */
     private $cardRepository, $transferRepository, $userCardRepository, $loanRepository, $depositRepository;
     private $activeDepositRepository, $activeDepositModel, $activeLoanModel;
 
     /**
+     * @param ActiveLoan $activeLoan
+     * @param ActiveDeposit $activeDeposit
      * @param CardRepository $cardRepository
      * @param TransferRepository $transferRepository
-     * @param UserRepository $userRepository
+     * @param UserCardRepository $userCardRepository
+     * @param LoanRepository $loanRepository
+     * @param DepositRepository $depositRepository
+     * @param ActiveDepositRepository $activeDepositRepository
      */
     public function __construct(
         ActiveLoan $activeLoan,
@@ -53,13 +63,13 @@ class AllTransactionsService
     }
 
     /**
+     * Making card transfer
      * @param array $transArray
      * @param array $infoFrom
      * @param array $infoTo
-     * @param null $type
      * @throws Exception
      */
-    public function make($transArray, $infoFrom, $infoTo, $type = null)
+    public function make($transArray, $infoFrom, $infoTo)
     {
         DB::beginTransaction();
         try {
@@ -80,6 +90,7 @@ class AllTransactionsService
     }
 
     /**
+     * Taking a loan
      * @param array $transInfo
      * @param array $card
      * @param float $sum
@@ -91,13 +102,15 @@ class AllTransactionsService
     {
         DB::beginTransaction();
         try {
+            $cardId = Arr::get($card, 'id', null);
             $this->transferRepository->create($transInfo);
-            $this->cardRepository->updateSum(Arr::get($card, 'id', null), -$sum);
+            $this->cardRepository->updateSum($cardId, -$sum);
+            $card = $this->cardRepository->find($cardId);
             $this->cardRepository->updateGeneral(Arr::get($card, 'currency', null), ['sum' => $bankSum - $sum]);
             $this->loanRepository->newLoan(
                 $id,
-                Arr::get($card, 'sum', null),
-                Arr::get($card, 'id', null),
+                $sum,
+                $cardId,
                 Auth::user()->id ?? 0
             );
         } catch(Exception $e) {
@@ -108,6 +121,7 @@ class AllTransactionsService
     }
 
     /**
+     * Creating new card
      * @param array $card
      * @throws Exception
      */
@@ -116,6 +130,7 @@ class AllTransactionsService
         DB::beginTransaction();
         try {
             $this->cardRepository->create($card);
+            $card['id'] = $this->cardRepository->getId(Arr::get($card, 'number', null));
             $this->userCardRepository->createNew(Auth::user()->id ?? 0, Arr::get($card, 'id', null));
         } catch(Exception $e) {
             DB::rollback();
@@ -125,6 +140,7 @@ class AllTransactionsService
     }
 
     /**
+     * Taking a deposit
      * @param array $transInfo
      * @param array $deposit
      * @param int $id
@@ -154,6 +170,7 @@ class AllTransactionsService
     }
 
     /**
+     * Closing a deposit
      * @param int $id
      * @param array $deposit
      * @throws Exception
@@ -183,6 +200,14 @@ class AllTransactionsService
         DB::commit();
     }
 
+    /**
+     * Deposit decrease
+     * @param int $id
+     * @param int $monthLeft
+     * @param float $monthSum
+     * @param array $deposit
+     * @throws Exception
+     */
     public function depositDecrease($id, $monthLeft, $monthSum, $deposit)
     {
         DB::beginTransaction();
@@ -208,6 +233,13 @@ class AllTransactionsService
         DB::commit();
     }
 
+    /**
+     * Loan decrease
+     * @param array $loan
+     * @param int $monthLeft
+     * @param int $loanId
+     * @throws Exception
+     */
     public function decreaseLoan($loan, $monthLeft, $loanId)
     {
         DB::beginTransaction();

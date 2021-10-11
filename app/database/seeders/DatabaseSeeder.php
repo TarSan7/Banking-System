@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
 //        User::factory(10)->create();
 //        UserCard::factory(150000)->create();
 //        CardTransfer::factory(100000)->create();
-//        ActiveDeposit::factory(200000)->create();
-        ActiveLoan::factory(200000)->create();
+        ActiveDeposit::factory(200000)->create();
+//        ActiveLoan::factory(200000)->create();
     }
 }

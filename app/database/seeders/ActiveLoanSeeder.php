@@ -21,7 +21,8 @@ class ActiveLoanSeeder extends Seeder
             'month_pay' => 20,
             'month_left' => 10,
             'card_id' => 1,
-            'user_id' => 1
+            'user_id' => 1,
+            'date' => date('y-m-d')
         ]);
     }
 }

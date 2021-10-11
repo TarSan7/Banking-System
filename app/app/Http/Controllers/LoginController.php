@@ -39,7 +39,6 @@ class LoginController extends Controller
         $this->userRepository = $userRepository;
         $this->cardRepository= $cardRepository;
         $this->userCardRepossitory = $userCardRepository;
-
     }
 
     /**
@@ -51,13 +50,10 @@ class LoginController extends Controller
         if (Auth::check()) {
             return redirect(route('user.private', app()->getLocale()));
         }
-
         $data = $request->only(['email', 'password']);
-
         if (Auth::attempt($data)) {
             return redirect()->intended(route('user.private', app()->getLocale()));
         }
-
         return redirect(route('user.login', app()->getLocale()))->withErrors([
             'email' => 'Login failed!'
         ]);

@@ -6,6 +6,7 @@ use App\Repository\Eloquent\ActiveLoanRepository;
 use App\Services\LoanService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
+use function Symfony\Component\Translation\t;
 
 class LoanCommand extends Command
 {
@@ -47,6 +48,9 @@ class LoanCommand extends Command
      */
     public function handle(): bool
     {
-        return $this->loanService->decrease();
+        if (!in_array((int) date('d'), [29, 30, 31])) {
+            return $this->loanService->decrease();
+        }
+        return true;
     }
 }

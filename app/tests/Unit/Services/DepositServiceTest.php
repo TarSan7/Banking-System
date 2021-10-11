@@ -8,6 +8,7 @@ use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
 use App\Repository\Eloquent\TransferRepository;
+use App\Services\AllTransactionsService;
 use App\Services\DepositService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
@@ -39,6 +40,8 @@ class DepositServiceTest extends TestCase
      */
     private $mockDepositRepository;
 
+    private $mockAllTransactionsService;
+
     /**
      * Set up the test environment.
      */
@@ -50,12 +53,13 @@ class DepositServiceTest extends TestCase
         $this->mockTransferRepository = $this->createMock(TransferRepository::class);
         $this->mockActiveDepositRepository = $this->createMock(ActiveDepositRepository::class);
         $this->mockDepositRepository = $this->createMock(DepositRepository::class);
+        $this->mockAllTransactionsService = $this->createMock(AllTransactionsService::class);
 
         $this->depositService = new DepositService(
             $this->mockDepositRepository,
             $this->mockActiveDepositRepository,
             $this->mockCardRepository,
-            $this->mockTransferRepository,
+            $this->mockAllTransactionsService
         );
     }
 
@@ -91,15 +95,11 @@ class DepositServiceTest extends TestCase
     public function testAccept(): void
     {
         $this->mockActiveDepositRepository->method('userDeposits')
-            ->willReturn(new Collection(), new Collection(), new Collection(), collect([1, 2, 3]), new Collection());
-        $this->mockCardRepository->method('getSumTo')->willReturn(0., 1000000000., 1000000000., 1000000000.);
+            ->willReturn(new Collection(), collect([1, 2, 3]), new Collection(), new Collection());
+        $this->mockCardRepository->method('getSumTo')->willReturn( 1000000000., 1., 10000000.);
         $this->mockCardRepository->method('getId')->willReturn(2);
         $this->mockCardRepository->method('getCurrencyFrom')->willReturn('EUR');
-        $this->mockCardRepository->method('updateSum')->willReturn(true);
-        $this->mockCardRepository->method('generalSumByCurrency')->willReturn(1000000);
-        $this->mockCardRepository->method('updateGeneral');
-        $this->mockDepositRepository->method('newDeposit')->willReturn(false, true, true);
-        $this->mockTransferRepository->method('create');
+        $this->mockAllTransactionsService->method('takeDeposit');
 
         $deposit = array(
             'currency' => 'EUR',
@@ -110,21 +110,26 @@ class DepositServiceTest extends TestCase
         );
 
         $result = $this->depositService->accept($deposit, 1);
-        $this->assertEquals('Not enough money for deposit.', Arr::get($result, 1, null));
-
-        $deposit['currency'] = 'UAH';
-        $result = $this->depositService->accept($deposit, 1);
-        $this->assertEquals('Different currencies.', Arr::get($result, 1, null));
-
-        $deposit['currency'] = 'EUR';
-        $result = $this->depositService->accept($deposit, 1);
-        $this->assertEquals('An error occurred!', Arr::get($result, 1, null));
+        $this->assertEquals('success', Arr::get($result, 0, null));
 
         $result = $this->depositService->accept($deposit, 1);
         $this->assertEquals('Too much deposits for one User!', Arr::get($result, 1, null));
 
         $result = $this->depositService->accept($deposit, 1);
-        $this->assertEquals('success', Arr::get($result, 0, null));
+        $this->assertEquals('Not enough money for deposit.', Arr::get($result, 1, null));
+
+        $deposit['currency'] = 'UAH';
+        $result = $this->depositService->accept($deposit, 1);
+        $this->assertEquals('Different currencies.', Arr::get($result, 1, null));
+    }
+
+    /**
+     * Creating an array with data about transfer
+     */
+    public function testCreateDepositTransfer(): void
+    {
+        $deposit = $this->depositService->createDepositTransfer('00000000000000', 100, 'EUR');
+        $this->assertEquals('EUR', Arr::get($deposit, 'currency', null));
     }
 
     /**

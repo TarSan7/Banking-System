@@ -15,23 +15,19 @@ use Illuminate\Support\Facades\DB;
 
 class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositoryInterface
 {
-    private $cardRepository, $transferRepository;
     /**
      * LoanRepository constructor.
      *
      * @param ActiveLoan $model
      */
     public function __construct(
-        ActiveLoan $model,
-        CardRepository $cardRepository,
-        TransferRepository $transferRepository
+        ActiveLoan $model
     ) {
         parent::__construct($model);
-        $this->cardRepository = $cardRepository;
-        $this->transferRepository = $transferRepository;
     }
 
     /**
+     * Getting all loans
      * @return Collection
      */
     public function all(): Collection
@@ -40,6 +36,7 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
     }
 
     /**
+     * Getting cards id's
      * @return Collection
      */
     public function getCardsId(): Collection
@@ -47,13 +44,18 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
         return $this->model->get('card_id');
     }
 
+    /**
+     * Getting loans by current dates
+     * @return object
+     */
     public function getLoansByDate(): object
     {
-        $date = date('d');
-        return $this->model->where('created_at', 'like', "%-$date %")->get();
+        $currentDate = date('d');
+        return $this->model->where('date', 'like', "%-$currentDate")->get();
     }
 
     /**
+     * Deleting loans
      * @param int $id
      * @return bool
      */
@@ -68,6 +70,7 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
     }
 
     /**
+     * Getting user loans
      * @param int $userId
      * @return Collection
      */
@@ -77,7 +80,7 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
     }
 
     /**
-     * Getting dates of creation
+     * Getting id's
      * @return object
      */
     public function getIds(): object
@@ -86,6 +89,7 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
     }
 
     /**
+     * Updating dates of loans
      * @param $id
      * @param $newDate
      * @return bool

@@ -33,7 +33,6 @@ class CardController extends Controller
     {
         $this->transferService = $transferService;
         $this->cardService = $cardService;
-
     }
 
     /**
