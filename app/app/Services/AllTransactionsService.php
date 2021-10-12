@@ -214,7 +214,7 @@ class AllTransactionsService
         try {
             $this->activeDepositModel->where('id', $id)->update([
                 'month_left' => $monthLeft - 1,
-                'total_sum' => Arr::get($deposit, 'total_sum', null) + $monthSum
+                'total_sum' => $deposit->total_sum + $monthSum
             ]);
             $this->transferRepository->create([
                 'card_from' => 'Bank',
@@ -222,9 +222,9 @@ class AllTransactionsService
                 'date' => date('Y-m-d H:i:s'),
                 'sum' => $monthSum,
                 'new_sum' => $monthSum,
-                'currency' => Arr::get($deposit, 'currency', null),
+                'currency' => $deposit->currency,
                 'comment' => 'Percents to deposit',
-                'user_id' => Arr::get($deposit, 'user_id', null)
+                'user_id' => $deposit->user_id
             ]);
         } catch (Exception $e) {
             DB::rollback();
@@ -244,13 +244,13 @@ class AllTransactionsService
     {
         DB::beginTransaction();
         try {
-            $cardFrom = $this->cardRepository->find(Arr::get($loan, 'card_id', null));
+            $cardFrom = $this->cardRepository->find($loan->card_id);
             $bankCurrency = Arr::get($cardFrom, 'currency', null);
             $bankSum = $this->cardRepository->generalSumByCurrency($bankCurrency);
-            $monthSum = Arr::get($loan, 'month_pay', null);
+            $monthSum = $loan->month_pay;
 
             $this->activeLoanModel->where('id', $loanId)->update(['month_left' => $monthLeft-1]);
-            $this->cardRepository->updateSum(Arr::get($loan, 'card_id', null), $monthSum);
+            $this->cardRepository->updateSum($loan->card_id, $monthSum);
             $this->cardRepository->updateGeneral($bankCurrency, ['sum' => $bankSum + $monthSum]);
             $this->transferRepository->create([
                 'card_from' => Arr::get($cardFrom, 'id', null),
@@ -260,7 +260,7 @@ class AllTransactionsService
                 'new_sum' => $monthSum,
                 'currency' => Arr::get($cardFrom, 'currency', null),
                 'comment' => 'Loan decrease',
-                'user_id' => Arr::get($loan, 'user_id', null)
+                'user_id' => $loan->user_id
             ]);
         } catch (Exception $e) {
             DB::rollback();

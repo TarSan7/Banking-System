@@ -46,14 +46,19 @@ class ActiveLoanRepository extends BaseRepository implements ActiveLoanRepositor
 
     /**
      * Getting loans by current dates
-     * @return object
+     * @return array
      */
-    public function getLoansByDate($currentDate = null): object
+    public function getLoansByDate(): array
     {
-        if (!$currentDate) {
-            $currentDate = date('d');
+        $currentDate = date('d');
+        if (date('d') === date('d', strtotime("last day of this month"))) {
+            return DB::select('select * from active_loans where dayofmonth(date) > :current_date',
+                ['current_date' => $currentDate - 1]);
+        } else {
+            return DB::select('select * from active_loans where dayofmonth(date) = :current_date',
+                ['current_date' => $currentDate]);
         }
-        return $this->model->where('date', 'like', "%-$currentDate")->get();
+
     }
 
     /**

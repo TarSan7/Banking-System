@@ -49,15 +49,8 @@ class LoanCommand extends Command
      */
     public function handle(): bool
     {
-        if (date('d') === date('d', strtotime("last day of this month"))) {
-            for ($i = (int) date('d'); $i <= 31; $i++) {
-                $loans = $this->activeLoanRepository->getLoansByDate($i);
-                $this->loanService->decrease($loans);
-            }
-        } else {
-            $loans = $this->activeLoanRepository->getLoansByDate();
-            return $this->loanService->decrease($loans);
-        }
+        $loans = $this->activeLoanRepository->getLoansByDate();
+        $this->loanService->decrease($loans);
         return true;
     }
 }

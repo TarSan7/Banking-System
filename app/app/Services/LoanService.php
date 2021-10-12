@@ -109,10 +109,11 @@ class LoanService
      */
     public function decrease($loans): bool
     {
-
         foreach ($loans as $loan) {
-            $loanId = Arr::get($loan, 'id', null);
-            $monthLeft = Arr::get($loan, 'month_left', null);
+            echo $loan->card_id;
+            print_r($loan);
+            $loanId = $loan->id;
+            $monthLeft = $loan->month_left;
             $this->allTransactionsService->decreaseLoan($loan, $monthLeft, $loanId);
             if ($monthLeft <= 0) {
                 $this->activeLoanRepository->delete($loanId);
