@@ -20,7 +20,7 @@ interface ActiveLoanRepositoryInterface
      * Getting loans by current dates
      * @return object
      */
-    public function getLoansByDate(): array;
+    public function getLoansByDate(): object;
 
     /**
      * @param int $id

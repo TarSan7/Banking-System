@@ -182,7 +182,7 @@ class DepositService
     public function decrease($deposits): bool
     {
         foreach ($deposits as $deposit) {
-            $depositId = $deposit->id;
+            $depositId = Arr::get($deposit, 'id', null);
             $monthLeft = $this->activeDepositRepository->getMonthsLeft($depositId);
             $monthSum = $this->activeDepositRepository->getMonthSum($depositId);
 
