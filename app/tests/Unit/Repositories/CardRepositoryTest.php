@@ -4,15 +4,23 @@ namespace Tests\Unit\Repositories;
 
 use App\Models\Card;
 use App\Repository\Eloquent\CardRepository;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CardRepositoryTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @var CardRepository
      */
     private $cardRepository;
 
+    private $cardData = [
+        'number' => '9999999999999',
+        'cvv' => 111,
+        'expires-end' => '10-10-2020',
+    ];
     /**
      * Set up the test environment.
      */
@@ -27,7 +35,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testAll(): void
     {
-        $this->assertEquals(Card::all(), $this->cardRepository->all());
+        $this->assertCount(6, $this->cardRepository->all());
     }
 
     /**
@@ -35,7 +43,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testFindAll(): void
     {
-        $cards = $this->cardRepository->findAll([10, 11, 20]);
+        $cards = $this->cardRepository->findAll([1, 2, 3]);
         $this->assertCount(3, $cards);
     }
 
@@ -44,12 +52,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testCardExist(): void
     {
-        $data = array(
-            'number' => '0000000000000000',
-            'cvv' => Card::find(1)['cvv'],
-            'expires-end' => Card::find(1)['expires_end']
-        );
-        $this->assertTrue($this->cardRepository->cardExist($data));
+        $this->assertFalse($this->cardRepository->cardExist($this->cardData));
     }
 
     /**
@@ -74,7 +77,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testGetSumFrom(): void
     {
-        $this->assertEquals(Card::find(10)['sum'], $this->cardRepository->getSumFrom(10));
+        $this->assertEquals(1000000000, $this->cardRepository->getSumFrom(5));
     }
 
     /**
@@ -82,7 +85,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testGetSumTo(): void
     {
-        $this->assertEquals(Card::find(1)['sum'], $this->cardRepository->getSumTo('0000000000000000'));
+        $this->assertEquals(1000000000, $this->cardRepository->getSumTo('0000000000000000'));
     }
 
     /**
@@ -90,11 +93,10 @@ class CardRepositoryTest extends TestCase
      */
     public function testUpdateFrom(): void
     {
-        $sum = $this->cardRepository->getSumFrom(10);
-        $this->cardRepository->updateFrom(10, ['sum' => $sum + 1]);
-        $this->assertEquals(Card::find(10)['sum'], $this->cardRepository->getSumFrom(10));
-
-        $this->cardRepository->updateFrom(10, ['sum' => $sum]);
+        $this->cardRepository->updateFrom(1, ['sum' => 1]);
+        $this->assertDatabaseHas('cards', [
+            'sum' => 1
+        ]);
     }
 
     /**
@@ -102,12 +104,10 @@ class CardRepositoryTest extends TestCase
      */
     public function testUpdateTo(): void
     {
-        $sum = $this->cardRepository->getSumTo('0000000000000000');
-        $this->cardRepository->updateTo('0000000000000000', ['sum' => $sum + 1]);
-        $this->assertEquals(Card::find(1)['sum'], $this->cardRepository->getSumTo('0000000000000000'));
-
-        $this->cardRepository->updateTo('0000000000000000', ['sum' => $sum]);
-        $this->assertEquals(Card::find(1)['sum'], $this->cardRepository->getSumTo('0000000000000000'));
+        $this->cardRepository->updateTo('0000000000000000', ['sum' => 11]);
+        $this->assertDatabaseHas('cards', [
+            'sum' => 11
+        ]);
     }
 
     /**
@@ -127,7 +127,7 @@ class CardRepositoryTest extends TestCase
     }
 
     /**
-     * Getting general card number by other card id
+     * Update general sum
      */
     public function testGetGeneralCardNum(): void
     {
@@ -139,12 +139,10 @@ class CardRepositoryTest extends TestCase
      */
     public function testUpdateSum(): void
     {
-        $this->cardRepository->updateSum(11, 20);
-        $this->assertEquals(Card::find(11)['sum'], $this->cardRepository->getSumFrom(11));
-
-        $sum = $this->cardRepository->getSumFrom(11);
-        $this->cardRepository->updateFrom(11, ['sum' => $sum + 20]);
-        $this->assertEquals(Card::find(11)['sum'], $this->cardRepository->getSumFrom(11));
+        $this->cardRepository->updateSum(6, 20);
+        $this->assertDatabaseHas('cards', [
+            'sum' => 999999980
+        ]);
     }
 
     /**
@@ -168,7 +166,7 @@ class CardRepositoryTest extends TestCase
      */
     public function testFind(): void
     {
-        $this->assertEquals(Card::find(2), $this->cardRepository->find(2));
+        $this->assertEquals('EUR', $this->cardRepository->find(2)->currency);
     }
 
     /**
@@ -179,4 +177,31 @@ class CardRepositoryTest extends TestCase
         $this->assertTrue($this->cardRepository->checkGeneralSum(0, 'UAH'));
     }
 
+    /**
+     * Update general card
+     */
+    public function testUpdateGeneral(): void
+    {
+        $this->cardRepository->updateGeneral('EUR', ['sum' => 999.99]);
+        $this->assertDatabaseHas('cards', [
+            'sum' => 999.99,
+            'type' => 'general'
+        ]);
+    }
+
+    /**
+     * Getting general cards
+     */
+    public function testGeneralSumByCurrency(): void
+    {
+        $this->assertEquals(1000000000, $this->cardRepository->generalSumByCurrency("EUR"));
+    }
+
+    /**
+     * Getting general card's sum by currency
+     */
+    public function testGetGeneral(): void
+    {
+        $this->assertCount(6, $this->cardRepository->getGeneral());
+    }
 }

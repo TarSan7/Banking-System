@@ -14,8 +14,14 @@ class LoanService
 {
     /**
      * @var LoanRepository
+     * @var CardRepository
+     * @var CardService
+     * @var ActiveLoanRepository
+     * @var AllTransactionsService
      */
-    private $loanRepository, $cardRepository, $cardService, $activeLoanRepository;
+    private $loanRepository, $cardRepository, $cardService, $activeLoanRepository, $allTransactionsService;
+
+    const MAX_LOANS = 3;
 
     /**
      * Responses for controller
@@ -30,17 +36,22 @@ class LoanService
     /**
      * @param LoanRepository $loanRepository
      * @param CardService $cardService
+     * @param ActiveLoanRepository $activeLoanRepository
+     * @param CardRepository $cardRepository
+     * @param AllTransactionsService $allTransactionsService
      */
     public function __construct(
         LoanRepository $loanRepository,
         CardService $cardService,
         ActiveLoanRepository $activeLoanRepository,
-        CardRepository $cardRepository
+        CardRepository $cardRepository,
+        AllTransactionsService $allTransactionsService
     ) {
         $this->loanRepository = $loanRepository;
         $this->cardService = $cardService;
         $this->activeLoanRepository = $activeLoanRepository;
         $this->cardRepository = $cardRepository;
+        $this->allTransactionsService = $allTransactionsService;
     }
 
     /**
@@ -53,6 +64,7 @@ class LoanService
     }
 
     /**
+     * Getting one loan by id
      * @param $id
      * @return Model|null
      */
@@ -62,57 +74,62 @@ class LoanService
     }
 
     /**
-     * @param array $card
-     * @param integer $id
-     * @return bool
-     */
-    public function newLoan($card, $id): bool
-    {
-        return $this->loanRepository->newLoan(
-            $id,
-            Arr::get($card, 'sum', null),
-            Arr::get($card, 'id', null),
-            Auth::id(),
-        ) ?? false;
-    }
-
-    /**
+     * Accepting loan
      * @param float $sum
      * @param integer $id
      * @return array
      */
     public function accept($sum, $id): array
     {
-        if ($this->countUserLoans() < 3) {
-            $card = $this->cardService->newCreditCard($sum, $id);
-            if (!$card) {
-                return ['error', Arr::get(self::RESPONSES, 'form', null)];
-            } elseif (!$this->cardRepository->checkGeneralSum($sum, Arr::get($card, 'currency', null))) {
-                return ['error', Arr::get(self::RESPONSES, 'money', null)];
-            } elseif ($this->newLoan($card, $id)) {
-                return ['success', Arr::get(self::RESPONSES, 'done', null)];
-            } else {
-                return ['error', Arr::get(self::RESPONSES, 'form', null)];
-            }
+        $loanCurr = $this->loanRepository->getCurrency($id);
+        $countLoans = $this->countUserLoans();
+        if ($countLoans < self::MAX_LOANS && $this->cardRepository->checkGeneralSum($sum, $loanCurr)) {
+            $this->cardService->newCreditCard($sum, $id);
+            return ['success', Arr::get(self::RESPONSES, 'done', null)];
         } else {
-            return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
+            if ($countLoans >= self::MAX_LOANS) {
+                return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
+            }
+            return ['error', Arr::get(self::RESPONSES, 'money', null)];
         }
     }
 
     /**
+     * Counting user loans
      * @return int
      */
     public function countUserLoans(): int
     {
-        return count($this->activeLoanRepository->userLoans(Auth::user()->id));
+        return count($this->activeLoanRepository->userLoans(Auth::user()->id ?? 0));
     }
 
     /**
+     * Decreasing sum of loan
+     * @return bool
+     */
+    public function decrease($loans): bool
+    {
+        foreach ($loans as $loan) {
+            echo $loan->card_id;
+            print_r($loan);
+            $loanId = $loan->id;
+            $monthLeft = $loan->month_left;
+            $this->allTransactionsService->decreaseLoan($loan, $monthLeft, $loanId);
+            if ($monthLeft <= 0) {
+                $this->activeLoanRepository->delete($loanId);
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * Getting all user loans
      * @return array
      */
     public function getUserLoans(): array
     {
-        $loans = $this->activeLoanRepository->userLoans(Auth::user()->id);
+        $loans = $this->activeLoanRepository->userLoans(Auth::user()->id ?? 0);
         $rez = array();
         foreach ($loans as $loan) {
             $base = $this->loanRepository->getLoan(Arr::get($loan, 'loan_id', null));

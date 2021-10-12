@@ -20,6 +20,7 @@ class UserCardRepository extends BaseRepository implements UserCardRepositoryInt
     }
 
     /**
+     * Getting all user cards
      * @return Collection
      */
     public function all(): Collection
@@ -28,24 +29,28 @@ class UserCardRepository extends BaseRepository implements UserCardRepositoryInt
     }
 
     /**
+     * Checking cards for existing
      * @param integer $id
      * @return bool
      */
-    public function cards($id): bool
+    public function cardsExist($id): bool
     {
-        return (bool) $this->model->where('card_id', $id)->get();
+        return $this->model->where('card_id', $id)->exists();
     }
 
     /**
+     * Getting card ids by user id
      * @param int $id
      * @return Collection|null
      */
     public function cardIdByUser($id): ?Collection
     {
-        return $this->model->where('user_id', $id)->get('card_id');
+        $rez =  $this->model->where('user_id', $id)->get('card_id');
+        return $rez;
     }
 
     /**
+     * Creating new user card
      * @param int $userId
      * @param int $cardId
      * @return bool
@@ -59,7 +64,7 @@ class UserCardRepository extends BaseRepository implements UserCardRepositoryInt
     }
 
     /**
-     * Deleting field userCard
+     * Deleting user card
      * @param int $userId
      * @param int $cardId
      * @return bool

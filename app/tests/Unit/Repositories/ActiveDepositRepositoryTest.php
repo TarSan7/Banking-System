@@ -10,15 +10,37 @@ use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
 use App\Repository\Eloquent\TransferRepository;
+use Database\Seeders\ActiveDepositSeeder;
+use Database\Seeders\UserSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class ActiveDepositRepositoryTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @var ActiveDepositRepository
      */
     private $activeDepositRepository, $depositRepository;
+    private $newDeposits = [
+        array(
+            'sum' => 199,
+            'currency' => 'UAH',
+            'percent' => 20,
+            'duration' => 4,
+            'numberFrom' => 2
+        ),
+        array(
+            'sum' => 199,
+            'currency' => 'UAH',
+            'percent' => 20,
+            'duration' => 0,
+            'numberFrom' => 2
+        )
+    ];
 
     /**
      * Set up the test environment.
@@ -26,6 +48,10 @@ class ActiveDepositRepositoryTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        $this->seed(UserSeeder::class);
+        $this->seed(ActiveDepositSeeder::class);
+
         $this->activeDepositRepository = new ActiveDepositRepository(
             new ActiveDeposit(),
             new CardRepository(new Card()),
@@ -39,7 +65,10 @@ class ActiveDepositRepositoryTest extends TestCase
      */
     public function testAll(): void
     {
-        $this->assertEquals(ActiveDeposit::all(), $this->activeDepositRepository->all());
+        $deposit = $this->activeDepositRepository->all();
+        $this->assertCount(1, $deposit);
+        $depositFirst = Arr::get($deposit, 0, null);
+        $this->assertLessThan(25, Arr::get($depositFirst, 'duration', null));
     }
 
     /**
@@ -48,28 +77,7 @@ class ActiveDepositRepositoryTest extends TestCase
     public function testGetCardsId(): void
     {
         $cards = $this->activeDepositRepository->getCardsId();
-        $this->assertCount(count(ActiveDeposit::all()), $cards);
-    }
-
-    /**
-     * Decrease deposit sum
-     */
-    public function testDecrease(): void
-    {
-        $this->depositRepository->newDeposit(1, [
-            'sum' => 199,
-            'currency' => 'UAH',
-            'percent' => 20,
-            'duration' => 4,
-            'numberFrom' => 8
-        ], 0);
-        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->first();
-        $this->assertTrue($this->activeDepositRepository->decrease([$deposit]));
-        ActiveDeposit::where('deposit_id', 1)->where('card_id', 8)->update(['month_left' => 0]);
-
-        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->first();
-        $this->assertTrue($this->activeDepositRepository->decrease([$deposit]));
-        $this->activeDepositRepository->delete(Arr::get($deposit, 'id', null));
+        $this->assertCount(1, $cards);
     }
 
     /**
@@ -77,16 +85,7 @@ class ActiveDepositRepositoryTest extends TestCase
      */
     public function testDelete(): void
     {
-        $this->depositRepository->newDeposit(1, [
-            'sum' => 199,
-            'currency' => 'UAH',
-            'percent' => 20,
-            'duration' => 4,
-            'numberFrom' => 8
-        ], 0);
-        $deposit = ActiveDeposit::where('deposit_id', 1)->where('sum', 199)->where('card_id', 8)->first();
-        $this->assertTrue($this->activeDepositRepository->delete(Arr::get($deposit, 'id', null)));
-        CardTransfer::where('user_id', 0)->delete();
+        $this->assertTrue($this->activeDepositRepository->delete());
     }
 
     /**
@@ -94,6 +93,51 @@ class ActiveDepositRepositoryTest extends TestCase
      */
     public function testUserDeposits(): void
     {
-        $this->assertIsObject($this->activeDepositRepository->userDeposits(1));
+        $this->assertCount(1, $this->activeDepositRepository->userDeposits(1));
+    }
+
+    /**
+     * Checking deposits by current date
+     */
+    public function testGetDepositsByDate(): void
+    {
+        $deposits = $this->activeDepositRepository->getDepositsByDate();
+        $this->assertCount(1, $deposits);
+    }
+
+    /**
+     * Getting month left
+     */
+    public function testGetMonthsLeft(): void
+    {
+        $this->assertEquals(12, $this->activeDepositRepository->getMonthsLeft(6));
+    }
+
+    /**
+     * Getting month sum
+     */
+    public function testGetMonthSum(): void
+    {
+        $this->assertEquals(300, $this->activeDepositRepository->getMonthSum(7));
+    }
+
+    /**
+     * Getting ids of deposits
+     */
+    public function testGetIds(): void
+    {
+        $this->assertCount(1, $this->activeDepositRepository->getIds());
+    }
+
+    /**
+     * Update date of deposit
+     */
+    public function testUpdateDate(): void
+    {
+        $date = date('y-m-d');
+        $this->activeDepositRepository->updateDate(9, $date);
+        $this->assertDatabaseHas('active_deposits', [
+            'created_at' => $date
+        ]);
     }
 }

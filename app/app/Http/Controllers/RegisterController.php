@@ -37,16 +37,15 @@ class RegisterController extends Controller
         if (Auth::check()) {
             return redirect(route('user.private'));
         }
-
         $validate = $request->validated();
         $user = $this->userRepository->create($validate);
-
         if ($user) {
             Auth::login($user);
-            return redirect(route('user.private'));
+            return redirect(route('user.private',
+                app()->getLocale()));
         }
 
-        return redirect(route('user.login'))->withErrors([
+        return redirect(route('user.login', app()->getLocale()))->withErrors([
            'formError' => 'An error occurred while saving data!'
         ]);
     }

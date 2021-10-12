@@ -19,7 +19,8 @@ class ActiveLoan extends Model
         'month_pay',
         'month_left',
         'card_id',
-        'user_id'
+        'user_id',
+        'date'
     ];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

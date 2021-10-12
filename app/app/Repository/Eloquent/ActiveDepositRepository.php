@@ -6,28 +6,33 @@ use App\Models\ActiveDeposit;
 use App\Models\Card;
 use App\Models\CardTransfer;
 use App\Repository\ActiveDepositRepositoryInterface;
+use App\Services\AllTransactionsService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ActiveDepositRepository extends BaseRepository implements ActiveDepositRepositoryInterface
 {
-    private $cardRepository, $transferRepository;
     /**
-     * DepositRepository constructor.
-     *
+     * @var CardRepository
+     */
+    private $cardRepository;
+
+    /**
+     * DepositRepository constructor
      * @param ActiveDeposit $model
+     * @param CardRepository $cardRepository
      */
     public function __construct(
         ActiveDeposit $model,
-        CardRepository $cardRepository,
-        TransferRepository $transferRepository
+        CardRepository $cardRepository
     ) {
         parent::__construct($model);
         $this->cardRepository = $cardRepository;
-        $this->transferRepository = $transferRepository;
     }
 
     /**
+     * Take all deposits
      * @return Collection
      */
     public function all(): Collection
@@ -36,6 +41,7 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
+     * Getting cards id
      * @return Collection
      */
     public function getCardsId(): Collection
@@ -44,6 +50,7 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
+     * Getting user deposits
      * @param int $userId
      * @return Collection
      */
@@ -53,6 +60,7 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
+     * Getting money when closing deposit
      * @param int $deposit_id
      */
     public function getMoney($deposit_id): void
@@ -71,47 +79,74 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
     }
 
     /**
+     * Deleting deposit
      * @param int $id
      * @return bool
      */
-    public function delete($id): bool
+    public function delete($id = null): bool
     {
-        return (bool) $this->model->where('id', $id)->delete();
+        if ($id === null) {
+            $this->model->delete();
+        } else {
+            $this->model->where('id', $id)->delete();
+        }
+        return true;
     }
 
     /**
-     * @param array $deposits
-     * @return bool
+     * Getting deposits by current date
+     * @return array
      */
-    public function decrease($deposits): bool
+    public function getDepositsByDate($currentDate = null): array
     {
-        foreach ($deposits as $deposit) {
-            $depositId = Arr::get($deposit, 'id', 0);
-            $monthLeft = Arr::get($this->model->where('id', $depositId)->first(), 'month_left', null);
-            $createDate = date('d', strtotime(Arr::get($deposit, 'created_at', null)));
-            if ($monthLeft <= 0) {
-                $this->getMoney($depositId);
-                $this->delete($depositId);
-            } elseif ($createDate === date('d')) {
-                $change = $monthLeft - 1;
-                $monthSum = Arr::get($this->model->where('id', $depositId)->first(), 'month_pay', null);
-                $this->model->where('id', $depositId)->update([
-                    'month_left' => $change,
-                    'total_sum' => Arr::get($deposit, 'total_sum', null) + $monthSum
-                ]);
-                $this->transferRepository->create([
-                    'card_from' => 'Bank',
-                    'card_to' => 'Deposit',
-                    'date' => date('Y-m-d H:i:s'),
-                    'sum' => $monthSum,
-                    'new_sum' => $monthSum,
-                    'currency' => Arr::get($deposit, 'currency', null),
-                    'comment' => 'Percents to deposit',
-                    'user_id' => Arr::get($deposit, 'user_id', null)
-                ]);
-            }
+        $currentDate = date('d');
+        if (date('d') === date('d', strtotime("last day of this month"))) {
+            return DB::select('select * from active_deposits where dayofmonth(date) > :current_date',
+                ['current_date' => $currentDate-1]);
+        } else {
+            return DB::select('select * from active_deposits where dayofmonth(date) = :current_date',
+                ['current_date' => $currentDate]);
         }
-        return true;
+
+    }
+
+    /**
+     * Getting number of month left
+     * @param int $depositId
+     * @return array|\ArrayAccess|mixed
+     */
+    public function getMonthsLeft($depositId)
+    {
+        return Arr::get($this->model->where('id', $depositId)->first(), 'month_left', 1);
+    }
+
+    /**
+     * Getting month payment
+     * @param int $depositId
+     * @return array|\ArrayAccess|mixed
+     */
+    public function getMonthSum($depositId)
+    {
+        return Arr::get($this->model->where('id', $depositId)->first(), 'month_pay', null);
+    }
+
+    /**
+     * Getting id's of deposits
+     * @return object
+     */
+    public function getIds(): object
+    {
+        return $this->model->select('id')->get();
+    }
+
+    /**
+     * Update dates for active deposits
+     * @param int $id
+     * @param string $newDate
+     */
+    public function updateDate($id, $newDate): void
+    {
+        $this->model->where('id', $id)->update(['created_at' => $newDate]);
     }
 
 }

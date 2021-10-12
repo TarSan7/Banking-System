@@ -26,6 +26,7 @@ class CreateActiveDepositsTable extends Migration
             $table->boolean('intime_percent');
             $table->integer('card_id');
             $table->integer('user_id');
+            $table->date('date');
             $table->timestamps();
         });
     }

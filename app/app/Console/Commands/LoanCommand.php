@@ -6,6 +6,7 @@ use App\Repository\Eloquent\ActiveLoanRepository;
 use App\Services\LoanService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
+use function Symfony\Component\Translation\t;
 
 class LoanCommand extends Command
 {
@@ -19,7 +20,7 @@ class LoanCommand extends Command
     /**
      * @var ActiveLoanRepository
      */
-    private $activeLoanRepository;
+    private $loanService, $activeLoanRepository;
 
     /**
      * The console command description.
@@ -31,12 +32,13 @@ class LoanCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @param ActiveLoanRepository $loanRepository
+     * @param LoanService $loanService
      * @return void
      */
-    public function __construct(ActiveLoanRepository $activeLoanRepository)
+    public function __construct(LoanService $loanService, ActiveLoanRepository $activeLoanRepository)
     {
         parent::__construct();
+        $this->loanService = $loanService;
         $this->activeLoanRepository = $activeLoanRepository;
     }
 
@@ -47,10 +49,8 @@ class LoanCommand extends Command
      */
     public function handle(): bool
     {
-        $allLoans = $this->activeLoanRepository->all();
-        if ($allLoans) {
-            return $this->activeLoanRepository->decrease($allLoans);
-        }
+        $loans = $this->activeLoanRepository->getLoansByDate();
+        $this->loanService->decrease($loans);
         return true;
     }
 }

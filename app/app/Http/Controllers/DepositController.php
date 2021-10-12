@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Route;
 
 class DepositController extends Controller
 {
@@ -36,6 +37,7 @@ class DepositController extends Controller
     public function all()
     {
         return view('allDeposits', [
+            app()->getLocale(),
            'deposits' => $this->depositService->getBaseDeposits(),
            'yourDeposits' => $this->depositService->getUserDeposits()
         ]);
@@ -45,9 +47,10 @@ class DepositController extends Controller
      * @param integer $id
      * @return Application|Factory|View
      */
-    public function take($id)
+    public function take($lang, $id)
     {
         return view('takeDeposit', [
+            app()->getLocale(),
             'deposit' => $this->depositService->oneDeposit($id),
             'cards' => $this->cardService->getUserCards()
         ]);
@@ -58,11 +61,12 @@ class DepositController extends Controller
      * @param integer $id
      * @return Application|Factory|View
      */
-    public function details(Request $request, $id)
+    public function details(Request $request, $lang, $id)
     {
         $cardFrom = $this->cardService->getCardById(Arr::get($request, 'numberFrom', null));
         $cardNumber = Arr::get($cardFrom, 'number', null);
         return view('depositInfo', [
+            app()->getLocale(),
             'cardFrom' => $cardNumber,
             'deposit' => $this->depositService->oneDeposit($id),
             'currency' => Arr::get($request, 'currency', null),
@@ -78,15 +82,15 @@ class DepositController extends Controller
      * @param integer $id
      * @return Application|RedirectResponse|Redirector
      */
-    public function accept(Request $request, $id)
+    public function accept(Request $request, $lang, $id)
     {
         $response = $this->depositService->accept($request, $id);
         if (Arr::get($response, 0, null) === 'success') {
             return redirect(route('user.takeDeposit',
-                ['id' => $id]))->with('success', Arr::get($response, 1, null));
+                [app()->getLocale(),'id' => $id]))->with('success', Arr::get($response, 1, null));
         } else {
             return redirect(route('user.takeDeposit',
-                ['id' => $id]))->withErrors(['error' => Arr::get($response, 1, null)]);
+                [app()->getLocale(),'id' => $id]))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 
@@ -94,13 +98,13 @@ class DepositController extends Controller
      * @param int $id
      * @return Application|RedirectResponse|Redirector
      */
-    public function close($id)
+    public function close($lang, $id)
     {
         $response = $this->depositService->close($id);
         if (Arr::get($response, 0, null) === 'success') {
-            return redirect(route('user.allDeposits'))->with('success', Arr::get($response, 1, null));
+            return redirect(route('user.allDeposits', app()->getLocale()))->with('success', Arr::get($response, 1, null));
         } else {
-            return redirect(route('user.allDeposits'))->withErrors(['error' => Arr::get($response, 1, null)]);
+            return redirect(route('user.allDeposits', app()->getLocale()))->withErrors(['error' => Arr::get($response, 1, null)]);
         }
     }
 }

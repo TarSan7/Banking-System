@@ -23,6 +23,7 @@ class BaseRepository implements EloquentRepositoryInterface
     }
 
     /**
+     * Creating model
      * @param array $attributes
      *
      * @return Model
@@ -33,8 +34,9 @@ class BaseRepository implements EloquentRepositoryInterface
     }
 
     /**
+     * Finding model
      * @param integer $id
-     * @return Model
+     * @return Model|null
      */
     public function find($id): ?Model
     {

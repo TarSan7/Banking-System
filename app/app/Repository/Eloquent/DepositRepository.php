@@ -11,12 +11,15 @@ use Illuminate\Support\Collection;
 
 class DepositRepository extends BaseRepository implements DepositRepositoryInterface
 {
-
+    /**
+     * @var ActiveDeposit
+     */
     private $activeDeposit;
+
     /**
      * DepositRepository constructor.
-     *
      * @param Deposit $model
+     * @param ActiveDeposit $activeDeposit
      */
     public function __construct(Deposit $model, ActiveDeposit $activeDeposit)
     {
@@ -25,6 +28,7 @@ class DepositRepository extends BaseRepository implements DepositRepositoryInter
     }
 
     /**
+     * Getting all deposits
      * @return Collection
      */
     public function all(): Collection
@@ -42,6 +46,7 @@ class DepositRepository extends BaseRepository implements DepositRepositoryInter
     }
 
     /**
+     * Creating a new deposit
      * @param int $id
      * @param array $deposit
      * @param int $user_id
@@ -53,7 +58,17 @@ class DepositRepository extends BaseRepository implements DepositRepositoryInter
         $percent = Arr::get($deposit, 'percent', 0);
         $duration = Arr::get($deposit, 'duration', null);
         $sum = Arr::get($deposit, 'sum', 0);
-        $monthPay = round(($percent * 0.01 * $sum) / $duration, 2);
+        if ($duration === 0) {
+            $monthPay = 0;
+        } else {
+            $monthPay = round(($percent * 0.01 * $sum) / $duration, 2);
+        }
+//
+//        if (in_array((int) date('d'), [29, 30, 31])) {
+//            $date = date('Y-m-d', strtotime('first day of next month'));
+//        } else {
+//        }
+        $date = date('Y-m-d');
         $earlyPercent = Arr::get($baseDeposit, 'early_percent', null) == $percent;
         $intimePercent = Arr::get($baseDeposit, 'intime_percent', null) == $percent;
 
@@ -68,7 +83,8 @@ class DepositRepository extends BaseRepository implements DepositRepositoryInter
             'early_percent' => $earlyPercent ? $percent : 0,
             'intime_percent' => $intimePercent ? $percent : 0,
             'card_id' => Arr::get($deposit, 'numberFrom', null),
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'date' => $date
         ]) ?? false;
     }
 

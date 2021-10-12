@@ -14,20 +14,24 @@ use phpDocumentor\Reflection\Types\Integer;
 
 class LoanRepository extends BaseRepository implements LoanRepositoryInterface
 {
-    private $cardRepository, $activeLoan;
+    /**
+     * @var ActiveLoan
+     */
+    private $activeLoan;
+
     /**
      * LoanRepository constructor.
-     *
      * @param Loan $model
+     * @param ActiveLoan $activeLoan
      */
-    public function __construct(Loan $model, CardRepository $cardRepository, ActiveLoan $activeLoan)
+    public function __construct(Loan $model, ActiveLoan $activeLoan)
     {
         parent::__construct($model);
-        $this->cardRepository = $cardRepository;
         $this->activeLoan = $activeLoan;
     }
 
     /**
+     * Getting all loans
      * @return Collection
      */
     public function all(): Collection
@@ -36,6 +40,7 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
     }
 
     /**
+     * Getting loan by id
      * Get existing loan by id
      * @return Model|null
      */
@@ -45,6 +50,7 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
     }
 
     /**
+     * Getting currency bi loan id
      * @param int $id
      * @return String
      */
@@ -54,6 +60,7 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
     }
 
     /**
+     * Creating a new loan
      * @param int $id
      * @param float $sum
      * @param int $card_id
@@ -62,12 +69,11 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
     public function newLoan($id, $sum, $card_id, $user_id): bool
     {
         $loan = $this->getLoan($id);
-        $cardSum = $this->cardRepository->generalSumByCurrency(Arr::get($loan, 'currency', null));
         $percent = Arr::get($loan, 'percent', 0);
         $duration = Arr::get($loan, 'duration', null);
         $sumPercents = $sum * ($percent * $duration) / 12 * 0.01;
+        $date = date('Y-m-d');
         $total = $sum + $sumPercents;
-        $this->cardRepository->updateGeneral(Arr::get($loan, 'currency', null), ['sum' => $cardSum - $sum]);
         return (bool) $this->activeLoan->create([
             'loan_id' => $id,
             'sum' => $sum,
@@ -75,7 +81,8 @@ class LoanRepository extends BaseRepository implements LoanRepositoryInterface
             'month_pay' => $total / $duration,
             'month_left' => $duration,
             'card_id' => $card_id,
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'date' => $date
         ]) ?? false;
     }
 }

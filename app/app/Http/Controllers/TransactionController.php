@@ -29,6 +29,7 @@ class TransactionController extends Controller
     public function all()
     {
         return view('allTransfers', [
+            app()->getLocale(),
             'transactions' => $this->transferService->getTransactions()
         ]);
     }

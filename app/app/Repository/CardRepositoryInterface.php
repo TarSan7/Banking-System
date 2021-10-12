@@ -27,7 +27,7 @@ interface CardRepositoryInterface
      * @param String $number
      * @return int
      */
-    public function getId($number): int;
+    public function getId($number): ?int;
 
     /**
      * @param string $number

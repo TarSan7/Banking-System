@@ -4,10 +4,13 @@ namespace Tests\Unit\Repositories;
 
 use App\Models\CardTransfer;
 use App\Repository\Eloquent\TransferRepository;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TransferRepositoryTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @var TransferRepository
      */
@@ -27,7 +30,7 @@ class TransferRepositoryTest extends TestCase
      */
     public function testAll(): void
     {
-        $this->assertEquals(CardTransfer::all(), $this->transferRepository->all());
+        $this->assertCount(0, $this->transferRepository->all());
     }
 
     /**
@@ -35,7 +38,7 @@ class TransferRepositoryTest extends TestCase
      */
     public function testGetCardTransactions(): void
     {
-        $this->assertEmpty($this->transferRepository->getCardTransactions(11));
+        $this->assertEmpty($this->transferRepository->getCardTransactions(1));
     }
 
     /**

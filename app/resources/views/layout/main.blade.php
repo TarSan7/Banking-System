@@ -19,7 +19,7 @@
     @yield('content')
 
     <nav class="footer">
-        <p class="navbar-brand">@All rights served</p>
+        <p class="navbar-brand">{{ __('index.rights') }}</p>
     </nav>
 </body>
 </html>

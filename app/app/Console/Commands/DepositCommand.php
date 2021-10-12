@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Repository\Eloquent\ActiveDepositRepository;
+use App\Services\DepositService;
 use Illuminate\Console\Command;
 
 class DepositCommand extends Command
@@ -16,7 +17,7 @@ class DepositCommand extends Command
     /**
      * @var ActiveDepositRepository
      */
-    private $activeDepositRepository;
+    private $depositService, $activeDepositRepository;
 
     /**
      * The console command description.
@@ -28,9 +29,10 @@ class DepositCommand extends Command
      * Create a new command instance.
      * @param ActiveDepositRepository $activeDepositRepository
      */
-    public function __construct(ActiveDepositRepository $activeDepositRepository)
+    public function __construct(DepositService $depositService, ActiveDepositRepository $activeDepositRepository)
     {
         parent::__construct();
+        $this->depositService = $depositService;
         $this->activeDepositRepository = $activeDepositRepository;
     }
 
@@ -41,10 +43,8 @@ class DepositCommand extends Command
      */
     public function handle(): bool
     {
-        $allDeposits = $this->activeDepositRepository->all();
-        if ($allDeposits) {
-            return $this->activeDepositRepository->decrease($allDeposits);
-        }
+        $deposits = $this->activeDepositRepository->getDepositsByDate();
+        $this->depositService->decrease($deposits);
         return true;
     }
 }

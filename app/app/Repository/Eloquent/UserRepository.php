@@ -20,6 +20,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
+     * All users
     * @return Collection
     */
     public function all(): Collection
@@ -28,6 +29,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
+     * Getting all user cards
      * @param integer $userId
      * @return Collection
      */
@@ -37,10 +39,20 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     /**
+     * Getting all user's names
      * @return String
      */
     public function getUsername($email): String
     {
         return $this->model->where('email', $email)->first()->name;
+    }
+
+    /**
+     * @param string $email
+     * @return bool
+     */
+    public function userExists($email): bool
+    {
+        return $this->model->where('email', $email)->exists();
     }
 }

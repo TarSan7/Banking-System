@@ -18,7 +18,6 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
 
     /**
      * UserRepository constructor.
-     *
      * @param Card $model
      */
     public function __construct(Card $model)
@@ -27,6 +26,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Getting all cards
      * @return Collection
      */
     public function all(): Collection
@@ -35,6 +35,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Finding all cards which have id's from array
      * @param array $cardsId
      * @return Collection|null
      */
@@ -44,28 +45,32 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Checking cards for exist
      * @param array $validate
      * @return bool
      */
     public function cardExist($validate): bool
     {
-        return (bool) $this->model->where('number', Arr::get($validate, 'number', null))
+        $card = $this->model->where('number', Arr::get($validate, 'number', null))
             ->where('cvv', Arr::get($validate, 'cvv', null))
-            ->where('expires_end', Arr::get($validate, 'expires-end', null));
+            ->where('expires_end', Arr::get($validate, 'expires-end', null))->exists();
+        return $card;
     }
 
     /**
+     * Getting id by number
      * @param String $number
-     * @return int
+     * @return ?int
      */
-    public function getId($number): int
+    public function getId($number): ?int
     {
-        return $this->model->where('number', $number)->first()->id;
+        return $this->model->where('number', $number)->first()->id ?? null;
     }
 
     /**
+     * Getting card model by number
      * @param String $number
-     * @return Model
+     * @return Model|null
      */
     public function getCardByNum($number): ?Model
     {
@@ -73,6 +78,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Getting sum of card from which was made transfer
      * @param int $numberFrom
      * @return float
      */
@@ -82,6 +88,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Getting sum of card to which was made transfer
      * @param String $numberTo
      * @return float
      */
@@ -91,6 +98,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Updating card from which was made transfer
      * @param int $numberFrom
      * @param array $attributes
      */
@@ -100,6 +108,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Updating card to which was made transfer
      * @param String $numberTo
      * @param array $attributes
      */
@@ -109,6 +118,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Getting currency of card from which was made transfer
      * @param int $numberFrom
      * @return String
      */
@@ -118,6 +128,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Getting currency of card to which was made transfer
      * @param String $numberTo
      * @return String
      */
@@ -127,6 +138,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Getting general card number by id
      * @param int $numberFrom
      * @return String
      */
@@ -137,6 +149,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Checking general sum
      * @param float $sum
      * @param string $currency
      * @return bool
@@ -147,17 +160,23 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Updating sum
      * @param int $id
      * @param float $sum
      * @return bool
      */
-    public function updateSum($id, $sum): bool
+    public function updateSum($id, $sum = 0): bool
     {
-        $updated = $this->model->find($id)->sum - $sum;
-        return (bool) $this->model->find($id)->update(['sum' => $updated]);
+        $cardSum = Arr::get($this->model->find($id), 'sum', null);
+        if ($cardSum >= $sum) {
+            $updated = $cardSum - $sum;
+            return (bool)$this->model->find($id)->update(['sum' => $updated]);
+        }
+        return false;
     }
 
     /**
+     * Getting number of card by id
      * @param int $id
      * @return string
      */
@@ -168,6 +187,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Getting user credit cards
      * @param array $userCards
      * @param int $loanId
      * @return Model|null
@@ -176,11 +196,12 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     {
         $currency = Loan::find($loanId)->currency;
         $card = $this->model->whereIn('id', $userCards)->where('type', 'credit')
-            ->where('currency', $currency)->get();
-        return Arr::get($card, 0, null);
+            ->where('currency', $currency)->first();
+        return $card;
     }
 
     /**
+     * Updating general cards
      * @param string $currency
      * @param array $toUpdate
      */
@@ -190,15 +211,18 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
     /**
+     * Getting general sum by currency
      * @param string $currency
      * @return int
      */
     public function generalSumByCurrency($currency): int
     {
-        return $this->getGeneral()->where('currency', $currency)->first()->sum;
+        $genSum =  $this->getGeneral()->where('currency', $currency)->first();
+        return Arr::get($genSum,'sum', 0);
     }
 
     /**
+     * Getting all general cards
      * @return Collection
      */
     public function getGeneral(): Collection

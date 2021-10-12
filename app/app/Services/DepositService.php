@@ -6,7 +6,6 @@ use App\Models\Card;
 use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
-use App\Repository\Eloquent\TransferRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -17,8 +16,13 @@ class DepositService
 
     /**
      * @var DepositRepository
+     * @var ActiveDepositRepository
+     * @var CardRepository
+     * @var AllTransactionsService
      */
-    private $depositRepository, $activeDepositRepository, $cardRepository, $transferRepository;
+    private $depositRepository, $activeDepositRepository, $cardRepository, $allTransactionsService;
+
+    const MAX_DEPOSITS = 3;
 
     /**
      * Responses for controller
@@ -36,18 +40,18 @@ class DepositService
      * @param DepositRepository $depositRepository
      * @param ActiveDepositRepository $activeDepositRepository
      * @param CardRepository $cardRepository
-     * @param TransferRepository $transferRepository
+     * @param AllTransactionsService $allTransactionsService
      */
     public function __construct(
         DepositRepository $depositRepository,
         ActiveDepositRepository $activeDepositRepository,
         CardRepository $cardRepository,
-        TransferRepository $transferRepository
+        AllTransactionsService $allTransactionsService
     ) {
         $this->depositRepository = $depositRepository;
         $this->activeDepositRepository = $activeDepositRepository;
         $this->cardRepository = $cardRepository;
-        $this->transferRepository = $transferRepository;
+        $this->allTransactionsService = $allTransactionsService;
     }
 
     /**
@@ -60,6 +64,7 @@ class DepositService
     }
 
     /**
+     * Getting one deposit by id
      * @param $id
      * @return Model|null
      */
@@ -69,55 +74,34 @@ class DepositService
     }
 
     /**
-     * @param array $deposit
-     * @param integer $id
-     * @return bool
-     */
-    public function newDeposit($deposit, $id): bool
-    {
-        return $this->depositRepository->newDeposit(
-            $id,
-            $deposit,
-            Auth::id()
-        ) ?? false;
-    }
-
-    /**
+     * Accepting deposit
      * @param array $deposit
      * @param integer $id
      * @return array
      */
     public function accept($deposit, $id): array
     {
-        if ($this->countUserDeposits() < 3) {
+        if ($this->countUserDeposits() < self::MAX_DEPOSITS) {
             $currency = Arr::get($deposit, 'currency', null);
-            $sum = Arr::get($deposit, 'sum', 0);
+            $sum = Arr::get($deposit, 'sum', null);
             $cardNum = Arr::get($deposit, 'numberFrom', null);
             $cardSum = $this->cardRepository->getSumTo(Arr::get($deposit, 'numberFrom', null));
             $numberFrom = Arr::get($deposit, 'numberFrom', null);
             $deposit['numberFrom'] = $this->cardRepository->getId($numberFrom);
+
             if ($cardSum < $sum) {
                 return ['error', Arr::get(self::RESPONSES, 'money', null)];
-            } elseif ($this->cardRepository->getCurrencyFrom($numberFrom) != $currency) {
+            } elseif ($this->cardRepository->getCurrencyFrom(Arr::get($deposit, 'numberFrom', null)) !== $currency) {
                 return ['error', Arr::get(self::RESPONSES, 'currency', null)];
-            } elseif ($this->newDeposit($deposit, $id)) {
-                $this->cardRepository->updateSum($numberFrom, $sum);
-                $bankSum = $this->cardRepository->generalSumByCurrency($currency);
-                $this->cardRepository->updateGeneral($currency, ['sum' => $bankSum + $sum]);
-
-                $this->transferRepository->create([
-                    'card_from' => $cardNum,
-                    'card_to' => 'Bank',
-                    'date' => date('Y-m-d H:i:s'),
-                    'sum' => $sum,
-                    'new_sum' => $sum,
-                    'currency' => $currency,
-                    'comment' => 'Take a deposit',
-                    'user_id' => Auth::user()->id ?? 0
-                ]);
-                return ['success', Arr::get(self::RESPONSES ,'done', null)];
             } else {
-                return ['error', Arr::get(self::RESPONSES, 'form', null)];
+                $this->allTransactionsService->takeDeposit(
+                    $this->createDepositTransfer($cardNum, $sum, $currency),
+                    $deposit,
+                    $id,
+                    $currency,
+                    $sum
+                );
+                return ['success', Arr::get(self::RESPONSES ,'done', null)];
             }
         } else {
             return ['error', Arr::get(self::RESPONSES, 'tooMuch', null)];
@@ -125,6 +109,27 @@ class DepositService
     }
 
     /**
+     * Creating array with deposit transfer info
+     * @param string $cardNum
+     * @param float $sum
+     * @param string $currency
+     */
+    public function createDepositTransfer($cardNum, $sum, $currency): array
+    {
+        return array(
+            'card_from' => $cardNum,
+            'card_to' => 'Bank',
+            'date' => date('Y-m-d H:i:s'),
+            'sum' => $sum,
+            'new_sum' => $sum,
+            'currency' => $currency,
+            'comment' => 'Take a deposit',
+            'user_id' => Auth::user()->id ?? 0
+        );
+    }
+
+    /**
+     * Counting user deposits
      * @return int
      */
     public function countUserDeposits(): int
@@ -133,6 +138,7 @@ class DepositService
     }
 
     /**
+     * Getting all user deposits
      * @return array
      */
     public function getUserDeposits(): array
@@ -157,24 +163,35 @@ class DepositService
     }
 
     /**
-     * @param *int $id
+     * Closing deposits
+     * @param int $id
      * @return array
      */
     public function close($id): array
     {
-        $this->activeDepositRepository->getMoney($id);
         $deposit = $this->activeDepositRepository->find($id);
-        $this->transferRepository->create([
-            'card_from' => 'Bank',
-            'card_to' => $this->cardRepository->getNumber(Arr::get($deposit, 'card_id', null)),
-            'date' => date('Y-m-d H:i:s'),
-            'sum' => Arr::get($deposit, 'total_sum', null),
-            'new_sum' => Arr::get($deposit, 'total_sum', null),
-            'currency' => Arr::get($deposit, 'currency', null),
-            'comment' => 'Closing deposit',
-            'user_id' => Auth::user()->id ?? 0
-        ]);
-        $this->activeDepositRepository->delete($id);
+        $this->allTransactionsService->closeDeposit($id, $deposit);
+
         return ['success', Arr::get(self::RESPONSES, 'closed', null)];
+    }
+
+    /**
+     * Decreasing deposit sum
+     * @return bool
+     */
+    public function decrease($deposits): bool
+    {
+        foreach ($deposits as $deposit) {
+            $depositId = $deposit->id;
+            $monthLeft = $this->activeDepositRepository->getMonthsLeft($depositId);
+            $monthSum = $this->activeDepositRepository->getMonthSum($depositId);
+
+            $this->allTransactionsService->depositDecrease($depositId, $monthLeft, $monthSum, $deposit);
+
+            if ($monthLeft <= 0) {
+                $this->allTransactionsService->closeDeposit($depositId);
+            }
+        }
+        return true;
     }
 }

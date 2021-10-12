@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Arr;
 
 /**
  * Class OtherTransferController
@@ -37,9 +38,9 @@ class OtherTransferController extends Controller
      * @param string $id
      * @return Application|Factory|View
      */
-    public function index($id)
+    public function index($lang, $id)
     {
-        return view('otherTransfer', ['cards' => $this->cardService->getUserCards(), 'id' => $id]);
+        return view('otherTransfer', [app()->getLocale(), 'cards' => $this->cardService->getUserCards(), 'id' => $id]);
     }
 
     /**
@@ -47,14 +48,14 @@ class OtherTransferController extends Controller
      * @param string $id
      * @return Application|RedirectResponse|Redirector
      */
-    public function make(TransferToPhoneRequest $request, $id)
+    public function make(TransferToPhoneRequest $request, $lang, $id)
     {
         $this->transferService->setInfo($request->validated(), $id);
         $response = $this->transferService->otherCheck($id);
-        if ($response[0] === 'success') {
-            return redirect(route('user.otherTransfer', ['id' => $id]))->with('success', $response[1]);
+        if (Arr::get($response, 0, null) === 'success') {
+            return redirect(route('user.otherTransfer', [app()->getLocale(), 'id' => $id]))->with('success', $response[1]);
         } else {
-            return redirect(route('user.otherTransfer', ['id' => $id]))->withErrors(['error' => $response[1]]);
+            return redirect(route('user.otherTransfer', [app()->getLocale(), 'id' => $id]))->withErrors(['error' => $response[1]]);
         }
     }
 }

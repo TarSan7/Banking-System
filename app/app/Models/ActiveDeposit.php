@@ -20,7 +20,8 @@ class ActiveDeposit extends Model
         'early_percent',
         'intime_percent',
         'card_id',
-        'user_id'
+        'user_id',
+        'date'
     ];
 
     /**

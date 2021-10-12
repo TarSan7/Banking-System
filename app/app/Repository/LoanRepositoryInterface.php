@@ -9,6 +9,12 @@ use phpDocumentor\Reflection\Types\Integer;
 interface LoanRepositoryInterface
 {
     /**
+     * Getting all loans
+     * @return Collection
+     */
+    public function all(): Collection;
+
+    /**
      * Get all existing loan types
      * @return ?Model
      */

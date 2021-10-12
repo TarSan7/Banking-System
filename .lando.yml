@@ -2,12 +2,24 @@ name: bank
 recipe: laravel
 config:
   php: '7.4'
+  via: apache
   webroot: /app/public
 
 services:
   database:
     type: mysql
     portforward: 3306
+    creds:
+      user: laravel
+      password: laravel
+      database: laravel
+  testdatabase:
+    type: mysql
+    portforward: true
+    creds:
+      user: laravel
+      password: laravel
+      database: laravelTest
   pma:
     type: phpmyadmin
     hosts:

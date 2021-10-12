@@ -22,9 +22,12 @@ class CardService
      * @var CardRepository
      * @var UserCardRepository
      * @var UserRepository
+     * @var CardFactory
+     * @var LoanRepository
+     * @var AllTransactionsService
      */
     private $cardRepository, $userCardRepository, $userRepository, $card,
-        $cardFactory, $transferRepository, $loanRepository;
+        $cardFactory, $loanRepository, $allTransactionsService;
 
     /**
      * Responses for controller
@@ -41,7 +44,7 @@ class CardService
      * @param UserCardRepository $userCardRepository
      * @param UserRepository $userRepository
      * @param CardFactory $cardFactory
-     * @param TransferRepository $transferRepository
+     * @param AllTransactionsService $allTransactionsService
      * @param LoanRepository $loanRepository
      */
     public function __construct(
@@ -49,15 +52,15 @@ class CardService
         UserCardRepository $userCardRepository,
         UserRepository $userRepository,
         CardFactory $cardFactory,
-        TransferRepository $transferRepository,
-        LoanRepository $loanRepository
+        LoanRepository $loanRepository,
+        AllTransactionsService $allTransactionsService
     ) {
         $this->cardRepository = $cardRepository;
         $this->userCardRepository = $userCardRepository;
         $this->userRepository = $userRepository;
         $this->cardFactory = $cardFactory;
-        $this->transferRepository = $transferRepository;
         $this->loanRepository = $loanRepository;
+        $this->allTransactionsService = $allTransactionsService;
     }
 
     /**
@@ -79,7 +82,7 @@ class CardService
         return $this->cardRepository->find($cardId);
     }
     /**
-     * Return model of card by it`s id
+     * Return model of card by it`s number
      * @param string $cardNum
      * @return Model|null
      */
@@ -104,7 +107,7 @@ class CardService
     public function cardAdded(): bool
     {
         $cardId = $this->cardRepository->getId(Arr::get($this->card, 'number', 0));
-        return $this->userCardRepository->cards($cardId);
+        return $this->userCardRepository->cardsExist($cardId);
     }
 
     /**
@@ -129,52 +132,71 @@ class CardService
         return $this->cardRepository->findAll($cardsId);
     }
 
+
     /**
+     * Information about transfer
+     * @param string $number
+     * @param float $sum
+     * @param float $newSum
+     * @param string $currency
+     * @return array
+     */
+    public function transferInfo($number, $sum, $newSum, $currency): array
+    {
+        return array(
+            'card_from' => 'Bank',
+            'card_to' => $number,
+            'date' => date('Y-m-d H:i:s'),
+            'sum' => $sum,
+            'new_sum' => $newSum,
+            'currency' => $currency,
+            'comment' => 'Loan money',
+            'user_id' => Auth::user()->id ?? 0
+        );
+    }
+
+    /**
+     * Creating or getting credit card for loan
      * @param float $sum
      * @param int $loanId
-     * @return Model|null
+     * @return bool
      */
-    public function newCreditCard($sum, $loanId): ?Model
+    public function newCreditCard($sum, $loanId): bool
     {
         $userCards = array();
-        foreach ($this->userCardRepository->cardIdByUser(Auth::user()->id ?? 0) as $one) {
+        $allCardsId = $this->userCardRepository->cardIdByUser(Auth::user()->id ?? 0) ?? [];
+        foreach ($allCardsId as $one) {
             $userCards[] = Arr::get($one, 'card_id', null);
         }
         $ifCard = $this->cardRepository->credit($userCards, $loanId);
+
         if ($ifCard) {
-            $this->cardRepository->updateSum(Arr::get($ifCard, 'id', null), -$sum);
-            $this->transferRepository->create([
-                'card_from' => 'Bank',
-                'card_to' => Arr::get($ifCard, 'number', null),
-                'date' => date('Y-m-d H:i:s'),
-                'sum' => $sum,
-                'new_sum' => Arr::get($ifCard, 'sum', null) + $sum,
-                'currency' => Arr::get($ifCard, 'currency', null),
-                'comment' => 'Loan money',
-                'user_id' => Auth::user()->id ?? 0
-            ]);
-            return $ifCard;
+            $bankSum = $this->cardRepository->generalSumByCurrency(Arr::get($ifCard, 'currency', null));
+            $this->allTransactionsService->takeLoan($this->transferInfo(
+                Arr::get($ifCard, 'number', null),
+                $sum,
+                Arr::get($ifCard, 'sum', null) + $sum,
+                Arr::get($ifCard, 'currency', null)
+            ), $ifCard, $sum, $bankSum, $loanId);
+            return true;
         } else {
             $loan = $this->loanRepository->getLoan($loanId);
-            $card = $this->cardFactory->createLoan($sum, Arr::get($loan, 'currency', null));
-            $this->cardRepository->create($card);
+            $card = $this->cardFactory->createLoan(0, Arr::get($loan, 'currency', null));
+            $this->allTransactionsService->cardCreate($card);
             $card = $this->getCardByNum(Arr::get($card, 'number', null));
-            $this->transferRepository->create([
-                'card_from' => 'Bank',
-                'card_to' => Arr::get($card, 'number', null),
-                'date' => date('Y-m-d H:i:s'),
-                'sum' => $sum,
-                'new_sum' => $sum,
-                'currency' => Arr::get($card, 'currency', null),
-                'comment' => 'Loan money',
-                'user_id' => Auth::user()->id ?? 0
-            ]);
-            $this->userCardRepository->createNew(Auth::user()->id ?? 0, Arr::get($card, 'id', null));
-            return $card ?? null;
+            $bankSum = $this->cardRepository->generalSumByCurrency(Arr::get($card, 'currency', null));
+            $this->allTransactionsService->takeLoan($this->transferInfo(
+                Arr::get($card, 'number', null),
+                $sum,
+                $sum,
+                Arr::get($card, 'currency', null)
+            ), $card, $sum, $bankSum, $loanId);
+            return true;
         }
     }
 
     /**
+     * Checking all items for creating card
      * @return array
      */
     public function check(): array
