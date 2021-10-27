@@ -126,7 +126,7 @@ class CardService
      * Return all information about user cards
      * @return Collection
      */
-    public function getUserCards($id = 1): Collection
+    public function getUserCards($id = 0): Collection
     {
         $cardsId = $this->userRepository->getCards(Auth::user()->id ?? $id);
         return $this->cardRepository->findAll($cardsId);

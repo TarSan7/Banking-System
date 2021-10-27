@@ -4,17 +4,14 @@ namespace Tests\Unit\Repositories;
 
 use App\Models\ActiveDeposit;
 use App\Models\Card;
-use App\Models\CardTransfer;
 use App\Models\Deposit;
 use App\Repository\Eloquent\ActiveDepositRepository;
 use App\Repository\Eloquent\CardRepository;
 use App\Repository\Eloquent\DepositRepository;
-use App\Repository\Eloquent\TransferRepository;
 use Database\Seeders\ActiveDepositSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class ActiveDepositRepositoryTest extends TestCase
@@ -54,8 +51,7 @@ class ActiveDepositRepositoryTest extends TestCase
 
         $this->activeDepositRepository = new ActiveDepositRepository(
             new ActiveDeposit(),
-            new CardRepository(new Card()),
-            new TransferRepository(new CardTransfer())
+            new CardRepository(new Card())
         );
         $this->depositRepository = new DepositRepository(new Deposit(), new ActiveDeposit());
     }
@@ -137,6 +133,7 @@ class ActiveDepositRepositoryTest extends TestCase
         $date = date('y-m-d');
         $this->activeDepositRepository->updateDate(9, $date);
         $this->assertDatabaseHas('active_deposits', [
+            'id' => 9,
             'created_at' => $date
         ]);
     }

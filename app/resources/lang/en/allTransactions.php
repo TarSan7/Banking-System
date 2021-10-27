@@ -1,11 +1,14 @@
 <?php
 return [
+    'appointment' => 'Appointment',
     'transactions' => 'Transactions',
     'of-card' => 'Transactions of card ',
     'from' => 'From card: ',
     'sum' => 'Sum: ',
+    'currency' => 'Currency',
     'to' => 'To card: ',
     'none' => 'None...',
+    'date' => 'Date ',
 
     'choose' => 'Choose transfer',
     'to-cards' => 'To another card',

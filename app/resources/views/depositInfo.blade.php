@@ -3,7 +3,7 @@
 @section('title') {{ __('takeDeposit.take') }} @endsection
 
 @section('style')
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="{{ mix('/css/main.css') }}">
 @endsection
 
 @section('content')
@@ -27,6 +27,15 @@
             </div>
         </div>
     </nav>
+    <div class="container">
+        <a href="{{ url()->previous(app()->getLocale()) }}" class="arrow">
+            <picture>
+                <source srcset="/img/arr.webp" type="image/webp" class="arrow">
+                <img src="/img/arr.png" alt="arrow" class="arrow">
+            </picture>
+        </a>
+    </div>
+
     <h1 class="index-title">{{ __('takeDeposit.details') }}<br>"{{ $deposit['title'] }}"</h1>
     @if(session()->has('success'))
         <p class="success">{{ $session('success') }}</p>

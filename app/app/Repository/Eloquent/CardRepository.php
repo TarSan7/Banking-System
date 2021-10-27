@@ -229,4 +229,36 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     {
         return $this->model->where('type', 'general')->get();
     }
+
+    /**
+     * @param string $path
+     * @param int $id
+     * @return bool
+     */
+    public function setImage($path, $id): bool
+    {
+        if ($this->model->where('id', '=', $id)->update(['image' => $path])) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function getImage($id): string
+    {
+        $obj = $this->model->select('image')->where('id', '=', $id)->first();
+        return Arr::get($obj, 'image', '');
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function setInitial($id): bool
+    {
+        return $this->model->where('id', '=', $id)->update(['image' => '']);
+    }
 }

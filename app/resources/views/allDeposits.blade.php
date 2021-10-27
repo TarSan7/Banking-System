@@ -4,7 +4,7 @@
 @section('title') {{ __('allDeposits.deposits') }} @endsection
 
 @section('style')
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="{{ mix('/css/main.css') }}">
 @endsection
 
 @section('content')
@@ -21,7 +21,7 @@
                 @if(count($deposits) > 0)
                     @foreach($deposits as $deposit)
                         <a href="{{ route('user.takeDeposit', [app()->getLocale(), 'id' => $deposit['id']]) }}" class="card-link">
-                            <div class="deposit col-md-6 col-12">
+                            <div class="standard deposit col-md-6 col-12">
                                 <h2 class="deposit-title"> "{{ $deposit['title'] }}" </h2>
                                 <div class="spacing">
                                     <h3 class="card-info"> {{ __('allDeposits.early') }} </h3>
@@ -100,5 +100,8 @@
             </div>
         </div>
     </div>
+
+
+    <script src = "{{ mix('/js/moveOther.js') }}"></script>
 @endsection
 

@@ -4,39 +4,67 @@
 @section('title') {{ __('allTransactions.transactions') }} @endsection
 
 @section('style')
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="{{ mix('/css/main.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
 @endsection
 
 @section('content')
     <div class="container">
-
-        <div class="transactions">
+        <div class="transactions" id="transactions">
             @if (count($transactions))
                 @foreach ($transactions as $cardTransactions)
-                        <h1 class="index-title">{{ __('allTransactions.of-card') }}  {{ $cardTransactions['number'] }}</h1>
+                    <h1 class="index-title">{{ __('allTransactions.of-card') }}  {{ $cardTransactions['number'] }}</h1>
+                    <table id="table_id" class="display transactions">
+                        <thead>
+                        <tr>
+                            <th>{{ __('allTransactions.appointment') }}</th>
+                            <th>{{ __('allTransactions.from') }}</th>
+                            <th>{{ __('allTransactions.to') }}</th>
+                            <th>{{ __('allTransactions.sum') }}</th>
+                            <th>{{ __('allTransactions.currency') }}</th>
+                            <th>{{ __('allTransactions.date') }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
                         @foreach ($cardTransactions['oneCard'] as $transaction)
-                            <div class="transaction">
-                                <div class="spacing">
-                                    <h2 class="card-title"> <b>{{ $transaction['comment'] }} </b></h2>
-                                    <h2 class="card-title"> {{ $transaction['date'] }} </h2>
-                                </div>
+                            <tr>
+                                <td> {{ $transaction['comment'] }} </td>
                                 @if($cardTransactions['number'] == $transaction['card_to'])
-                                    <h3 class="card-info"> {{ __('allTransactions.from') }} {{ $transaction['card_from'] }} </h3>
-                                    <h3 class="card-info"> {{ __('allTransactions.sum') }} <b class="card-to">+{{ $transaction['sum'] }}
-                                            {{ $transaction['currency'] }} </b></h3>
+                                    <td> {{ $transaction['card_from'] }} </td>
+                                    <td> {{ $transaction['card_to'] }} </td>
+                                    <td> +{{ $transaction['sum'] }} </td>
+                                    <td> {{ $transaction['currency'] }} </td>
                                 @else
                                     @if($transaction['comment'] == 'Transfer to another card.' || $transaction['comment'] == 'Провести перевод на карту.')
-                                        <h3 class="card-info"> {{ __('allTransactions.to') }} {{ $transaction['card_to'] }} </h3>
+                                        <td> {{ $transaction['card_from'] }} </td>
+                                        <td> {{ $transaction['card_to'] }} </td>
+                                    @else
+                                        <td> {{ $transaction['card_from'] }} </td>
+                                        <td> {{ $transaction['card_to'] }} </td>
                                     @endif
-                                    <h3 class="card-info"> {{ __('allTransactions.sum') }} <b class="card-from">-{{ $transaction['sum'] }}
-                                            {{ $transaction['currency'] }}</b></h3>
+                                    <td> -{{ $transaction['sum'] }} </td>
+                                    <td> {{ $transaction['currency'] }} </td>
                                 @endif
-                            </div>
+                                <td> {{ $transaction['date'] }} </td>
+                            </tr>
                         @endforeach
+                            </tbody>
+                    </table>
                 @endforeach
             @else
                 <h2 class="text">{{ __('allTransactions.none') }} </h2>
             @endif
         </div>
     </div>
+
+    <script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('table.display').DataTable();
+        } );
+    </script>
 @endsection

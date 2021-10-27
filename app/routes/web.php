@@ -96,6 +96,7 @@ Route::prefix('{locale}')->group(function () {
 
         Route::post('/closeDeposit/{id}', [DepositController::class, 'close'])->name('closeDeposit');
 
+        Route::post('/changeImg/{id}', [CardController::class, 'change'])->name('changeImg');
     });
 });
 

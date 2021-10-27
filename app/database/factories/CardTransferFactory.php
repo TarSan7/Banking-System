@@ -27,18 +27,18 @@ class CardTransferFactory extends Factory
         return [
             'card_from' => function ()
             {
-                return Card::find(rand(7, 1000000))->number;
+                return Card::find(rand(7, 100000))->number;
             },
             'card_to' => function ()
             {
-                return Card::find(rand(7, 1000000))->number;
+                return Card::find(rand(7, 100000))->number;
             },
             'date' => $this->faker->date(),
             'sum' => rand(10, 10000),
             'new_sum' => rand(10, 10000),
             'currency' => $this->currency[rand(0, 5)],
             'comment' => 'Transfer to card',
-            'user_id' => rand(1, 1000000)
+            'user_id' => rand(1, 500)
         ];
     }
 }

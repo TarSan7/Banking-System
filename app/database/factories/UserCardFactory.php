@@ -23,7 +23,7 @@ class UserCardFactory extends Factory
     {
         return [
             'user_id' => rand(1, 100000),
-            'card_id' => $this->faker->unique()->numberBetween(6, 1000000)
+            'card_id' => $this->faker->unique()->numberBetween(6, 506)
         ];
     }
 }

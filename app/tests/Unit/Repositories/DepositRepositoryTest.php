@@ -40,8 +40,7 @@ class DepositRepositoryTest extends TestCase
         $this->depositRepository = new DepositRepository(new Deposit(), new ActiveDeposit());
         $this->activeDepositRepository = new ActiveDepositRepository(
             new ActiveDeposit(),
-            new CardRepository(new Card()),
-            new TransferRepository(new CardTransfer())
+            new CardRepository(new Card())
         );
     }
 
@@ -69,6 +68,10 @@ class DepositRepositoryTest extends TestCase
     {
         if ($this->depositRepository->newDeposit(1, $this->newDeposit, 2)) {
             $this->assertDatabaseHas('active_deposits', [
+                'user_id' => 2
+            ]);
+        } else {
+            $this->assertDatabaseMissing('active_deposits', [
                 'user_id' => 2
             ]);
         }

@@ -3,7 +3,7 @@
 @section('title') {{ __('takeLoan.take') }}@endsection
 
 @section('style')
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="{{ mix('/css/main.css') }}">
 @endsection
 
 @section('content')
@@ -15,9 +15,9 @@
                     @foreach (config('app.available_locales') as $locale)
                         <div class="nav-item">
                             <a class="nav-link active" href="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), [$locale, 'id' => $loan['id']])}}">
-                        <span class="sr-only">
-                            {{ strtoupper($locale) }}
-                        </span>
+                            <span class="sr-only">
+                                {{ strtoupper($locale) }}
+                            </span>
                             </a>
                         </div>
                     @endforeach
@@ -30,7 +30,10 @@
     </nav>
     <div class="container">
         <a href="{{ url()->previous(app()->getLocale()) }}" class="arrow">
-            <img src="/img/arr.png" alt="arrow" class="arrow">
+            <picture>
+                <source srcset="/img/arr.webp" type="image/webp" class="arrow">
+                <img src="/img/arr.png" alt="arrow" class="arrow">
+            </picture>
         </a>
     </div>
 

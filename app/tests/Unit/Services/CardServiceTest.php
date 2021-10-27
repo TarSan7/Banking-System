@@ -94,11 +94,12 @@ class CardServiceTest extends TestCase
     public function testCardAdded(): void
     {
         $this->mockCardRepository->method('getId')->willReturn(1);
-        $this->mockUserCardRepository->method('cardsExist')->willReturn(false);
+        $this->mockUserCardRepository->method('cardsExist')->willReturn(false, true);
 
         $this->cardService->setCard(['number' => '0000000000000000']);
 
         $this->assertFalse($this->cardService->cardAdded());
+        $this->assertTrue($this->cardService->cardAdded());
     }
 
     /**
@@ -116,10 +117,18 @@ class CardServiceTest extends TestCase
      */
     public function testGetUserCards(): void
     {
-        $this->mockUserRepository->method('getCards')->willReturn(new \Illuminate\Support\Collection());
-        $this->mockCardRepository->method('findAll')->willReturn(new \Illuminate\Support\Collection());
+        $this->mockUserRepository->method('getCards')->willReturn(collect([1]));
+        $this->mockCardRepository->method('findAll')->willReturn(collect([[
+            'id' => 7,
+            'type' => 'checking',
+            'number' => '10101010101010',
+            'cvv' => '657',
+            'expires_end' => date('y-m-d'),
+            'sum' => 100,
+            'currency' => 'EUR'
+        ]]));
 
-        $this->assertCount(0, $this->cardService->getUserCards());
+        $this->assertCount(1, $this->cardService->getUserCards());
     }
 
     /**

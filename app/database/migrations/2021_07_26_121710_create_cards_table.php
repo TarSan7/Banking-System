@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateCardsTable extends Migration
@@ -25,6 +26,7 @@ class CreateCardsTable extends Migration
             $table->date('expires_end');
             $table->float('sum', $precision = 30, $scale = 2);
             $table->string('currency');
+            $table->string('image');
             $table->timestamps();
         });
 
@@ -45,7 +47,8 @@ class CreateCardsTable extends Migration
             'cvv' => rand(100, 999),
             'expires_end' => date('Y-m-d', strtotime( '+'.mt_rand(0,300).' days')),
             'sum' => 1000000000,
-            'currency' => $currency
+            'currency' => $currency,
+            'image' => ''
         ));
     }
 

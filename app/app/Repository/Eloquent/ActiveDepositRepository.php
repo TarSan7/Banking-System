@@ -95,17 +95,15 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
 
     /**
      * Getting deposits by current date
-     * @return array
+     * @return object
      */
-    public function getDepositsByDate($currentDate = null): array
+    public function getDepositsByDate($currentDate = null): object
     {
         $currentDate = date('d');
         if (date('d') === date('d', strtotime("last day of this month"))) {
-            return DB::select('select * from active_deposits where dayofmonth(date) > :current_date',
-                ['current_date' => $currentDate-1]);
+            return $this->model->select('*')->whereDay('date', '>', $currentDate-1)->get();
         } else {
-            return DB::select('select * from active_deposits where dayofmonth(date) = :current_date',
-                ['current_date' => $currentDate]);
+            return $this->model->select('*')->whereDay('date', '=', $currentDate)->get();
         }
 
     }

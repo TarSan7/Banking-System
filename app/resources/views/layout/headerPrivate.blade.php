@@ -20,6 +20,9 @@
 </nav>
 <div class="container">
     <a href="{{ url()->previous(app()->getLocale()) }}" class="arrow">
-        <img src="/img/arr.png" alt="arrow" class="arrow">
+        <picture>
+            <source srcset="/img/arr.webp" type="image/webp" class="arrow">
+            <img src="/img/arr.png" alt="arrow" class="arrow">
+        </picture>
     </a>
 </div>

@@ -4,18 +4,18 @@
 @section('title') {{ __('allLoans.loans') }} @endsection
 
 @section('style')
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="{{ mix('/css/main.css') }}">
 @endsection
 
 @section('content')
     <div class="container">
         <h1 class="index-title">{{ __('allLoans.list') }}</h1>
         <div class="to-center">
-            <div class="loans">
+            <div class="loans ">
                 @if(count($loans) > 0)
                     @foreach($loans as $loan)
                         <a href="{{ route('user.takeLoan', [app()->getLocale(), 'id' => $loan['id']]) }}" class="card-link">
-                            <div class="loan col-md-6 col-12">
+                            <div class="standard loan col-md-6 col-12">
                                 <h2 class="loan-title"> "{{ $loan['title'] }}" </h2>
                                 <div class="spacing">
                                     <h3 class="card-info"> {{ __('allLoans.percents') }} </h3>
@@ -74,5 +74,7 @@
             </div>
         </div>
     </div>
+
+    <script src = "{{ mix('/js/moveOther.js') }}"></script>
 @endsection
 

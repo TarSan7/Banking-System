@@ -121,4 +121,17 @@ interface CardRepositoryInterface
      * @return Collection
      */
     public function getGeneral(): Collection;
+
+    /**
+     * @param string $path
+     * @param int $id
+     * @return bool
+     */
+    public function setImage($path, $id): bool;
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function getImage($id): string;
 }

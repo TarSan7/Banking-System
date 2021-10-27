@@ -18,11 +18,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-//        Card::factory(1100000)->create();
-//        User::factory(10)->create();
-//        UserCard::factory(150000)->create();
-//        CardTransfer::factory(100000)->create();
-        ActiveDeposit::factory(200000)->create();
-//        ActiveLoan::factory(200000)->create();
+//        Card::factory(100000)->create();
+//        User::factory(500)->create();
+//        UserCard::factory(450)->create();
+//        CardTransfer::factory(10000)->create();
+//        ActiveDeposit::factory(2000)->create();
+        ActiveLoan::factory(2000)->create();
     }
 }

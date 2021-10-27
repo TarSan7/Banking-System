@@ -4,7 +4,7 @@
 @section('title') {{ __('index.hello') }} @endsection
 
 @section('style')
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="{{ mix('/css/main.css') }}">
 @endsection
 
 
