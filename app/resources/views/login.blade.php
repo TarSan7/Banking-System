@@ -4,7 +4,7 @@
 @section('title'){{ __('login.login') }}@endsection
 
 @section('style')
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="{{ mix('/css/main.css') }}">
 @endsection
 
 

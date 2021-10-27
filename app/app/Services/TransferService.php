@@ -135,12 +135,13 @@ class TransferService
      * Return result of creating transaction
      * @return array
      */
-    public function createTransfer(): array
+    public function createTransfer($id = 0): array
     {
+        $card_to = $id === self::PHONE ? 'Mobile provider' : 'Internet provider';
         return array(
             'card_from' => $this->cardRepository
                 ->find(Arr::get($this->tranInfo, 'numberFrom', null))['number'],
-            'card_to' => Arr::get($this->tranInfo, 'numberTo', null),
+            'card_to' => $id === 0 ? Arr::get($this->tranInfo, 'numberTo', null) : $card_to,
             'date' => date('Y-m-d H:i:s'),
             'sum' => Arr::get($this->tranInfo, 'sum', null),
             'new_sum' => $this->getBalanceFrom() - Arr::get($this->tranInfo, 'sum', null),
@@ -216,7 +217,7 @@ class TransferService
         } elseif ($this->transferSum() > $this->getBalanceFrom()) {
             return ['error', Arr::get(self::RESPONSES, 'sum', null)];
         } else {
-            $this->allTransactionsService->make($this->createTransfer(), $this->infoFrom(), $this->infoTo());
+            $this->allTransactionsService->make($this->createTransfer($id), $this->infoFrom(), $this->infoTo());
             return ['success', Arr::get(self::RESPONSES, 'done', null)];
         }
     }

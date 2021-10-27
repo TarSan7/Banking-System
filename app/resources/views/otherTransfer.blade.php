@@ -3,7 +3,7 @@
 @section ('title') {{ __('otherTrans.other') }}@endsection
 
 @section ('style')
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="{{ mix('/css/main.css') }}">
 @endsection
 
 @section ('content')
@@ -30,9 +30,11 @@
     </nav>
 
     <div class="container">
-        {{--    @if ()--}}
         <a href="{{ url()->previous(app()->getLocale()) }}" class="arrow">
-            <img src="/img/arr.png" alt="arrow" class="arrow">
+            <picture>
+                <source srcset="/img/arr.webp" type="image/webp" class="arrow">
+                <img src="/img/arr.png" alt="arrow" class="arrow">
+            </picture>
         </a>
     </div>
 

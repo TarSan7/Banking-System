@@ -1,17 +1,52 @@
 const mix = require('laravel-mix');
 
-/*
- |--------------------------------------------------------------------------
- | Mix Asset Management
- |--------------------------------------------------------------------------
- |
- | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel applications. By default, we are compiling the CSS
- | file for the application as well as bundling up all the JS files.
- |
- */
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ImageminPlugin = require('imagemin-webpack-plugin').default;
+const imageminMozjpeg = require('imagemin-mozjpeg');
 
-mix.js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+require('laravel-mix-webp');
+require("laravel-mix");
+
+
+mix
+    .js('resources/js/slider.js', 'public/js/slider.js')
+    .js('resources/js/cardRotate.js', 'public/js/cardRotate.js')
+    .js('resources/js/cardMove.js', 'public/js/cardMove.js')
+    .js('resources/js/moveOther.js', 'public/js/moveOther.js')
+    .postCss('resources/css/main.css', 'public/css')
+    .options({
+        postCss: [
+            require('postcss-sort-media-queries')
+        ]
+    })
+    .webpackConfig({
+        plugins: [
+            new CopyWebpackPlugin({
+                patterns: [
+                    {
+                        from: 'resources/img',
+                        to: 'img'
+                    }
+                ]
+            }),
+
+            new ImageminPlugin({
+                    test: /\.(jpe?g|png|svg)$/i,
+                    plugins: [
+                        imageminMozjpeg({
+                            quality: 80,
+                            progressive: true
+                        })
+                    ]
+                }
+            )
+        ]
+    })
+    .ImageWebp({
+        from: 'resources/img',
+        to: 'public/img',
+        imageminWebpOptions: {
+            quality: 70
+        }
+    })
+    .version();

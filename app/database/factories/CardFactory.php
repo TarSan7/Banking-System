@@ -30,7 +30,8 @@ class CardFactory extends Factory
             'cvv' => rand(100, 999),
             'expires_end' => $this->faker->creditCardExpirationDate(),
             'sum' => rand(0, 100000),
-            'currency' => $this->currency[rand(0, 5)]
+            'currency' => $this->currency[rand(0, 5)],
+            'image' => ''
         ];
     }
 
@@ -48,7 +49,8 @@ class CardFactory extends Factory
             'cvv' => rand(100, 999),
             'expires_end' => $this->faker->creditCardExpirationDate(),
             'sum' => $sum,
-            'currency' => $currency
+            'currency' => $currency,
+            'image' => ''
         ];
     }
 }

@@ -18,7 +18,8 @@ class Card extends Model
         'cvv',
         'expires_end',
         'sum',
-        'currency'
+        'currency',
+        'image'
     ];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
