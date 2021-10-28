@@ -9,6 +9,7 @@ use App\Repository\ActiveDepositRepositoryInterface;
 use App\Services\AllTransactionsService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ActiveDepositRepository extends BaseRepository implements ActiveDepositRepositoryInterface
 {
@@ -96,12 +97,15 @@ class ActiveDepositRepository extends BaseRepository implements ActiveDepositRep
      * Getting deposits by current date
      * @return object
      */
-    public function getDepositsByDate($date = null): object
+    public function getDepositsByDate($currentDate = null): object
     {
-        if (!$date) {
-            $date = date('d');
+        $currentDate = date('d');
+        if (date('d') === date('d', strtotime("last day of this month"))) {
+            return $this->model->select('*')->whereDay('date', '>', $currentDate-1)->get();
+        } else {
+            return $this->model->select('*')->whereDay('date', '=', $currentDate)->get();
         }
-        return $this->model->where('date', 'like', "%-$date")->get();
+
     }
 
     /**

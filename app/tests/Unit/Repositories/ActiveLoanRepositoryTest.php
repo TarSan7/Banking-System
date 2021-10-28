@@ -104,8 +104,8 @@ class ActiveLoanRepositoryTest extends TestCase
     {
         $date = date('y-m-d');
         $this->activeLoanRepository->updateDate(7, $date);
-//        print_r($this->activeLoanRepository->all());
         $this->assertDatabaseHas('active_loans', [
+            'id' => 7,
             'created_at' => $date
         ]);
     }

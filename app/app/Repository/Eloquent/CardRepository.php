@@ -167,7 +167,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function updateSum($id, $sum = 0): bool
     {
-        $cardSum = $this->model->find($id)['sum'];
+        $cardSum = Arr::get($this->model->find($id), 'sum', null);
         if ($cardSum >= $sum) {
             $updated = $cardSum - $sum;
             return (bool)$this->model->find($id)->update(['sum' => $updated]);

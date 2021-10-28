@@ -43,15 +43,8 @@ class DepositCommand extends Command
      */
     public function handle(): bool
     {
-        if (date('d') === date('d', strtotime("last day of this month"))) {
-            for ($i = (int) date('d'); $i <= 31; $i++) {
-                $deposits = $this->activeDepositRepository->getDepositsByDate($i);
-                $this->depositService->decrease($deposits);
-            }
-        } else {
-            $deposits = $this->activeDepositRepository->getDepositsByDate();
-            return $this->depositService->decrease($deposits);
-        }
+        $deposits = $this->activeDepositRepository->getDepositsByDate();
+        $this->depositService->decrease($deposits);
         return true;
     }
 }
