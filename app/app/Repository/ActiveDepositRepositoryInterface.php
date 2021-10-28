@@ -37,7 +37,7 @@ interface ActiveDepositRepositoryInterface
      * Getting deposits by current date
      * @return object
      */
-    public function getDepositsByDate(): array;
+    public function getDepositsByDate(): object;
 
     /**
      * Getting number of month left

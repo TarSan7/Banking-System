@@ -26,4 +26,12 @@ class UserCardFactory extends Factory
             'card_id' => $this->faker->unique()->numberBetween(6, 1000000)
         ];
     }
+
+    public function testData()
+    {
+        return [
+            'user_id' => 40,
+            'card_id' => 8
+        ];
+    }
 }

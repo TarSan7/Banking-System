@@ -214,7 +214,7 @@ class AllTransactionsService
         try {
             $this->activeDepositModel->where('id', $id)->update([
                 'month_left' => $monthLeft - 1,
-                'total_sum' => $deposit->total_sum + $monthSum
+                'total_sum' => Arr::get($deposit, 'total_sum', null) + $monthSum
             ]);
             $this->transferRepository->create([
                 'card_from' => 'Bank',
@@ -222,9 +222,9 @@ class AllTransactionsService
                 'date' => date('Y-m-d H:i:s'),
                 'sum' => $monthSum,
                 'new_sum' => $monthSum,
-                'currency' => $deposit->currency,
+                'currency' => Arr::get($deposit, 'currency', null),
                 'comment' => 'Percents to deposit',
-                'user_id' => $deposit->user_id
+                'user_id' => Arr::get($deposit, 'user_id', null)
             ]);
         } catch (Exception $e) {
             DB::rollback();

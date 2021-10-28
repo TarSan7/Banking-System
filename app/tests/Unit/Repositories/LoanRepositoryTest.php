@@ -72,6 +72,10 @@ class LoanRepositoryTest extends TestCase
             $this->assertDatabaseHas('active_loans', [
                 'user_id' => 2
             ]);
+        } else {
+            $this->assertDatabaseMissing('active_loans', [
+                'user_id' => 2
+            ]);
         }
     }
 }
