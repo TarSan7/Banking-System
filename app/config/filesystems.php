@@ -31,7 +31,7 @@ return [
     'disks' => [
         'dropbox' => [
             'driver' => 'dropbox',
-            'token' => env('DROPBOX_ACCESS_TOKEN')
+            'token' => env('DROPBOX_ACCESS_TOKEN'),
         ],
 
         'local' => [

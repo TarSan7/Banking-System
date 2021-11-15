@@ -12,8 +12,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use League\Flysystem\Filesystem;
 
 /**
  * Class CardController
@@ -73,16 +75,15 @@ class CardController extends Controller
     {
         if ($request->file('AddImage')) {
             $file = $request->file('AddImage');
-            $is = Storage::disk('dropbox')->putFile('', $file);
+            $is = Storage::disk('dropbox')->putFile('', $file, 'public');
             if (Storage::disk('dropbox')->exists($is)) {
-               $path = Storage::disk('dropbox')->url($is);
-               $this->cardRepository->setImage($path, $id);
-               echo '<script>window.close()</script>';
+                $path = Storage::disk('dropbox')->url($is);
+                $this->cardRepository->setImage($path, $id);
+                echo '<script>window.close()</script>';
             }
         } else {
             $this->cardRepository->setInitial($id);
             echo '<script>window.close()</script>';
         }
-
     }
 }
